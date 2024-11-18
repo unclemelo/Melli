@@ -23,7 +23,7 @@ async def on_ready():
         print(f"Synced {len(synced)} commands!")
     except Exception as e:
         print(f'already synced\n{Fore.RED}[ FAILED ]{Fore.RESET} {e}')
-    await client.change_presence(activity=discord.Streaming(name="🍉 Melon System", url="https://www.twitch.tv/uncle_melo_"))
+    await client.change_presence(status=discord.Status.dnd, activity=discord.Activity(type=discord.ActivityType.watching, name=f"🍉 {len(client.guilds)} guilds!"))
     print(f"{Fore.GREEN}Connected to {client.user.name}!{Fore.RESET}")
 
 # Load cogs
