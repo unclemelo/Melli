@@ -1,18 +1,16 @@
-import discord, json, asyncio, subprocess, os, sys
-
-from datetime import timedelta
+import discord, json, asyncio, subprocess, os, sys, psutil
+from datetime import datetime, timedelta
 from colorama import Fore
 from discord import app_commands
 from discord.ext import commands, tasks
 
-
 def restart_bot(): 
     os.execv(sys.executable, ['python3'] + sys.argv)
-
 
 class System(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.start_time = datetime.utcnow()  # Track when the bot started
 
     def restart_bot(self): 
         os.execv(sys.executable, ['python3'] + sys.argv)
@@ -35,6 +33,19 @@ class System(commands.Cog):
         except Exception as e:
             print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Exception during git pull: {e}")
             return str(e)
+
+    def get_uptime(self):
+        """Calculate the bot's uptime."""
+        now = datetime.utcnow()
+        uptime = now - self.start_time
+        return str(timedelta(seconds=uptime.total_seconds()))
+
+    def get_resource_usage(self):
+        """Fetch system resource usage (CPU, Memory)."""
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        memory_usage = f"{memory.used // (1024**2)}MB / {memory.total // (1024**2)}MB ({memory.percent}%)"
+        return cpu_percent, memory_usage
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -61,6 +72,41 @@ class System(commands.Cog):
         print("Rebooting...")
         restart_bot()
 
+    @app_commands.command(name="shutdown", description="Shuts down the bot.")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def shutdown_cmd(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="Shutting Down `MelonShield`...",
+            description="The bot is now shutting down.",
+            color=0xff0000
+        )
+        await interaction.response.send_message(embed=embed)
+        print("Shutting down...")
+        await self.bot.close()
+
+    @app_commands.command(name="uptime", description="Shows the bot's uptime.")
+    async def uptime_cmd(self, interaction: discord.Interaction):
+        uptime = self.get_uptime()
+        embed = discord.Embed(
+            title="Bot Uptime",
+            description=f"`MelonShield` has been online for: **{uptime}**",
+            color=0x3df553
+        )
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="resources", description="Displays system resource usage.")
+    async def resources_cmd(self, interaction: discord.Interaction):
+        cpu_percent, memory_usage = self.get_resource_usage()
+        embed = discord.Embed(
+            title="System Resource Usage",
+            description=(
+                f"**CPU Usage:** {cpu_percent}%\n"
+                f"**Memory Usage:** {memory_usage}"
+            ),
+            color=0x3df553
+        )
+        await interaction.response.send_message(embed=embed)
+
     @tasks.loop(hours=24)
     async def reboot_loop(self):
         channel = self.bot.get_channel(1308048388637462558)
@@ -85,7 +131,6 @@ class System(commands.Cog):
     @reboot_loop.before_loop
     async def before_my_task(self):
         await self.bot.wait_until_ready()  # Wait until the bot is ready
-
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(System(bot))
