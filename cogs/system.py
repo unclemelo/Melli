@@ -24,7 +24,9 @@ class System(commands.Cog):
     @app_commands.command(name="reboot", description="reboots the bot.")
     @app_commands.checks.has_permissions(administrator=True)
     async def restart_cmd(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Rebooting `MeloGames`...")
+        embed = discord.Embed(title="Rebooting `MelonShield`...", description="`MelonShield` is now updating all its code...", color=0x3df553)
+        await interaction.response.send_message(embed=embed)
+        print("Rebooting...")
         restart_bot()
 
     @tasks.loop(hours=24)
@@ -32,6 +34,7 @@ class System(commands.Cog):
         channel = self.bot.get_channel(1308048388637462558)
         embed = discord.Embed(title="Rebooting `MelonShield`...", description="`MelonShield` is now updating all its code...", color=0x3df553)
         await channel.send(embed=embed)
+        print("Rebooting...")
         restart_bot()
 
     @reboot_loop.before_loop
