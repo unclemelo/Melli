@@ -38,9 +38,7 @@ class AutoMod(commands.Cog):
             ]
 
             allowed_links = [
-                "*://tenor.com/*", "*://cdn.discordapp.com/*", "*://imgflip.com/*",
-                "*://media.discordapp.net/*", "*://on.soundcloud.com/*",
-                "*://open.spotify.com/*", "*://youtube.com/*"
+                "*://c.tenor.com/*", "*://cdn.discordapp.com/*", "*://imgflip.com/*", "*://media.discordapp.net/*", "*://on.soundcloud.com/*", "*://open.spotify.com/*", "*://tenor.com/*", "*://treeben77.github.io/*", "*://www.bilibili.com/*", "*://www.youtube.com/*", "*://youtu.be/*", "*://youtube.com/*", "*.go*", "*.js*", "*.py*", "poly.ai"
             ]
 
             # Create AutoMod Rule: Block Harmful Links
