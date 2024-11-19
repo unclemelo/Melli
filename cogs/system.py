@@ -54,35 +54,41 @@ class System(commands.Cog):
     @app_commands.command(name="reboot", description="Reboots the bot and updates its code.")
     @app_commands.checks.has_permissions(administrator=True)
     async def restart_cmd(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="Rebooting `MelonShield`...",
-            description="`MelonShield` is now pulling updates from GitHub and rebooting.",
-            color=0x3df553
-        )
-        await interaction.response.send_message(embed=embed)
+        if interaction.user.id == 954135885392252940:
+            embed = discord.Embed(
+                title="Rebooting `MelonShield`...",
+                description="`MelonShield` is now pulling updates from GitHub and rebooting.",
+                color=0x3df553
+            )
+            await interaction.response.send_message(embed=embed)
 
-        # Pull latest code
-        git_response = self.update_code()
-        if "Already up to date" in git_response:
-            embed.description += "\n\nNo updates found, restarting with the current version."
+            # Pull latest code
+            git_response = self.update_code()
+            if "Already up to date" in git_response:
+                embed.description += "\n\nNo updates found, restarting with the current version."
+            else:
+                embed.description += "\n\nUpdates applied successfully."
+
+            await interaction.followup.send(embed=embed)
+            print("Rebooting...")
+            restart_bot()
         else:
-            embed.description += "\n\nUpdates applied successfully."
-
-        await interaction.followup.send(embed=embed)
-        print("Rebooting...")
-        restart_bot()
+            await interaction.response.send_message("Sorry only the dev can do that.")
 
     @app_commands.command(name="shutdown", description="Shuts down the bot.")
     @app_commands.checks.has_permissions(administrator=True)
     async def shutdown_cmd(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="Shutting Down `MelonShield`...",
-            description="The bot is now shutting down.",
-            color=0xff0000
-        )
-        await interaction.response.send_message(embed=embed)
-        print("Shutting down...")
-        await self.bot.close()
+        if interaction.user.id == 954135885392252940:
+            embed = discord.Embed(
+                title="Shutting Down `MelonShield`...",
+                description="The bot is now shutting down.",
+                color=0xff0000
+            )
+            await interaction.response.send_message(embed=embed)
+            print("Shutting down...")
+            await self.bot.close()
+        else:
+            await interaction.response.send_message("Sorry only the dev can do that.")
 
     @app_commands.command(name="uptime", description="Shows the bot's uptime.")
     async def uptime_cmd(self, interaction: discord.Interaction):
