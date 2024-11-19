@@ -1,4 +1,4 @@
-import discord, json, asyncio, subprocess, os, sys, psutil
+import discord, json, asyncio, subprocess, os, sys
 from datetime import datetime, timedelta
 from colorama import Fore
 from discord import app_commands
@@ -39,13 +39,6 @@ class System(commands.Cog):
         now = datetime.utcnow()
         uptime = now - self.start_time
         return str(timedelta(seconds=uptime.total_seconds()))
-
-    def get_resource_usage(self):
-        """Fetch system resource usage (CPU, Memory)."""
-        cpu_percent = psutil.cpu_percent(interval=1)
-        memory = psutil.virtual_memory()
-        memory_usage = f"{memory.used // (1024**2)}MB / {memory.total // (1024**2)}MB ({memory.percent}%)"
-        return cpu_percent, memory_usage
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -100,18 +93,6 @@ class System(commands.Cog):
         )
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="resources", description="Displays system resource usage.")
-    async def resources_cmd(self, interaction: discord.Interaction):
-        cpu_percent, memory_usage = self.get_resource_usage()
-        embed = discord.Embed(
-            title="System Resource Usage",
-            description=(
-                f"**CPU Usage:** {cpu_percent}%\n"
-                f"**Memory Usage:** {memory_usage}"
-            ),
-            color=0x3df553
-        )
-        await interaction.response.send_message(embed=embed)
 
     @tasks.loop(hours=24)
     async def reboot_loop(self):
