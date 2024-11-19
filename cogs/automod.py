@@ -68,8 +68,10 @@ class AutoMod(commands.Cog):
                 reason="Prevent spam or malicious text."
             )
 
+            embed = discord.Embed(title="AutoMod setup complete!", description=f"Created rules:\n- **{rule_1.name}**\n- **{rule_2.name}**", color=0x03fcb6)
+
             await interaction.response.send_message(
-                f"AutoMod setup complete! Created rules:\n- **{rule_1.name}**\n- **{rule_2.name}**"
+                embed=embed
             )
         except Exception as e:
             print(f"Error in AutoMod setup: {e}")
