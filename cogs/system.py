@@ -94,7 +94,7 @@ class System(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
 
-    @tasks.loop(hours=24)
+    @tasks.loop(hours=12)
     async def reboot_loop(self):
         channel = self.bot.get_channel(1308048388637462558)
         embed = discord.Embed(
