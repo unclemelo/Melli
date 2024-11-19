@@ -4,7 +4,7 @@ from datetime import timedelta
 from discord import app_commands
 from colorama import Fore
 
-class AutoMod(commands.Cog):
+class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -21,4 +21,4 @@ class AutoMod(commands.Cog):
 
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(AutoMod(bot))
+    await bot.add_cog(Misc(bot))
