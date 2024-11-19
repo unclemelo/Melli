@@ -52,7 +52,9 @@ class AutoMod(commands.Cog):
                 ),
                 actions=[
                     discord.AutoModRuleAction(
-                        type=discord.AutoModRuleActionType.block_message,
+                        type=discord.AutoModRuleActionType.block_message
+                    ), 
+                    discord.AutoModRuleAction(
                         channel_id=channel.id
                     )],
                 enabled=True,
@@ -69,7 +71,9 @@ class AutoMod(commands.Cog):
                 ),
                 actions=[
                     discord.AutoModRuleAction(
-                        type=discord.AutoModRuleActionType.block_message,
+                        type=discord.AutoModRuleActionType.block_message
+                    ), 
+                    discord.AutoModRuleAction(
                         channel_id=channel.id
                     )],
                 enabled=True,
