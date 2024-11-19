@@ -50,7 +50,7 @@ class AutoMod(commands.Cog):
                     regex_patterns=blocked_links_regex,
                     allow_list=allowed_links
                 ),
-                actions=[discord.AutoModRuleAction(channel_id=channel.id)],
+                actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message,channel_id=channel.id)],
                 enabled=True,
                 reason="Prevent harmful or spam links."
             )
@@ -63,7 +63,7 @@ class AutoMod(commands.Cog):
                     type=discord.AutoModRuleTriggerType.keyword,
                     regex_patterns=blocked_text_regex
                 ),
-                actions=[discord.AutoModRuleAction(channel_id=channel.id)],
+                actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message,channel_id=channel.id)],
                 enabled=True,
                 reason="Prevent spam or malicious text."
             )
