@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from datetime import timedelta
 from discord import app_commands
 from colorama import Fore
 
@@ -56,6 +57,12 @@ class AutoMod(commands.Cog):
                     ), 
                     discord.AutoModRuleAction(
                         channel_id=channel.id
+                    ),
+                    discord.AutoModRuleAction(
+                        duration=timedelta(minutes=5)
+                    ),
+                    discord.AutoModRuleAction(
+                        custom_message="That link isn't socially acceptable here, find another 🙃\nTry using `/allowed_links` 🐟"
                     )],
                 enabled=True,
                 reason="Prevent harmful or spam links."
@@ -75,6 +82,9 @@ class AutoMod(commands.Cog):
                     ), 
                     discord.AutoModRuleAction(
                         channel_id=channel.id
+                    ),
+                    discord.AutoModRuleAction(
+                        custom_message="NO SPAM/KEEP IT LEGIBLE.\n>:("
                     )],
                 enabled=True,
                 reason="Prevent spam or malicious text."
