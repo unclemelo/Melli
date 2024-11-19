@@ -52,8 +52,10 @@ class AutoMod(commands.Cog):
                 ),
                 actions=[
                     discord.AutoModRuleAction(
-                        channel_id=channel.id,
                         type=discord.AutoModRuleActionType.block_message
+                    ), 
+                    discord.AutoModRuleAction(
+                        channel_id=channel.id
                     )],
                 enabled=True,
                 reason="Prevent harmful or spam links."
@@ -69,8 +71,10 @@ class AutoMod(commands.Cog):
                 ),
                 actions=[
                     discord.AutoModRuleAction(
-                        channel_id=channel.id,
                         type=discord.AutoModRuleActionType.block_message
+                    ), 
+                    discord.AutoModRuleAction(
+                        channel_id=channel.id
                     )],
                 enabled=True,
                 reason="Prevent spam or malicious text."
