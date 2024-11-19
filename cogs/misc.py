@@ -38,7 +38,7 @@ class Misc(commands.Cog):
             value="\n".join(f"• {link}" for link in allowed_links),
             inline=False
         )
-        embed.set_footer(text="Please ensure your links adhere to these guidelines.", icon_url=interaction.guild.icon.url if interaction.guild else None)
+        embed.set_footer(text="Please ensure your links adhere to these guidelines.", icon_url = interaction.guild.icon.url if interaction.guild and interaction.guild.icon else None)
 
         await interaction.response.send_message(embed=embed)
 
