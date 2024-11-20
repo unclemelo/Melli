@@ -1,12 +1,9 @@
-import discord, json, random, logging
+import discord, json, random
 from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
 from colorama import Fore
 from discord import app_commands
 from discord.ext import commands
-
-# Set up logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 class Royal(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -46,12 +43,12 @@ class Royal(commands.Cog):
         elif isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message("You don't have the required permissions to use this command.", ephemeral=True)
         else:
-            logging.error(f"An error occurred: {error}")
+            print(f"An error occurred: {error}")
             raise error
 
     @commands.Cog.listener()
     async def on_ready(self):
-        logging.info(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py")
+        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py")
     
     @app_commands.command(name="help_kill", description="View what the kill command brings.")
     async def helpkill_cmd(self, interaction: discord.Interaction):
@@ -108,7 +105,7 @@ class Royal(commands.Cog):
         except discord.Forbidden:
             await interaction.response.send_message("I don't have permission to timeout that user.", ephemeral=True)
         except discord.HTTPException as e:
-            logging.error(f"HTTPException: {e}")
+            print(f"HTTPException: {e}")
             await interaction.response.send_message("An error occurred while trying to timeout the user.", ephemeral=True)
 
 async def setup(bot: commands.Bot):
