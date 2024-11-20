@@ -51,7 +51,7 @@ class Royal(commands.Cog):
     async def on_ready(self):
         print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py - Time to wreak havoc!")
 
-    @app_commands.command(name="kill", description="Time to choose violence. Use a weapon to timeout someone!")
+    @app_commands.command(name="kill", description="Use a weapon to timeout a member!")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     @app_commands.choices(tool=[
         app_commands.Choice(name="Sniper", value="sniper"),
@@ -61,61 +61,39 @@ class Royal(commands.Cog):
         app_commands.Choice(name="Rocket Launcher", value="rocket"),
     ])
     async def snipecmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
-        await interaction.response.defer()
         member = member or random.choice(interaction.guild.members)
-
         if member == interaction.guild.me:
-            await interaction.followup.send("You really wanna try me? Nope, not happening.", ephemeral=True)
+            await interaction.response.send_message("I can't target myself!", ephemeral=True)
             return
 
         try:
-            # Check dud probability
-            if tool.value in self.dud_probabilities:
-                if random.random() < self.dud_probabilities[tool.value]:
-                    await interaction.followup.send(f"Oops! Your **{tool.name}** went full potato mode. Better luck next time.", ephemeral=False)
-                    return
-
             embed = discord.Embed(color=discord.Color.red())
             timeout_durations = {"sniper": 30, "shotie": 60, "pistol": 20, "grenade": 90, "rocket": 120}
             duration = timeout_durations[tool.value]
-
-            # Make sure dud_probabilities contains the tool before accessing
-            if tool.value not in self.dud_probabilities:
-                await interaction.followup.send(f"Error: No dud probability defined for `{tool.value}`.", ephemeral=True)
-                return
-
-            # Correctly get the image URL for the tool
-            tool_key = self.image_urls.get(tool.value, None)
-            if not tool_key:
-                tool_key = None
-
+            
             if tool.value == "shotie":
                 outcome = random.choice(["explosive", "buckshot"])
                 tool_key = "shotie_explosive" if outcome == "explosive" else "shotie"
-                embed.title = "💥 Explosive Shotgun Boom!" if outcome == "explosive" else "🔫 Buckshot Mayhem!"
-                embed.description = f"`{member.name}` got absolutely wrecked by `{interaction.user.display_name}` with an **{outcome} round**!"
+                embed.title = "💥 Explosive Shotgun Blast!" if outcome == "explosive" else "🔫 Buckshot Blast!"
+                embed.description = f"`{member.name}` was hit with an **{outcome} round** by `{interaction.user.display_name}`!"
             else:
-                embed.title = f"🚀 {tool.name.capitalize()} Attack!"
-                embed.description = f"`{member.name}` just got vaporized by `{interaction.user.display_name}`. Rest in pepperonis."
-
-            # Timeout member
+                tool_key = tool.value
+                embed.title = f"🚀 {tool.name.capitalize()}!"
+                embed.description = f"`{member.name}` was obliterated by `{interaction.user.display_name}`!"
+            
             await member.timeout(discord.utils.utcnow() + timedelta(seconds=duration), reason=f"Hit with a {tool.name}")
             embed.set_image(url=self.image_urls.get(tool_key, ""))
-            embed.set_footer(text=f"Cooldown: 10 minutes | Timeout Duration: {duration} seconds")
-            
+            embed.set_footer(text=f"Cooldown: 10 minutes | Duration: {duration} seconds")
             self.weapon_stats[tool.value] += 1
             self.save_stats()
-
-            await interaction.followup.send(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
         except discord.Forbidden:
-            await interaction.followup.send("Can't touch that user. Too powerful, maybe?", ephemeral=True)
+            await interaction.response.send_message("I don't have permission to timeout that user.", ephemeral=True)
         except discord.HTTPException as e:
             print(f"HTTPException: {e}")
-            await interaction.followup.send("Something broke. It wasn't me, I swear!", ephemeral=True)
-        except Exception as e:
-            await interaction.followup.send(f"Error: {e}")
-            print(f"Error: {e}")
+            await interaction.response.send_message("An error occurred while trying to timeout the user.", ephemeral=True)
+
 
     
 
