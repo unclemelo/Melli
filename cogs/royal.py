@@ -54,7 +54,7 @@ class Royal(commands.Cog):
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=30), reason="( -_•)▄︻デ══━一 Sniped")
                 embed.title = "🔫 Sniper Shot!"
                 embed.description = f"( -_•)▄︻デ══━一 `{member.name}` has been **sniped** by `{interaction.user.display_name}`!"
-                embed.set_image(url="https://tenor.com/view/sinon-sao-sword-art-online-gif-25208771")  # Replace with an image URL
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308790458889146398/sinon-sao.gif?ex=673f3999&is=673de819&hm=c0eec9ad754ebe2be6b970944255ca951e3099e562b400e5e7cea5fd1443956c&")  # Replace with an image URL
 
             elif tool.value == 'shotie':
                 outcome = random.choice(["explosive", "buckshot"])
@@ -66,25 +66,25 @@ class Royal(commands.Cog):
                     await member.timeout(discord.utils.utcnow() + timedelta(seconds=30), reason="Buckshot!")
                     embed.title = "🔫 Buckshot Blast!"
                     embed.description = f"`{member.name}` was peppered with **buckshot** by `{interaction.user.display_name}`!"
-                embed.set_image(url="https://tenor.com/view/shotgun-bread-boys-gif-22775719")  # Replace with an image URL
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308790449795895347/shotgun-bread-boys.gif?ex=673f3997&is=673de817&hm=9d44ec914cc4136fd465eb058644e4e790623e94fae18363af718e2677aced6e&")  # Replace with an image URL
 
             elif tool.value == 'pistol':
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=20), reason="Quick shot!")
                 embed.title = "🔫 Pistol Shot!"
                 embed.description = f"`{member.name}` was swiftly shot by `{interaction.user.display_name}`! Precision at its finest."
-                embed.set_image(url="https://tenor.com/view/gun-fire-anime-shoot-blam-gif-5256396")
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308790414626656256/gun-fire.gif?ex=673f398e&is=673de80e&hm=fbbedb181d2798f5cc8d5f7aeea49fa62b456b38c403e40f95600dbfabc5cebc&")
 
             elif tool.value == 'grenade':
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=90), reason="BOOM! Grenade explosion!")
                 embed.title = "💣 Grenade Explosion!"
                 embed.description = f"`{member.name}` was caught in a **grenade explosion** launched by `{interaction.user.display_name}`!"
-                embed.set_image(url="https://tenor.com/view/boom-gif-20562682")  # Replace with an image URL
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308790148493873162/boom.gif?ex=673f394f&is=673de7cf&hm=db599e2dc587b30174c498d444a3aa5f4b45dc057379cf2b81d16ba43c78e0fc&")  # Replace with an image URL
 
             elif tool.value == 'rocket':
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=120), reason="Direct hit from a rocket!")
                 embed.title = "🚀 Rocket Launcher!"
                 embed.description = f"`{member.name}` was obliterated by a **rocket launcher** wielded by `{interaction.user.display_name}`!"
-                embed.set_image(url="https://tenor.com/view/laser-eye-rocket-launcher-missile-gif-20287288")  # Replace with an image URL
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308789861880299583/laser-eye.gif?ex=673f390b&is=673de78b&hm=677edca23d9011967c5054703709e1c5101b038ea7e65d9d8ecdc2fe4d47be8d&")  # Replace with an image URL
 
             # Add a footer to the embed
             embed.set_footer(text="Cooldown: 10 minutes")
