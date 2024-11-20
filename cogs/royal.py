@@ -29,7 +29,7 @@ class Royal(commands.Cog):
 
     
     @app_commands.command(name="kill", description="Use a weapon to timeout a member for 30 seconds or more!")
-    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id))
+    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     @app_commands.choices(tool=[
         app_commands.Choice(name="Sniper", value="sniper"),
         app_commands.Choice(name="Shotgun", value="shotie"),
