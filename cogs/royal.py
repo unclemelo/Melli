@@ -132,12 +132,13 @@ class Royal(commands.Cog):
 
     @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
     async def chaos_cmd(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         try:
             members = interaction.guild.members
             for member in random.sample(members, min(len(members), 10)):
                 random_nickname = f"💥 {random.choice(['Goblin', 'Legend', 'Potato', 'Dud'])}"
                 await member.edit(nick=random_nickname)
-            await interaction.response.send_message("Chaos unleashed! Check those nicknames. 😈")
+            await interaction.followup.send("Chaos unleashed! Check those nicknames. 😈")
             
             # Reset the chaos after some time
             await asyncio.sleep(60)
