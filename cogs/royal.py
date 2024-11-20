@@ -106,6 +106,8 @@ class Royal(commands.Cog):
         except discord.HTTPException as e:
             print(f"HTTPException: {e}")
             await interaction.response.send_message("Something broke. It wasn't me, I swear!", ephemeral=True)
+        except Exception as e:
+            print(f"Error: {e}")
 
     
 
@@ -124,6 +126,8 @@ class Royal(commands.Cog):
             await interaction.response.send_message("I don't have permission to revive them. RIP again. 😔", ephemeral=True)
         except discord.HTTPException:
             await interaction.response.send_message("Failed to revive. The afterlife is holding onto them tight.", ephemeral=True)
+        except Exception as e:
+            print(f"Error: {e}")
 
 
     @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
@@ -144,6 +148,8 @@ class Royal(commands.Cog):
             await interaction.response.send_message("I couldn't touch someone's nickname. They're protected. 😅", ephemeral=True)
         except discord.HTTPException:
             await interaction.response.send_message("Something went wrong during chaos mode. Abort!", ephemeral=True)
+        except Exception as e:
+            print(f"Error: {e}")
 
     @app_commands.command(name="betray", description="Sometimes, karma strikes back.")
     async def betray_cmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str]):
@@ -169,6 +175,8 @@ class Royal(commands.Cog):
             await interaction.followup.send("Prank over. Nickname restored!")
         except discord.Forbidden:
             await interaction.response.send_message("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
+        except Exception as e:
+            print(f"Error: {e}")
 
 
 async def setup(bot: commands.Bot):
