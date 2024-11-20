@@ -39,27 +39,27 @@ class Royal(commands.Cog):
 
     async def on_tree_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
         if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(f"Command is on cooldown! Try again in **{error.retry_after:.2f}** seconds!", ephemeral=True)
+            await interaction.response.send_message(f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.", ephemeral=True)
         elif isinstance(error, app_commands.MissingPermissions):
-            await interaction.response.send_message("You don't have the required permissions to use this command.", ephemeral=True)
+            await interaction.response.send_message("LOL, you thought? Not enough perms, buddy.", ephemeral=True)
         else:
             print(f"An error occurred: {error}")
             raise error
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py")
-    
-    @app_commands.command(name="help_kill", description="View what the kill command brings.")
+        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py - Time to wreak havoc!")
+
+    @app_commands.command(name="help_kill", description="Learn how to obliterate your friends (virtually).")
     async def helpkill_cmd(self, interaction: discord.Interaction):
         embed = discord.Embed(title="Royal Commands", color=discord.Color.blurple())
-        embed.add_field(name="/kill", value="Use a weapon to timeout a member.", inline=False)
-        embed.add_field(name="Cooldown", value="Each weapon has a 10-minute cooldown.", inline=False)
-        embed.add_field(name="Duds", value="Some weapons may fail to activate!", inline=False)
-        embed.set_footer(text="Try /kill for some action!")
+        embed.add_field(name="/kill", value="Pick a weapon and show them who's boss.", inline=False)
+        embed.add_field(name="Cooldown", value="Every weapon needs a 10-minute breather after unleashing chaos.", inline=False)
+        embed.add_field(name="Duds", value="Sometimes your weapon decides to nap instead. Deal with it.", inline=False)
+        embed.set_footer(text="Command responsibly... or not.")
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="kill", description="Use a weapon to timeout a member!")
+    @app_commands.command(name="kill", description="Time to choose violence. Use a weapon to timeout someone!")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     @app_commands.choices(tool=[
         app_commands.Choice(name="Sniper", value="sniper"),
@@ -71,16 +71,14 @@ class Royal(commands.Cog):
     async def snipecmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
         member = member or random.choice(interaction.guild.members)
         if member == interaction.guild.me:
-            await interaction.response.send_message("I can't target myself!", ephemeral=True)
+            await interaction.response.send_message("You really wanna try me? Nope, not happening.", ephemeral=True)
             return
 
         try:
-            # Check for dud
             if random.random() < self.dud_probabilities[tool.value]:
-                await interaction.response.send_message(f"Your **{tool.name}** misfired and was a dud! Better luck next time.", ephemeral=True)
+                await interaction.response.send_message(f"Oops! Your **{tool.name}** went full potato mode. Better luck next time.", ephemeral=False)
                 return
 
-            # Weapon is not a dud, proceed
             embed = discord.Embed(color=discord.Color.red())
             timeout_durations = {"sniper": 30, "shotie": 60, "pistol": 20, "grenade": 90, "rocket": 120}
             duration = timeout_durations[tool.value]
@@ -88,25 +86,25 @@ class Royal(commands.Cog):
             if tool.value == "shotie":
                 outcome = random.choice(["explosive", "buckshot"])
                 tool_key = "shotie_explosive" if outcome == "explosive" else "shotie"
-                embed.title = "💥 Explosive Shotgun Blast!" if outcome == "explosive" else "🔫 Buckshot Blast!"
-                embed.description = f"`{member.name}` was hit with an **{outcome} round** by `{interaction.user.display_name}`!"
+                embed.title = "💥 Explosive Shotgun Boom!" if outcome == "explosive" else "🔫 Buckshot Mayhem!"
+                embed.description = f"`{member.name}` got absolutely wrecked by `{interaction.user.display_name}` with an **{outcome} round**!"
             else:
                 tool_key = tool.value
-                embed.title = f"🚀 {tool.name.capitalize()}!"
-                embed.description = f"`{member.name}` was obliterated by `{interaction.user.display_name}`!"
+                embed.title = f"🚀 {tool.name.capitalize()} Attack!"
+                embed.description = f"`{member.name}` just got vaporized by `{interaction.user.display_name}`. Rest in pepperonis."
             
             await member.timeout(discord.utils.utcnow() + timedelta(seconds=duration), reason=f"Hit with a {tool.name}")
             embed.set_image(url=self.image_urls.get(tool_key, ""))
-            embed.set_footer(text=f"Cooldown: 10 minutes | Duration: {duration} seconds")
+            embed.set_footer(text=f"Cooldown: 10 minutes | Timeout Duration: {duration} seconds")
             self.weapon_stats[tool.value] += 1
             self.save_stats()
             await interaction.response.send_message(embed=embed)
 
         except discord.Forbidden:
-            await interaction.response.send_message("I don't have permission to timeout that user.", ephemeral=True)
+            await interaction.response.send_message("Can't touch that user. Too powerful, maybe?", ephemeral=True)
         except discord.HTTPException as e:
             print(f"HTTPException: {e}")
-            await interaction.response.send_message("An error occurred while trying to timeout the user.", ephemeral=True)
+            await interaction.response.send_message("Something broke. It wasn't me, I swear!", ephemeral=True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Royal(bot))
