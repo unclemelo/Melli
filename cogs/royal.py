@@ -1,4 +1,5 @@
 import discord, json, random
+import asyncio
 from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
 from colorama import Fore
@@ -105,6 +106,70 @@ class Royal(commands.Cog):
         except discord.HTTPException as e:
             print(f"HTTPException: {e}")
             await interaction.response.send_message("Something broke. It wasn't me, I swear!", ephemeral=True)
+
+    
+
+    @app_commands.command(name="revive", description="Bring back a timed-out user with flair!")
+    async def revive_cmd(self, interaction: discord.Interaction, member: discord.Member):
+        try:
+            await member.edit(timed_out_until=None)
+            embed = discord.Embed(
+                title="✨ Resurrection Complete!",
+                description=f"`{member.name}` has been revived by `{interaction.user.display_name}`! Hopefully, they behave this time. 🤞",
+                color=discord.Color.green()
+            )
+            embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308808048030126162/love-live-static.gif?ex=673f49fb&is=673df87b&hm=e53b7c74842f2939f60c71bdad015a1013b28c0476f41244e8a8091464143f02&")
+            await interaction.response.send_message(embed=embed)
+        except discord.Forbidden:
+            await interaction.response.send_message("I don't have permission to revive them. RIP again. 😔", ephemeral=True)
+        except discord.HTTPException:
+            await interaction.response.send_message("Failed to revive. The afterlife is holding onto them tight.", ephemeral=True)
+
+
+    @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
+    async def chaos_cmd(self, interaction: discord.Interaction):
+        try:
+            members = interaction.guild.members
+            for member in random.sample(members, min(len(members), 10)):
+                random_nickname = f"💥 {random.choice(['Goblin', 'Legend', 'Potato', 'Dud'])}"
+                await member.edit(nick=random_nickname)
+            await interaction.response.send_message("Chaos unleashed! Check those nicknames. 😈")
+            
+            # Reset the chaos after some time
+            await asyncio.sleep(60)
+            for member in members:
+                await member.edit(nick=None)
+            await interaction.followup.send("Chaos reverted. Everyone’s back to normal. For now.")
+        except discord.Forbidden:
+            await interaction.response.send_message("I couldn't touch someone's nickname. They're protected. 😅", ephemeral=True)
+        except discord.HTTPException:
+            await interaction.response.send_message("Something went wrong during chaos mode. Abort!", ephemeral=True)
+
+    @app_commands.command(name="betray", description="Sometimes, karma strikes back.")
+    async def betray_cmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str]):
+        if random.random() < 0.2:  # 20% chance of betrayal
+            embed = discord.Embed(
+                title="🔄 Backfire!",
+                description=f"`{interaction.user.display_name}` tried to attack but ended up timing *themselves* out! Karma's a bummer. 🤷",
+                color=discord.Color.red()
+            )
+            await interaction.user.timeout(discord.utils.utcnow() + timedelta(seconds=30), reason="Betrayed by their own weapon")
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message("No betrayal this time... but watch your back. 👀")
+
+    @app_commands.command(name="prank", description="Play a harmless prank on a member!")
+    async def prank_cmd(self, interaction: discord.Interaction, member: discord.Member):
+        prank_nick = f"{member.name} 🤡"
+        try:
+            await member.edit(nick=prank_nick)
+            await interaction.response.send_message(f"`{member.name}` is now known as `{prank_nick}`. Let the giggles begin!")
+            await asyncio.sleep(60)
+            await member.edit(nick=None)
+            await interaction.followup.send("Prank over. Nickname restored!")
+        except discord.Forbidden:
+            await interaction.response.send_message("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Royal(bot))
