@@ -166,30 +166,18 @@ class Royal(commands.Cog):
             await interaction.followup.send("Something went wrong during chaos mode. Abort!", ephemeral=True)
 
 
-    @app_commands.command(name="betray", description="Sometimes, karma strikes back.")
-    async def betray_cmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str]):
-        if random.random() < 0.2:  # 20% chance of betrayal
-            embed = discord.Embed(
-                title="🔄 Backfire!",
-                description=f"`{interaction.user.display_name}` tried to attack but ended up timing *themselves* out! Karma's a bummer. 🤷",
-                color=discord.Color.red()
-            )
-            await interaction.user.timeout(discord.utils.utcnow() + timedelta(seconds=30), reason="Betrayed by their own weapon")
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message("No betrayal this time... but watch your back. 👀")
-
     @app_commands.command(name="prank", description="Play a harmless prank on a member!")
     async def prank_cmd(self, interaction: discord.Interaction, member: discord.Member):
+        await interaction.response.defer()
         prank_nick = f"{member.name} 🤡"
         try:
             await member.edit(nick=prank_nick)
-            await interaction.response.send_message(f"`{member.name}` is now known as `{prank_nick}`. Let the giggles begin!")
+            await interaction.followup.send(f"`{member.name}` is now known as `{prank_nick}`. Let the giggles begin!")
             await asyncio.sleep(60)
             await member.edit(nick=None)
             await interaction.followup.send("Prank over. Nickname restored!")
         except discord.Forbidden:
-            await interaction.response.send_message("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
+            await interaction.followup.send("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
         except Exception as e:
             print(f"Error: {e}")
 
