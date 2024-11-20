@@ -108,6 +108,7 @@ class Royal(commands.Cog):
             print(f"HTTPException: {e}")
             await interaction.followup.send("Something broke. It wasn't me, I swear!", ephemeral=True)
         except Exception as e:
+            await interaction.followup.send(f"Error: {e}")
             print(f"Error: {e}")
 
     
