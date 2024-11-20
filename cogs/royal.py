@@ -135,22 +135,36 @@ class Royal(commands.Cog):
         await interaction.response.defer()
         try:
             members = interaction.guild.members
+            skipped_members = []  # Track members that couldn't be edited
+
             for member in random.sample(members, min(len(members), 10)):
-                random_nickname = f"💥 {random.choice(['Goblin', 'Legend', 'Potato', 'Dud'])}"
-                await member.edit(nick=random_nickname)
-            await interaction.followup.send("Chaos unleashed! Check those nicknames. 😈")
-            
+                try:
+                    random_nickname = f"💥 {random.choice(['Goblin', 'Legend', 'Potato', 'Dud'])}"
+                    await member.edit(nick=random_nickname)
+                except discord.Forbidden:
+                    skipped_members.append(member)
+                except discord.HTTPException:
+                    continue  # Ignore and move to the next member
+
+            chaos_message = "Chaos unleashed! Check those nicknames. 😈"
+            if skipped_members:
+                chaos_message += f"\n\nCouldn't touch {len(skipped_members)} members. They're either protected or untouchable. 😏"
+
+            await interaction.followup.send(chaos_message)
+
             # Reset the chaos after some time
             await asyncio.sleep(60)
             for member in members:
-                await member.edit(nick=None)
+                try:
+                    await member.edit(nick=None)
+                except (discord.Forbidden, discord.HTTPException):
+                    continue  # Skip members we can't reset
+
             await interaction.followup.send("Chaos reverted. Everyone’s back to normal. For now.")
-        except discord.Forbidden:
-            await interaction.response.send_message("I couldn't touch someone's nickname. They're protected. 😅", ephemeral=True)
-        except discord.HTTPException:
-            await interaction.response.send_message("Something went wrong during chaos mode. Abort!", ephemeral=True)
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Unexpected error: {e}")
+            await interaction.followup.send("Something went wrong during chaos mode. Abort!", ephemeral=True)
+
 
     @app_commands.command(name="betray", description="Sometimes, karma strikes back.")
     async def betray_cmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str]):
