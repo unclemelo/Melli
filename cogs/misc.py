@@ -61,7 +61,7 @@ class Misc(commands.Cog):
             value=f"[Click here to join]({support_server_link})",
             inline=False
         )
-        embed.set_thumbnail(url="https://example.com/logo.png")  # Replace with your bot/server logo URL
+        embed.set_thumbnail(url=interaction.guild.icon.url if interaction.guild and interaction.guild.icon else None) #temp until we get out logo
         embed.set_footer(text="We're here to help! 🍉")
 
         await interaction.response.send_message(embed=embed)
