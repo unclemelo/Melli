@@ -70,14 +70,15 @@ class Royal(commands.Cog):
         app_commands.Choice(name="Rocket Launcher", value="rocket"),
     ])
     async def snipecmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
+        await interaction.response.defer()
         member = member or random.choice(interaction.guild.members)
         if member == interaction.guild.me:
-            await interaction.response.send_message("You really wanna try me? Nope, not happening.", ephemeral=True)
+            await interaction.followup.send("You really wanna try me? Nope, not happening.", ephemeral=True)
             return
 
         try:
             if random.random() < self.dud_probabilities[tool.value]:
-                await interaction.response.send_message(f"Oops! Your **{tool.name}** went full potato mode. Better luck next time.", ephemeral=False)
+                await interaction.followup.send(f"Oops! Your **{tool.name}** went full potato mode. Better luck next time.", ephemeral=False)
                 return
 
             embed = discord.Embed(color=discord.Color.red())
@@ -99,13 +100,13 @@ class Royal(commands.Cog):
             embed.set_footer(text=f"Cooldown: 10 minutes | Timeout Duration: {duration} seconds")
             self.weapon_stats[tool.value] += 1
             self.save_stats()
-            await interaction.response.send_message(embed=embed)
+            await interaction.followup.send(embed=embed)
 
         except discord.Forbidden:
-            await interaction.response.send_message("Can't touch that user. Too powerful, maybe?", ephemeral=True)
+            await interaction.followup.send("Can't touch that user. Too powerful, maybe?", ephemeral=True)
         except discord.HTTPException as e:
             print(f"HTTPException: {e}")
-            await interaction.response.send_message("Something broke. It wasn't me, I swear!", ephemeral=True)
+            await interaction.followup.send("Something broke. It wasn't me, I swear!", ephemeral=True)
         except Exception as e:
             print(f"Error: {e}")
 
