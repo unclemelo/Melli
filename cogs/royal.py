@@ -122,6 +122,7 @@ class Royal(commands.Cog):
     
 
     @app_commands.command(name="revive", description="Bring back a timed-out user with flair!")
+    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     async def revive_cmd(self, interaction: discord.Interaction, member: discord.Member):
         try:
             await member.edit(timed_out_until=None)
@@ -141,6 +142,7 @@ class Royal(commands.Cog):
 
 
     @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
+    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     async def chaos_cmd(self, interaction: discord.Interaction):
         await interaction.response.defer()
         try:
@@ -177,6 +179,7 @@ class Royal(commands.Cog):
 
 
     @app_commands.command(name="prank", description="Play a harmless prank on a member!")
+    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     async def prank_cmd(self, interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
         prank_nick = f"{member.name} 🤡"
