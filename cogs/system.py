@@ -4,6 +4,7 @@ import asyncio
 import subprocess
 import os
 import sys
+import re
 from datetime import datetime, timedelta
 from discord import app_commands
 from discord.ext import commands, tasks
@@ -23,6 +24,35 @@ class System(commands.Cog):
         """Fetches the update channel."""
         channel_id = 1310589613701857300  # Replace with your actual update channel ID
         return self.bot.get_channel(channel_id)
+    
+    def summarize_pip_output(self, pip_output: str) -> str:
+        """
+        Summarizes pip install output for better readability, removing version constraints.
+        Args:
+            pip_output (str): The raw pip install output.
+        Returns:
+            str: A condensed summary of the pip output.
+        """
+        lines = pip_output.splitlines()
+        summary = []
+
+        for line in lines:
+            if "Requirement already satisfied" in line:
+                # Extract the package name and version from the output line
+                parts = line.split()
+                package = parts[3]  # This is the package name
+                version = parts[-1].strip("()")  # This is the version inside the parentheses
+
+                # Remove version constraints like '>=', '<=', etc.
+                version = re.sub(r'[<>=!~]+[0-9.]+', '', version).strip()
+
+                summary.append(f"- {package}: satisfied ({version})")
+            elif "Successfully installed" in line:
+                # Summarize successful installations
+                installed = line.replace("Successfully installed", "").strip()
+                summary.append(f"Installed: {installed}")
+
+        return "\n".join(summary) if summary else "No changes."
     
     async def notify_updates(self, update_results: dict):
         """
@@ -72,37 +102,6 @@ class System(commands.Cog):
         )
 
         await channel.send(embed=embed)
-
-    # Add the summarize function
-    def summarize_pip_output(self, pip_output: str) -> str:
-        """
-        Summarizes pip install output for better readability.
-        Args:
-            pip_output (str): The raw pip install output.
-        Returns:
-            str: A condensed summary of the pip output.
-        """
-        lines = pip_output.splitlines()
-        summary = []
-
-        for line in lines:
-            if "Requirement already satisfied" in line:
-                # Extract the package name and version from the output line
-                parts = line.split()
-                package = parts[1]  # This is the package name
-                version = parts[-1].strip("()")  # This is the version inside the parentheses
-                summary.append(f"- {package}: already satisfied ({version})")
-            elif "Successfully installed" in line:
-                # Summarize successful installations
-                installed = line.replace("Successfully installed", "").strip()
-                summary.append(f"Installed: {installed}")
-
-        return "\n".join(summary) if summary else "No changes."
-
-
-
-
-
 
     @staticmethod
     def restart_bot():
