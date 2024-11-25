@@ -46,7 +46,7 @@ class System(commands.Cog):
                 # Remove version constraints like '>=', '<=', etc.
                 package = re.sub(r'[<>=!~]+[0-9.]+', '', package).strip()
 
-                summary.append(f"- {package}: satisfied ({version})")
+                summary.append(f"- {package}: ({version})")
             elif "Successfully installed" in line:
                 # Summarize successful installations
                 installed = line.replace("Successfully installed", "").strip()
