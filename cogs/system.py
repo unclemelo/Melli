@@ -89,7 +89,7 @@ class System(commands.Cog):
             if "Requirement already satisfied" in line:
                 # Extract the package name and version
                 parts = line.split()
-                package = parts[1]
+                package = parts[3]
                 version = parts[-1].strip("()")
                 summary.append(f"- {package}: satisfied ({version})")
             elif "Successfully installed" in line:
