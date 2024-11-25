@@ -35,63 +35,70 @@ class System(commands.Cog):
             print("[ ERROR ] Update channel not found.")
             return
 
-        max_embed_length = 1024  # Discord's total embed content length limit
-        embed_chunks = []  # Store multiple embeds if needed
-
-        current_embed = discord.Embed(
+        embed = discord.Embed(
             title="🔄 Bot Updated",
             description="The bot has successfully pulled updates from GitHub and restarted.",
             color=0x3df553,
             timestamp=datetime.utcnow()
         )
-        total_length = len(current_embed.title) + len(current_embed.description)
 
         # Add GitHub update details
         git_response = update_results.get("git_pull", "No Git response available.")
         updated_files = update_results.get("updated_files", [])
+
         if "Already up to date." in git_response:
-            field_content = "✨ No updates found. The bot is running the latest version."
-        else:
-            updates = "\n".join(f"- `{file}`" for file in updated_files)
-            field_content = updates or "No specific files listed."
-
-        if total_length + len(field_content) > max_embed_length:
-            current_embed.description += "\n... (Truncated)"
-            embed_chunks.append(current_embed)
-            current_embed = discord.Embed(
-                description=field_content[:max_embed_length],
-                color=0x3df553,
-                timestamp=datetime.utcnow()
+            embed.add_field(
+                name="GitHub Status",
+                value="✨ No updates found. The bot is running the latest version.",
+                inline=False
             )
-            total_length = len(current_embed.description)
-
-        current_embed.add_field(name="🔧 Applied Updates", value=field_content, inline=False)
-        total_length += len("🔧 Applied Updates") + len(field_content)
+        else:
+            updates = "\n".join(f"- `{file}`" for file in updated_files) if updated_files else "No specific files listed."
+            if len(updates) > 1024:  # Truncate if necessary
+                updates = updates[:1021] + "..."
+            embed.add_field(
+                name="🔧 Applied Updates",
+                value=f"**Updated Files/Commits:**\n{updates}",
+                inline=False
+            )
 
         # Add dependency update details
         pip_response = update_results.get("pip_install", "No dependency update response.")
-        pip_response_truncated = pip_response[:max_embed_length - total_length] if len(pip_response) + total_length > max_embed_length else pip_response
+        pip_summary = self.summarize_pip_output(pip_response)
+        embed.add_field(
+            name="📦 Dependencies",
+            value=f"```{pip_summary}```" if pip_summary else "No changes.",
+            inline=False
+        )
 
-        if total_length + len(pip_response_truncated) > max_embed_length:
-            current_embed.description += "\n... (Truncated)"
-            embed_chunks.append(current_embed)
-            current_embed = discord.Embed(
-                description=f"Dependencies:\n{pip_response_truncated[:max_embed_length]}",
-                color=0x3df553,
-                timestamp=datetime.utcnow()
-            )
-            total_length = len(current_embed.description)
+        await channel.send(embed=embed)
 
-        current_embed.add_field(name="📦 Dependencies", value=f"```{pip_response_truncated}```" if pip_response else "No changes.", inline=False)
+    # Add the summarize function
+    def summarize_pip_output(self, pip_output: str) -> str:
+        """
+        Summarizes pip install output for better readability.
+        Args:
+            pip_output (str): The raw pip install output.
+        Returns:
+            str: A condensed summary of the pip output.
+        """
+        lines = pip_output.splitlines()
+        summary = []
 
-        embed_chunks.append(current_embed)
+        for line in lines:
+            if "Requirement already satisfied" in line:
+                # Extract the package name and version
+                parts = line.split()
+                package = parts[1]
+                version = parts[-1].strip("()")
+                summary.append(f"- {package}: satisfied ({version})")
+            elif "Successfully installed" in line:
+                # Summarize successful installations
+                installed = line.replace("Successfully installed", "").strip()
+                summary.append(f"Installed: {installed}")
 
-        # Send each embed chunk
-        try:
-            for embed in embed_chunks:
-                await channel.send(embed=embed)
-        except discord.HTTPException as e:
-            print(f"[ ERROR ] Failed to send embed: {e}")
+        return "\n".join(summary) if summary else "No changes."
+
 
 
 
