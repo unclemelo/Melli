@@ -27,27 +27,51 @@ class System(commands.Cog):
     @staticmethod
     def update_code():
         """
-        Pulls the latest code from the GitHub repository.
+        Pulls the latest code from the GitHub repository and updates Python dependencies.
         
         Returns:
-            str: The output of the Git pull operation.
+            dict: A dictionary with the results of Git pull and pip install operations.
         """
+        results = {"git_pull": None, "pip_install": None}
+
+        # Step 1: Git Pull
         try:
-            result = subprocess.run(
+            git_result = subprocess.run(
                 ["git", "pull"], 
                 stdout=subprocess.PIPE, 
                 stderr=subprocess.PIPE, 
                 text=True
             )
-            if result.returncode == 0:
-                print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Git Pull Successful:\n{result.stdout}")
-                return result.stdout
+            if git_result.returncode == 0:
+                print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Git Pull Successful:\n{git_result.stdout}")
+                results["git_pull"] = git_result.stdout
             else:
-                print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Git Pull Failed:\n{result.stderr}")
-                return result.stderr
+                print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Git Pull Failed:\n{git_result.stderr}")
+                results["git_pull"] = git_result.stderr
         except Exception as e:
             print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Exception during Git pull: {e}")
-            return str(e)
+            results["git_pull"] = str(e)
+            return results  # Exit early if Git pull fails
+
+        # Step 2: Update Python Dependencies
+        try:
+            pip_result = subprocess.run(
+                ["python3", "-m", "pip", "install", "-r", "requirements.txt"], 
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.PIPE, 
+                text=True
+            )
+            if pip_result.returncode == 0:
+                print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Dependencies Updated Successfully:\n{pip_result.stdout}")
+                results["pip_install"] = pip_result.stdout
+            else:
+                print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Failed to Update Dependencies:\n{pip_result.stderr}")
+                results["pip_install"] = pip_result.stderr
+        except Exception as e:
+            print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Exception during pip install: {e}")
+            results["pip_install"] = str(e)
+
+        return results
 
     def get_uptime(self):
         """Calculates and returns the bot's uptime."""
