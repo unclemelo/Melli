@@ -35,53 +35,64 @@ class System(commands.Cog):
             print("[ ERROR ] Update channel not found.")
             return
 
-        embed = discord.Embed(
+        max_embed_length = 1024  # Discord's total embed content length limit
+        embed_chunks = []  # Store multiple embeds if needed
+
+        current_embed = discord.Embed(
             title="🔄 Bot Updated",
             description="The bot has successfully pulled updates from GitHub and restarted.",
             color=0x3df553,
             timestamp=datetime.utcnow()
         )
+        total_length = len(current_embed.title) + len(current_embed.description)
 
         # Add GitHub update details
         git_response = update_results.get("git_pull", "No Git response available.")
         updated_files = update_results.get("updated_files", [])
-
         if "Already up to date." in git_response:
-            embed.add_field(
-                name="GitHub Status",
-                value="✨ No updates found. The bot is running the latest version.",
-                inline=False
-            )
+            field_content = "✨ No updates found. The bot is running the latest version."
         else:
-            updates = "\n".join(f"- `{file}`" for file in updated_files) if updated_files else "No specific files listed."
-            if len(updates) > 1024:
-                updates = updates[:1020] + "..."  # Ensure it's within 1024 characters
-            embed.add_field(
-                name="🔧 Applied Updates",
-                value=f"**Updated Files/Commits:**\n{updates}",
-                inline=False
+            updates = "\n".join(f"- `{file}`" for file in updated_files)
+            field_content = updates or "No specific files listed."
+
+        if total_length + len(field_content) > max_embed_length:
+            current_embed.description += "\n... (Truncated)"
+            embed_chunks.append(current_embed)
+            current_embed = discord.Embed(
+                description=field_content[:max_embed_length],
+                color=0x3df553,
+                timestamp=datetime.utcnow()
             )
+            total_length = len(current_embed.description)
+
+        current_embed.add_field(name="🔧 Applied Updates", value=field_content, inline=False)
+        total_length += len("🔧 Applied Updates") + len(field_content)
 
         # Add dependency update details
         pip_response = update_results.get("pip_install", "No dependency update response.")
-        if len(pip_response) > 1024:
-            pip_response_truncated = pip_response[:1020] + "..."
-        else:
-            pip_response_truncated = pip_response
-        embed.add_field(
-            name="📦 Dependencies",
-            value=f"```{pip_response_truncated}```" if pip_response else "No changes.",
-            inline=False
-        )
+        pip_response_truncated = pip_response[:max_embed_length - total_length] if len(pip_response) + total_length > max_embed_length else pip_response
 
-        # Debug: Check the size of embed fields
-        for field in embed.fields:
-            print(f"Field '{field.name}' length: {len(field.value)}")
+        if total_length + len(pip_response_truncated) > max_embed_length:
+            current_embed.description += "\n... (Truncated)"
+            embed_chunks.append(current_embed)
+            current_embed = discord.Embed(
+                description=f"Dependencies:\n{pip_response_truncated[:max_embed_length]}",
+                color=0x3df553,
+                timestamp=datetime.utcnow()
+            )
+            total_length = len(current_embed.description)
 
+        current_embed.add_field(name="📦 Dependencies", value=f"```{pip_response_truncated}```" if pip_response else "No changes.", inline=False)
+
+        embed_chunks.append(current_embed)
+
+        # Send each embed chunk
         try:
-            await channel.send(embed=embed)
+            for embed in embed_chunks:
+                await channel.send(embed=embed)
         except discord.HTTPException as e:
             print(f"[ ERROR ] Failed to send embed: {e}")
+
 
 
 
