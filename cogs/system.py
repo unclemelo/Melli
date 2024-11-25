@@ -19,6 +19,59 @@ class System(commands.Cog):
         self.bot = bot
         self.start_time = datetime.utcnow()  # Track when the bot started
 
+    def get_update_channel(self) -> discord.TextChannel:
+        """Fetches the update channel."""
+        channel_id = 1310589613701857300  # Replace with your actual update channel ID
+        return self.bot.get_channel(channel_id)
+    
+    async def notify_updates(self, update_results: dict):
+        """
+        Sends update notifications to the designated update channel.
+        Args:
+            update_results (dict): Results of the update process.
+        """
+        channel = self.get_update_channel()
+        if channel is None:
+            print("[ ERROR ] Update channel not found.")
+            return
+
+        embed = discord.Embed(
+            title="🔄 Bot Updated",
+            description="The bot has successfully pulled updates from GitHub and restarted.",
+            color=0x3df553,
+            timestamp=datetime.utcnow()
+        )
+
+        # Add GitHub update details
+        git_response = update_results.get("git_pull", "No Git response available.")
+        updated_files = update_results.get("updated_files", [])
+
+        if "Already up to date." in git_response:
+            embed.add_field(
+                name="GitHub Status",
+                value="✨ No updates found. The bot is running the latest version.",
+                inline=False
+            )
+        else:
+            updates = "\n".join(f"- `{file}`" for file in updated_files) if updated_files else "No specific files listed."
+            embed.add_field(
+                name="🔧 Applied Updates",
+                value=f"**Updated Files/Commits:**\n{updates}",
+                inline=False
+            )
+
+        # Add dependency update details
+        pip_response = update_results.get("pip_install", "No dependency update response.")
+        embed.add_field(
+            name="📦 Dependencies",
+            value=f"```{pip_response[:1024]}```" if pip_response else "No changes.",
+            inline=False
+        )
+
+        await channel.send(embed=embed)
+
+
+
     @staticmethod
     def restart_bot():
         """Restarts the bot using the current Python interpreter."""
@@ -96,18 +149,23 @@ class System(commands.Cog):
             )
             await interaction.response.send_message(embed=embed)
 
-            # Pull latest code and check the result
-            git_response = self.update_code()
-            if "Already up to date" in git_response:
-                embed.description += "\n\nNo updates found. Restarting with the current version."
+            # Pull latest code and notify update channel
+            update_results = self.update_code()
+            await self.notify_updates(update_results)  # Notify the update channel
+
+            # Send feedback to the interaction user
+            git_response = update_results.get("git_pull", "No Git response available.")
+            if "Already up to date." in git_response:
+                embed.description += "\n\n✨ No updates found. Restarting with the current version."
             else:
-                embed.description += "\n\nUpdates applied successfully."
+                embed.description += "\n\n🔧 Updates applied successfully."
 
             await interaction.followup.send(embed=embed)
             print("[ SYSTEM ] Rebooting bot...")
             self.restart_bot()
         else:
             await interaction.response.send_message("Sorry, only the developer can execute this command.")
+
 
     @app_commands.command(name="shutdown", description="Shuts down the bot.")
     @app_commands.checks.has_permissions(administrator=True)
