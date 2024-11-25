@@ -87,17 +87,18 @@ class System(commands.Cog):
 
         for line in lines:
             if "Requirement already satisfied" in line:
-                # Extract the package name and version
+                # Extract the package name and version from the output line
                 parts = line.split()
-                package = parts[3]
-                version = parts[-1].strip("()")
-                summary.append(f"- {package}: satisfied ({version})")
+                package = parts[1]  # This is the package name
+                version = parts[-1].strip("()")  # This is the version inside the parentheses
+                summary.append(f"- {package}: already satisfied ({version})")
             elif "Successfully installed" in line:
                 # Summarize successful installations
                 installed = line.replace("Successfully installed", "").strip()
                 summary.append(f"Installed: {installed}")
 
         return "\n".join(summary) if summary else "No changes."
+
 
 
 
