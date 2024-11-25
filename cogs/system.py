@@ -54,8 +54,8 @@ class System(commands.Cog):
             )
         else:
             updates = "\n".join(f"- `{file}`" for file in updated_files) if updated_files else "No specific files listed."
-            if len(updates) > 210:
-                updates = updates[:207] + "..."
+            if len(updates) > 1024:
+                updates = updates[:1020] + "..."  # Ensure it's within 1024 characters
             embed.add_field(
                 name="🔧 Applied Updates",
                 value=f"**Updated Files/Commits:**\n{updates}",
@@ -64,15 +64,24 @@ class System(commands.Cog):
 
         # Add dependency update details
         pip_response = update_results.get("pip_install", "No dependency update response.")
-        pip_response_truncated = (pip_response[:207] + "...") if len(pip_response) > 210 else pip_response
+        if len(pip_response) > 1024:
+            pip_response_truncated = pip_response[:1020] + "..."
+        else:
+            pip_response_truncated = pip_response
         embed.add_field(
             name="📦 Dependencies",
             value=f"```{pip_response_truncated}```" if pip_response else "No changes.",
             inline=False
         )
 
-        await channel.send(embed=embed)
+        # Debug: Check the size of embed fields
+        for field in embed.fields:
+            print(f"Field '{field.name}' length: {len(field.value)}")
 
+        try:
+            await channel.send(embed=embed)
+        except discord.HTTPException as e:
+            print(f"[ ERROR ] Failed to send embed: {e}")
 
 
 
