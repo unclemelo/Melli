@@ -44,7 +44,7 @@ class System(commands.Cog):
                 version = parts[-1].strip("()")  # This is the version inside the parentheses
 
                 # Remove version constraints like '>=', '<=', etc.
-                version = re.sub(r'[<>=!~]+[0-9.]+', '', version).strip()
+                package = re.sub(r'[<>=!~]+[0-9.]+', '', package).strip()
 
                 summary.append(f"- {package}: satisfied ({version})")
             elif "Successfully installed" in line:
