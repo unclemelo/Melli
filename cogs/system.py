@@ -54,8 +54,8 @@ class System(commands.Cog):
             )
         else:
             updates = "\n".join(f"- `{file}`" for file in updated_files) if updated_files else "No specific files listed."
-            if len(updates) > 1024:
-                updates = updates[:1021] + "..."
+            if len(updates) > 210:
+                updates = updates[:207] + "..."
             embed.add_field(
                 name="🔧 Applied Updates",
                 value=f"**Updated Files/Commits:**\n{updates}",
@@ -64,7 +64,7 @@ class System(commands.Cog):
 
         # Add dependency update details
         pip_response = update_results.get("pip_install", "No dependency update response.")
-        pip_response_truncated = (pip_response[:1021] + "...") if len(pip_response) > 1024 else pip_response
+        pip_response_truncated = (pip_response[:207] + "...") if len(pip_response) > 210 else pip_response
         embed.add_field(
             name="📦 Dependencies",
             value=f"```{pip_response_truncated}```" if pip_response else "No changes.",
