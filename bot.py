@@ -39,7 +39,8 @@ async def update_server_count():
             status=discord.Status.dnd,
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
-                name=f"🍉 | {len(client.guilds)} guilds!"
+                name=f"🦃 | Happy Thanksgiving"
+                # {len(client.guilds)} guilds!
             )
         )
     except Exception as e:
