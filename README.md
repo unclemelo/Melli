@@ -36,8 +36,6 @@ git clone https://github.com/unclemelo/MelonShield
 cd MelonShield
 ```
 
----
-
 ### 2. Set Up a Virtual Environment (Optional, Recommended)
 
 Create a virtual environment to isolate dependencies:
