@@ -44,6 +44,7 @@ class Royal(commands.Cog):
         elif isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message("LOL, you thought? Not enough perms, buddy.", ephemeral=True)
         else:
+            await interaction.response.send_message(f"{error}")
             print(f"An error occurred: {error}")
             raise error
 
