@@ -1,5 +1,6 @@
 import json
 import discord
+import re
 from discord.ext import commands
 from discord import app_commands
 
@@ -75,7 +76,16 @@ class AutoMod(commands.Cog):
                 self.config["blocked_links_regex"].append(value)
                 self.save_config()
                 await interaction.response.send_message(f"Added blocked regex pattern: `{value}`", ephemeral=True)
+
         elif tool.value == "link":
+            # Enforce the link format: *://<domain>/*
+            if not re.match(r"^\*://[a-z0-9.-]+/\*$", value):
+                await interaction.response.send_message(
+                    "Invalid link format. Please use the format `*://<domain>/*` (e.g., `*://example.com/*`).",
+                    ephemeral=True
+                )
+                return
+
             if value in self.config["allowed_links"]:
                 await interaction.response.send_message("This link is already allowed.", ephemeral=True)
             else:
