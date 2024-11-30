@@ -119,6 +119,54 @@ class AutoMod(commands.Cog):
                 self.save_config()
                 await interaction.response.send_message(f"Removed allowed link: `{value}`", ephemeral=True)
 
+    @app_commands.command(name="automod_help", description="Displays help for automod commands.")
+    async def automod_help(self, interaction: discord.Interaction):
+        """Provide help information for automod commands."""
+        
+        # Creating the embed object
+        embed = discord.Embed(
+            title="Automod Commands Help",
+            description="Here are the commands available for managing the Automod system.",
+            color=discord.Color.blue()
+        )
+
+        embed.add_field(
+            name="1. `/add_blocked <regex/link>`",
+            value="Add a blocked regex pattern or an allowed link. (Admin Only)\n"
+                  "Usage examples:\n"
+                  "`/add_blocked regex <pattern>`\n"
+                  "`/add_blocked link *://example.com/*`",
+            inline=False
+        )
+
+        embed.add_field(
+            name="2. `/remove_blocked <regex/link>`",
+            value="Remove a blocked regex pattern or an allowed link. (Admin Only)\n"
+                  "Usage examples:\n"
+                  "`/remove_blocked regex <pattern>`\n"
+                  "`/remove_blocked link *://example.com/*`",
+            inline=False
+        )
+
+        embed.add_field(
+            name="3. `/view_blocked <regex/links>`",
+            value="View all blocked regex patterns or allowed links.\n"
+                  "Usage examples:\n"
+                  "`/view_blocked regex` - Shows all blocked regex patterns.\n"
+                  "`/view_blocked links` - Shows all allowed links.",
+            inline=False
+        )
+
+        embed.add_field(
+            name="4. `/automod_help`",
+            value="Shows this help message for automod commands.\n"
+                  "Usage: `/automod_help` - Display a list of available automod commands.",
+            inline=False
+        )
+
+        # Sending the embed
+        await interaction.response.send_message(embed=embed)
+
 # Setup the Cog
 async def setup(bot):
     await bot.add_cog(AutoMod(bot))
