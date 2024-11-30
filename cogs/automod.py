@@ -1,104 +1,114 @@
+import json
 import discord
 from discord.ext import commands
-from datetime import timedelta
 from discord import app_commands
-from colorama import Fore
 
 class AutoMod(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         self.bot = bot
+        self.config_file = "data/AM_regex.json"
+        self.admin_role_id = 1312236793730437130
+        self.load_config()
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded automod.py")
-
-    @app_commands.command(name="setup_automod", description="Automatically sets up AutoMod rules for the server.")
-    @app_commands.checks.has_permissions(administrator=True)
-    async def setup_automod(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        """
-        Automatically sets up AutoMod rules for the server with predefined configurations.
-        """
+    def load_config(self):
+        """Load the configuration from the JSON file."""
         try:
-            guild = interaction.guild
-            if not guild:
-                await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
-                return
-            
-            blocked_links_regex = [
-                r"(?:https?://?)?(\S*@)?[\\a-z0-9_\-\.\%]*[a-z0-9_\-%]+(\.|%2e)[a-z(%[a-z0-9])]{2,}",
-                r"(?:https?://)?(?:www.|ptb.|canary.)?(?:dsc\.gg|invite\.gg|discord\.link|(?:discord\.(?:gg|io|me|li|id))|disboard\.org|discord(?:app)?\.(?:com|gg)/(?:invite|servers))/[a-z0-9-_]+",
-                r"[a-z0-9_\-\.\+]+@[a-z0-9_\-\.]*[a-z0-9_\-]+\.[a-z]{2,}",
-                r"\[.*[a-z0-9_\-]+\.[a-z]{2,}[\/]?.*\]\(<?(?:https?://)?[a-z0-9_\-\.]*[a-z0-9_\-]+\.[a-z]{2,}.*>?\)"
-            ]
+            with open(self.config_file, "r") as file:
+                self.config = json.load(file)
+        except FileNotFoundError:
+            self.config = {
+                "blocked_links_regex": [],
+                "allowed_links": []
+            }
+            self.save_config()
 
-            blocked_text_regex = [
-                r"^(> )?#{1,3}\s.*$",
-                r"(?m)^-#\s.*$",
-                r"(?s)(?i)((<a?:[a-z_0-9]+:[0-9]+>|\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]|[0-9#\*]\u{fe0f}).*){4,}",
-                r"\p{M}{3,}"
-            ]
+    def save_config(self):
+        """Save the current configuration to the JSON file."""
+        with open(self.config_file, "w") as file:
+            json.dump(self.config, file, indent=4)
 
-            allowed_links = [
-                "*://c.tenor.com/*", "*://cdn.discordapp.com/*", "*://imgflip.com/*", "*://media.discordapp.net/*", "*://on.soundcloud.com/*", "*://open.spotify.com/*", "*://tenor.com/*", "*://treeben77.github.io/*", "*://www.bilibili.com/*", "*://www.youtube.com/*", "*://youtu.be/*", "*://youtube.com/*", "*.go*", "*.js*", "*.py*", "poly.ai"
-            ]
+    async def has_admin_role(self, interaction: discord.Interaction) -> bool:
+        """Check if the user has the admin role."""
+        role = discord.utils.get(interaction.user.roles, id=self.admin_role_id)
+        return role is not None
 
-            # Create AutoMod Rule: Block Harmful Links
-            rule_1 = await guild.create_automod_rule(
-                name="Blocked Links",
-                event_type=discord.AutoModRuleEventType.message_send,
-                trigger=discord.AutoModTrigger(
-                    type=discord.AutoModRuleTriggerType.keyword,
-                    regex_patterns=blocked_links_regex,
-                    allow_list=allowed_links
-                ),
-                actions=[
-                    discord.AutoModRuleAction(
-                        type=discord.AutoModRuleActionType.block_message
-                    ), 
-                    discord.AutoModRuleAction(
-                        channel_id=channel.id
-                    ),
-                    discord.AutoModRuleAction(
-                        duration=timedelta(minutes=5)
-                    ),
-                    discord.AutoModRuleAction(
-                        custom_message="That link isn't socially acceptable here, find another 🙃\nTry using `/allowed_links` 🐟"
-                    )],
-                enabled=True,
-                reason="Prevent harmful or spam links."
-            )
-
-            # Create AutoMod Rule: Block Spam Text
-            rule_2 = await guild.create_automod_rule(
-                name="Blocked Text",
-                event_type=discord.AutoModRuleEventType.message_send,
-                trigger=discord.AutoModTrigger(
-                    type=discord.AutoModRuleTriggerType.keyword,
-                    regex_patterns=blocked_text_regex
-                ),
-                actions=[
-                    discord.AutoModRuleAction(
-                        type=discord.AutoModRuleActionType.block_message
-                    ), 
-                    discord.AutoModRuleAction(
-                        channel_id=channel.id
-                    ),
-                    discord.AutoModRuleAction(
-                        custom_message="NO SPAM/KEEP IT LEGIBLE.\n>:("
-                    )],
-                enabled=True,
-                reason="Prevent spam or malicious text."
-            )
-
-            embed = discord.Embed(title="AutoMod setup complete!", description=f"Created rules:\n- **{rule_1.name}**\n- **{rule_2.name}**", color=0x03fcb6)
-
+    async def admin_only_check(self, interaction: discord.Interaction):
+        """Ensure the user has the required admin role."""
+        if not await self.has_admin_role(interaction):
             await interaction.response.send_message(
-                embed=embed
+                "You do not have the required role to use this command.",
+                ephemeral=True,
             )
-        except Exception as e:
-            print(f"Error in AutoMod setup: {e}")
-            await interaction.response.send_message("An error occurred. Please contact an administrator.", ephemeral=True)
+            return False
+        return True
 
+    # View Blocked Regex or Links
+    @app_commands.command(name="view_blocked", description="View blocked regex patterns or allowed links.")
+    @app_commands.choices(tool=[
+        app_commands.Choice(name="Regex", value="regex"),
+        app_commands.Choice(name="Links", value="links"),
+    ])
+    async def view_blocked(self, interaction: discord.Interaction, tool: app_commands.Choice[str]):
+        """View blocked regex patterns or allowed links."""
+        if tool.value == "regex":
+            blocked = "\n".join(self.config["blocked_links_regex"]) or "No blocked regex patterns."
+            await interaction.response.send_message(f"Blocked Regex Patterns:\n```{blocked}```")
+        elif tool.value == "links":
+            allowed = "\n".join(self.config["allowed_links"]) or "No allowed links."
+            await interaction.response.send_message(f"Allowed Links:\n```{allowed}```")
 
-async def setup(bot: commands.Bot):
+    # Add Blocked Regex or Allowed Link
+    @app_commands.command(name="add_blocked", description="Add a new blocked regex or allowed link.")
+    @app_commands.choices(tool=[
+        app_commands.Choice(name="Regex", value="regex"),
+        app_commands.Choice(name="Link", value="link"),
+    ])
+    async def add_blocked(self, interaction: discord.Interaction, tool: app_commands.Choice[str], value: str):
+        """Add a new blocked regex pattern or allowed link."""
+        if not await self.admin_only_check(interaction):
+            return
+
+        if tool.value == "regex":
+            if value in self.config["blocked_links_regex"]:
+                await interaction.response.send_message("This regex pattern is already blocked.", ephemeral=True)
+            else:
+                self.config["blocked_links_regex"].append(value)
+                self.save_config()
+                await interaction.response.send_message(f"Added blocked regex pattern: `{value}`", ephemeral=True)
+        elif tool.value == "link":
+            if value in self.config["allowed_links"]:
+                await interaction.response.send_message("This link is already allowed.", ephemeral=True)
+            else:
+                self.config["allowed_links"].append(value)
+                self.save_config()
+                await interaction.response.send_message(f"Added allowed link: `{value}`", ephemeral=True)
+
+    # Remove Blocked Regex or Allowed Link
+    @app_commands.command(name="remove_blocked", description="Remove a blocked regex or allowed link.")
+    @app_commands.choices(tool=[
+        app_commands.Choice(name="Regex", value="regex"),
+        app_commands.Choice(name="Link", value="link"),
+    ])
+    async def remove_blocked(self, interaction: discord.Interaction, tool: app_commands.Choice[str], value: str):
+        """Remove a blocked regex pattern or allowed link."""
+        if not await self.admin_only_check(interaction):
+            return
+
+        if tool.value == "regex":
+            if value not in self.config["blocked_links_regex"]:
+                await interaction.response.send_message("This regex pattern is not in the blocked list.", ephemeral=True)
+            else:
+                self.config["blocked_links_regex"].remove(value)
+                self.save_config()
+                await interaction.response.send_message(f"Removed blocked regex pattern: `{value}`", ephemeral=True)
+        elif tool.value == "link":
+            if value not in self.config["allowed_links"]:
+                await interaction.response.send_message("This link is not in the allowed list.", ephemeral=True)
+            else:
+                self.config["allowed_links"].remove(value)
+                self.save_config()
+                await interaction.response.send_message(f"Removed allowed link: `{value}`", ephemeral=True)
+
+# Setup the Cog
+async def setup(bot):
     await bot.add_cog(AutoMod(bot))
