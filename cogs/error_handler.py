@@ -31,7 +31,7 @@ class ERROR(commands.Cog):
         )
         embed.add_field(
             name="Traceback",
-            value=f"```py\n{traceback_details[:1024]}```",  # Truncate if too long
+            value=f"```py\n{traceback_details[:400]}```",  # Truncate if too long
             inline=False,
         )
 
