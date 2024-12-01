@@ -70,6 +70,10 @@ class Royal(commands.Cog):
         if member == interaction.guild.me:
             await interaction.response.send_message("I can't target myself!", ephemeral=True)
             return
+        elif member == interaction.user:
+            await interaction.response.send_message("## Help is available ##\n-# Speak with someone today\n`988` Suicide and Crisis Lifeline\n**Languages**: *English, Spanish*\n**Hours**: Available 24 hours", ephemeral=True)
+            return
+
 
         try:
             embed = discord.Embed(color=discord.Color.red())
