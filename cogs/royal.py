@@ -52,7 +52,7 @@ class Royal(commands.Cog):
     async def on_ready(self):
         print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py - Time to wreak havoc!")
 
-    @app_commands.command(name="kill", description="Use a weapon to timeout a member for 30 seconds or more!")
+    @app_commands.command(name="knockout", description="Use a weapon to timeout a member for 30 seconds or more!")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     @app_commands.choices(tool=[
         app_commands.Choice(name="Sniper", value="sniper"),
@@ -61,7 +61,7 @@ class Royal(commands.Cog):
         app_commands.Choice(name="Grenade", value="grenade"),
         app_commands.Choice(name="Rocket Launcher", value="rocket"),
     ])
-    async def royalcmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
+    async def knockoutcmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
         # If no member is provided, pick a random member from the guild
         if member is None:
             member = random.choice(interaction.guild.members)
