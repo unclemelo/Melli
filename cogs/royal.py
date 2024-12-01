@@ -39,14 +39,22 @@ class Royal(commands.Cog):
             json.dump(self.weapon_stats, file, indent=4)
 
     async def on_tree_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        print(f"on_tree_error triggered with error: {type(error).__name__}")
         if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.", ephemeral=True)
+            await interaction.response.send_message(
+                f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.",
+                ephemeral=True
+            )
         elif isinstance(error, app_commands.MissingPermissions):
-            await interaction.response.send_message("LOL, you thought? Not enough perms, buddy.", ephemeral=True)
+            await interaction.response.send_message(
+                "LOL, you thought? Not enough perms, buddy.",
+                ephemeral=True
+            )
         else:
             await interaction.response.send_message(f"{error}")
             print(f"An error occurred: {error}")
             raise error
+
 
     @commands.Cog.listener()
     async def on_ready(self):
