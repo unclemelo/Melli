@@ -9,7 +9,6 @@ from discord.ext import commands
 class Royal(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bot.tree.on_error = self.on_tree_error
         self.stats_file = "data/weapon_stats.json"
         self.image_urls = {
             "sniper": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790458889146398/sinon-sao.gif",
@@ -37,24 +36,6 @@ class Royal(commands.Cog):
     def save_stats(self):
         with open(self.stats_file, "w") as file:
             json.dump(self.weapon_stats, file, indent=4)
-
-    async def on_tree_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        print(f"on_tree_error triggered with error: {type(error).__name__}")
-        if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(
-                f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.",
-                ephemeral=True
-            )
-        elif isinstance(error, app_commands.MissingPermissions):
-            await interaction.response.send_message(
-                "LOL, you thought? Not enough perms, buddy.",
-                ephemeral=True
-            )
-        else:
-            await interaction.response.send_message(f"{error}")
-            print(f"An error occurred: {error}")
-            raise error
-
 
     @commands.Cog.listener()
     async def on_ready(self):
