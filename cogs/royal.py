@@ -71,8 +71,16 @@ class Royal(commands.Cog):
             await interaction.response.send_message("I can't target myself!", ephemeral=True)
             return
         elif member == interaction.user:
-            await interaction.response.send_message("## Help is available ##\n-# Speak with someone today\n`988` Suicide and Crisis Lifeline\n**Languages**: *English, Spanish*\n**Hours**: Available 24 hours", ephemeral=True)
-            return
+                embed = discord.Embed(
+                    title="Help is Available",
+                    description="- Speak with someone today\n`988` Suicide and Crisis Lifeline",
+                    color=discord.Color.red()  # You can customize the color
+                )
+                embed.add_field(name="Languages", value="*English, Spanish*", inline=False)
+                embed.add_field(name="Hours", value="Available 24 hours", inline=False)
+                
+                await interaction.response.send_message(embed=embed, ephemeral=True)
+                return
 
 
         try:
