@@ -103,7 +103,7 @@ class Royal(commands.Cog):
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=90), reason="BOOM! Grenade explosion!")
                 embed.title = "💣 Grenade Explosion!"
                 embed.description = f"{member.name} was caught in a **grenade explosion** launched by {interaction.user.display_name}!"
-                embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308790148493873162/boom.gif?ex=673f394f&is=673de7cf&hm=db599e2dc587b30174c498d444a3aa5f4b45dc057379cf2b81d16ba43c78e0fc&")  # Replace with an image URL
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1292650717395554356/1313512025577488424/Untitled_video_-_Made_with_Clipchamp.gif?ex=675066e6&is=674f1566&hm=c0c0f002bd8c97e184ebdafa4bc05ece81ef7700d43bd9e225b3839182bfc072&")  # Replace with an image URL
 
             elif tool.value == 'rocket':
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=120), reason="Direct hit from a rocket!")

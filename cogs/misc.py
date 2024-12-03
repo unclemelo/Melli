@@ -65,6 +65,30 @@ class Misc(commands.Cog):
         embed.set_footer(text="We're here to help! 🍉")
 
         await interaction.response.send_message(embed=embed)
+    
+    @app_commands.command(name="m", description="Melo's socials.")
+    async def m_social(self, interaction: discord.Interaction):
+        bsky_link = "https://bsky.app/profile/unclemelo.bsky.social"
+        twitch_link = "https://www.twitch.tv/uncle_melo_"
+        yt_link = "https://www.youtube.com/@unclemelo"
+        tiktok_link = "https://www.tiktok.com/@uncle_melo_"
+        github_link = "https://github.com/unclemelo"
+        discord_link = "https://discord.gg/bsWukZXg8s"
+
+        embed = discord.Embed(
+            title="Uncle Melo's Socials",
+            description="Check out Uncle Melo on various platforms!",
+            color=discord.Color.blue()
+        )
+        embed.add_field(name="<:bluesky:1313595815884755035> BlueSky", value=f"[Click here]({bsky_link})", inline=False)
+        embed.add_field(name="<:twitch:1313592912965144576> Twitch", value=f"[Click here]({twitch_link})", inline=False)
+        embed.add_field(name="<:youtube:1313592929259884716> YouTube", value=f"[Click here]({yt_link})", inline=False)
+        embed.add_field(name="<:tiktok:1313592945735368847> TikTok", value=f"[Click here]({tiktok_link})", inline=False)
+        embed.add_field(name="<:blurplegithub:1313592960385941504> GitHub", value=f"[Click here]({github_link})", inline=False)
+        embed.add_field(name="<:discord:1313592889418317867> Discord Server", value=f"[Click here]({discord_link})", inline=False)
+        embed.set_footer(text="Follow Melo on all platforms!")
+
+        await interaction.response.send_message(embed=embed)
 
 
 
