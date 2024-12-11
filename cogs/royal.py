@@ -130,59 +130,5 @@ class Royal(commands.Cog):
             print(f"Error: {e}")
 
 
-    @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
-    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
-    async def chaos_cmd(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-        try:
-            members = interaction.guild.members
-            skipped_members = []  # Track members that couldn't be edited
-
-            for member in random.sample(members, min(len(members), 10)):
-                try:
-                    random_nickname = f"💥 {random.choice(['Goblin', 'Legend', 'Potato', 'Dud'])}"
-                    await member.edit(nick=random_nickname)
-                except discord.Forbidden:
-                    skipped_members.append(member)
-                except discord.HTTPException:
-                    continue  # Ignore and move to the next member
-
-            chaos_message = "Chaos unleashed! Check those nicknames. 😈"
-            if skipped_members:
-                chaos_message += f"\n\nCouldn't touch {len(skipped_members)} members. They're either protected or untouchable. 😏"
-
-            await interaction.followup.send(chaos_message)
-
-            # Reset the chaos after some time
-            await asyncio.sleep(60)
-            for member in members:
-                try:
-                    await member.edit(nick=None)
-                except (discord.Forbidden, discord.HTTPException):
-                    continue  # Skip members we can't reset
-
-            await interaction.followup.send("Chaos reverted. Everyone’s back to normal. For now.")
-        except Exception as e:
-            print(f"Unexpected error: {e}")
-            await interaction.followup.send("Something went wrong during chaos mode. Abort!", ephemeral=True)
-
-
-    @app_commands.command(name="prank", description="Play a harmless prank on a member!")
-    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
-    async def prank_cmd(self, interaction: discord.Interaction, member: discord.Member):
-        await interaction.response.defer()
-        prank_nick = f"{member.name} 🤡"
-        try:
-            await member.edit(nick=prank_nick)
-            await interaction.followup.send(f"`{member.name}` is now known as `{prank_nick}`. Let the giggles begin!")
-            await asyncio.sleep(60)
-            await member.edit(nick=None)
-            await interaction.followup.send("Prank over. Nickname restored!")
-        except discord.Forbidden:
-            await interaction.followup.send("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
-        except Exception as e:
-            print(f"Error: {e}")
-
-
 async def setup(bot: commands.Bot):
     await bot.add_cog(Royal(bot))
