@@ -10,8 +10,6 @@
 - **Error Handling**: Graceful handling of errors to ensure a seamless experience.
 - **Custom Commands**: Miscellaneous commands for fun and utility.
 - **Royal System**: Special module for unique server mechanics.
-- **Level System**: Tracks user activity and levels.
-- **Weapon Stats**: Handles game-like weapon statistics.
 
 ---
 
