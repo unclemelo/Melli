@@ -19,6 +19,7 @@ class System(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.start_time = datetime.utcnow()  # Track when the bot started
+        
 
     def get_update_channel(self) -> discord.TextChannel:
         """Fetches the update channel."""

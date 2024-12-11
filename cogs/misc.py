@@ -1,4 +1,4 @@
-import discord
+import discord, json
 from discord.ext import commands
 from datetime import timedelta
 from discord import app_commands
@@ -7,34 +7,36 @@ from colorama import Fore
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.load_config()
+        self.config_file = "data/AM_regex.json"
+
+    def load_config(self):
+        """Load the configuration from the JSON file."""
+        try:
+            with open(self.config_file, "r") as file:
+                self.config = json.load(file)
+        except FileNotFoundError:
+            self.config = {
+                "blocked_links_regex": [],
+                "allowed_links": []
+            }
 
     @app_commands.command(name="allowed_links", description="Displays the list of all allowed links.")
     async def allowedlinks(self, interaction: discord.Interaction):
-        allowed_links = [
-            "https://c.tenor.com/",
-            "https://cdn.discordapp.com/",
-            "https://imgflip.com/",
-            "https://media.discordapp.net/",
-            "https://on.soundcloud.com/",
-            "https://open.spotify.com/",
-            "https://tenor.com/",
-            "https://www.bilibili.com/",
-            "https://www.youtube.com/",
-            "https://youtu.be/",
-            "https://youtube.com/"
-        ]
 
         embed = discord.Embed(
             title="Allowed Links",
             description="Here are the links allowed in this server:",
             color=0x3df553  # Use a consistent theme color for your bot
         )
+        allowed = "\n• ".join(self.config["allowed_links"]) or "No allowed links."
+            
         embed.add_field(
             name="🔗 Links",
-            value="\n".join(f"• {link}" for link in allowed_links),
+            value="\n".join(f"• {allowed}"),
             inline=False
         )
-        embed.set_footer(text="Please ensure your links adhere to these guidelines.", icon_url = interaction.guild.icon.url if interaction.guild and interaction.guild.icon else None)
+        embed.set_footer(text="Please contact your server admin for the list of links.", icon_url = interaction.guild.icon.url if interaction.guild and interaction.guild.icon else None)
 
         await interaction.response.send_message(embed=embed)
 
