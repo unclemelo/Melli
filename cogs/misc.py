@@ -8,10 +8,6 @@ class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded misc.py")
-
     @app_commands.command(name="allowed_links", description="Displays the list of all allowed links.")
     async def allowedlinks(self, interaction: discord.Interaction):
         allowed_links = [

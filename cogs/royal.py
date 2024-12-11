@@ -9,7 +9,6 @@ from discord.ext import commands
 class Royal(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.stats_file = "data/weapon_stats.json"
         self.image_urls = {
             "sniper": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790458889146398/sinon-sao.gif",
             "shotie_explosive": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790449795895347/shotgun-bread-boys.gif",
@@ -17,14 +16,6 @@ class Royal(commands.Cog):
             "grenade": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790148493873162/boom.gif",
             "rocket": "https://cdn.discordapp.com/attachments/1183985896039661658/1308789861880299583/laser-eye.gif",
         }
-        self.dud_probabilities = {
-            "sniper": 0.1,  # 10% chance of being a dud
-            "shotie": 0.15,  # 15% chance
-            "pistol": 0.05,  # 5% chance
-            "grenade": 0.2,  # 20% chance
-            "rocket": 0.25,  # 25% chance
-        }
-        self.load_stats()
 
     def load_stats(self):
         try:
@@ -36,10 +27,6 @@ class Royal(commands.Cog):
     def save_stats(self):
         with open(self.stats_file, "w") as file:
             json.dump(self.weapon_stats, file, indent=4)
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py - Time to wreak havoc!")
 
     @app_commands.command(name="knockout", description="Use a weapon to timeout a member for 30 seconds or more!")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
