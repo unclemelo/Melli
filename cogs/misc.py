@@ -7,8 +7,9 @@ from colorama import Fore
 class Misc(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.load_config()
         self.config_file = "data/AM_regex.json"
+        self.load_config()
+
 
     def load_config(self):
         """Load the configuration from the JSON file."""
