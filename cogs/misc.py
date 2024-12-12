@@ -24,22 +24,37 @@ class Misc(commands.Cog):
 
     @app_commands.command(name="allowed_links", description="Displays the list of all allowed links.")
     async def allowedlinks(self, interaction: discord.Interaction):
-
         embed = discord.Embed(
             title="Allowed Links",
             description="Here are the links allowed in this server:",
             color=0x3df553  # Use a consistent theme color for your bot
         )
-        allowed = "\n• ".join(self.config["allowed_links"]) or "No allowed links."
-            
+
+        # Check if the allowed_links list is empty
+        allowed_links = self.config.get("allowed_links", [])
+
+        # If there are allowed links, format them with bullets; otherwise, display a fallback message
+        if allowed_links:
+            allowed = "\n• ".join(allowed_links)  # Join allowed links with a bullet
+        else:
+            allowed = "No allowed links."  # If empty, show this message
+        
+        # Add the formatted allowed links to the embed
         embed.add_field(
             name="🔗 Links",
-            value="\n".join(f"• {allowed}"),
+            value=f"• {allowed}",  # Display the links with a bullet if there are any
             inline=False
         )
-        embed.set_footer(text="Please contact your server admin for the list of links.", icon_url = interaction.guild.icon.url if interaction.guild and interaction.guild.icon else None)
+        
+        # Set the footer with guild icon if available
+        embed.set_footer(
+            text="Please contact your server admin for the list of links.", 
+            icon_url=interaction.guild.icon.url if interaction.guild and interaction.guild.icon else None
+        )
 
+        # Send the embed message
         await interaction.response.send_message(embed=embed)
+
 
     
     @app_commands.command(name="support_server", description="Get the invite link to the bot's support server.")
