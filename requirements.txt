@@ -3,3 +3,4 @@ colorama
 asyncio
 python-dotenv
 pytz
+requests
