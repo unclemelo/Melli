@@ -42,7 +42,7 @@ class Misc(commands.Cog):
         # Add the formatted allowed links to the embed
         embed.add_field(
             name="🔗 Links",
-            value=f"• {allowed}",  # Display the links with a bullet if there are any
+            value=f"• `{allowed}`",  # Display the links with a bullet if there are any
             inline=False
         )
         
