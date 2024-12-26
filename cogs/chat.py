@@ -36,10 +36,6 @@ class ChatCog(commands.Cog):
         if message.author.bot:
             return
 
-        # Recognize the creator
-        if message.author.id == self.user_id:
-            await message.channel.send("Hey Dad!")
-
         if any(keyword in message.content.lower() for keyword in ["hello", "melli", "help"]) or random.random() < 0.2:
             prompt = (
                 f"You are Melli, a chill assistant. Respond to the message casually, "
