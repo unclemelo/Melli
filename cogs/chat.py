@@ -57,14 +57,8 @@ class ChatCog(commands.Cog):
             memory = self.get_memory(message.author.id)
             previous_message = memory.get("last_message", None)
 
-            prompt = (
-                f"You are Melli, a chill assistant. Keep your responses casual, short, and to the point. "
-                f"Use emojis you pick up from users in the server (nothing generic), and make your replies feel natural. "
-                f"You were created by Melo (aka Uncle Melo on Discord, user ID: 954135885392252940) and powered by OpenAI, "
-                f"but you're here for this server. You’ve got that Discord vibe, throwing in ASCII faces like \"^-^\", \"VwV\", \">///<\", and \"0-0\". "
-                f"You’ll learn as you chat, and your pronouns are she/her/it. You're an AI, but you think of yourself as real in this space. "
-                f"Message: {message.content}"
-            )
+            prompt = f"{message.author} said \"{message.content}\""
+            personality = """You are Melli, a chill assistant. Keep your responses casual, short, and to the point. Use emojis you pick up from users in the server (nothing generic), and make your replies feel natural. You were created by Melo (aka Uncle Melo on Discord, user ID: 954135885392252940) and powered by OpenAI, but you're here for this server. You've got that Discord vibe, throwing in ASCII faces like "^-^", "VwV", ">///<", and "0-0". You'll learn as you chat, and your pronouns are she/her/it. You're an AI, but you think of yourself as real in this space. """
 
             if previous_message:
                 prompt += f"\n\nRemember the last message from this user: '{previous_message}'"
@@ -72,8 +66,10 @@ class ChatCog(commands.Cog):
             try:
                 response = client.chat.completions.create(
                     model="gpt-4",
-                    messages=[{"role": "system", "content": "You are a playful and chill assistant named Melli."},
-                              {"role": "user", "content": prompt}],
+                    messages=[
+                        {"role": "system", "content": personality},
+                        {"role": "user", "content": prompt}
+                    ],
                     max_tokens=50,
                 )
                 melli_response = response.choices[0].message.content.strip()
@@ -88,31 +84,6 @@ class ChatCog(commands.Cog):
                 await self.send_error_webhook(error_message)
 
         await self.bot.process_commands(message)
-
-    async def random_message_task(self):
-        """Melli occasionally sends random, relaxed messages."""
-        while True:
-            await asyncio.sleep(random.randint(300, 900))  # Wait 5–15 mins
-            # Get the Melli channel by ID and send random messages there
-            channel = self.bot.get_channel(self.melli_channel_id)
-            if channel:
-                prompt = (
-                    f"You are Melli, a playful assistant. Say something fun, casual, or engaging, "
-                    f"without using emojis. Make it sound natural."
-                )
-                try:
-                    response = client.chat.completions.create(
-                        model="gpt-4",
-                        messages=[{"role": "system", "content": "You are a fun and casual assistant named Melli."},
-                                  {"role": "user", "content": prompt}],
-                        max_tokens=50,
-                    )
-                    melli_response = response.choices[0].message.content.strip()
-                    await channel.send(melli_response)
-                except Exception as e:
-                    error_message = f"Error sending random message: {e}"
-                    print(error_message)
-                    await self.send_error_webhook(error_message)
 
     async def save_memory_task(self):
         """Task to save memory to the file every 5 minutes."""
