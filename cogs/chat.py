@@ -52,38 +52,35 @@ class ChatCog(commands.Cog):
 
         # Only respond if the message is in the designated Melli channel by ID
         if message.channel.id == self.melli_channel_id:
+            memory = self.get_memory(message.author.id)
+            previous_message = memory.get("last_message", None)
 
-            # Respond if the message mentions Melli or contains trigger words
-            if any(keyword in message.content.lower() for keyword in ["hello", "help"]) or random.random() < 0.2:
-                memory = self.get_memory(message.author.id)
-                previous_message = memory.get("last_message", None)
+            prompt = (
+                f"You are Melli, a chill assistant. Respond to the message casually, "
+                f"keeping it short and fun. You never use emojis and should respond naturally. "
+                f"Message: {message.content}"
+            )
 
-                prompt = (
-                    f"You are Melli, a chill assistant. Respond to the message casually, "
-                    f"keeping it short and fun. You never use emojis and should respond naturally. "
-                    f"Message: {message.content}"
+            if previous_message:
+                prompt += f"\n\nRemember the last message from this user: '{previous_message}'"
+
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[{"role": "system", "content": "You are a playful and chill assistant named Melli."},
+                              {"role": "user", "content": prompt}],
+                    max_tokens=50,
                 )
+                melli_response = response.choices[0].message.content.strip()
 
-                if previous_message:
-                    prompt += f"\n\nRemember the last message from this user: '{previous_message}'"
+                # Store the conversation in memory
+                self.update_memory(message.author.id, {"last_message": message.content, "response": melli_response})
 
-                try:
-                    response = client.chat.completions.create(
-                        model="gpt-4",
-                        messages=[{"role": "system", "content": "You are a playful and chill assistant named Melli."},
-                                  {"role": "user", "content": prompt}],
-                        max_tokens=50,
-                    )
-                    melli_response = response.choices[0].message.content.strip()
-
-                    # Store the conversation in memory
-                    self.update_memory(message.author.id, {"last_message": message.content, "response": melli_response})
-
-                    await message.channel.send(melli_response)
-                except Exception as e:
-                    error_message = f"Error responding to message '{message.content}' by {message.author}: {e}"
-                    print(error_message)
-                    await self.send_error_webhook(error_message)
+                await message.channel.send(melli_response)
+            except Exception as e:
+                error_message = f"Error responding to message '{message.content}' by {message.author}: {e}"
+                print(error_message)
+                await self.send_error_webhook(error_message)
 
         await self.bot.process_commands(message)
 
