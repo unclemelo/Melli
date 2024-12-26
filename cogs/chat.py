@@ -6,19 +6,33 @@ import random
 import asyncio
 import aiohttp  # For sending webhook messages
 
-client = OpenAI(api_key='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')
+client = OpenAI(api_key='your-api-key-here')
 
 class ChatCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.user_id = 954135885392252940  # Creator/Father ID
-        self.memory = {}  # Simple memory storage
+        self.memory = self.load_memory()  # Load memory from the file
+        self.melli_channel_id = 1321827675895234631  # Channel ID for Melli's channel
+        self.task_started = False
 
         # Load Melli's profile
         with open('data/melli_profile.json', 'r') as file:
             self.melli_profile = json.load(file)
 
-        self.task_started = False
+    def load_memory(self):
+        """Load memory from mem.json."""
+        try:
+            with open('data/mem.json', 'r') as file:
+                return json.load(file)
+        except FileNotFoundError:
+            # If file doesn't exist, return an empty dictionary
+            return {}
+
+    def save_memory(self):
+        """Save the current memory to mem.json every 5 minutes."""
+        with open('mem.json', 'w') as file:
+            json.dump(self.memory, file, indent=4)
 
     def update_memory(self, user_id, data):
         """Update memory for a specific user."""
@@ -32,31 +46,44 @@ class ChatCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        """Listener for messages Melli should respond to."""
+        """Listener for messages in the Melli channel."""
         if message.author.bot:
             return
 
-        if any(keyword in message.content.lower() for keyword in ["hello", "melli", "help"]) or random.random() < 0.2:
-            prompt = (
-                f"You are Melli, a chill assistant. Respond to the message casually, "
-                f"keeping it short and fun. You never use emojis and should respond naturally. "
-                f"Message: {message.content}"
-            )
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[{"role": "system", "content": "You are a playful and chill assistant named Melli."},
-                              {"role": "user", "content": prompt}],
-                    max_tokens=50,
+        # Only respond if the message is in the designated Melli channel by ID
+        if message.channel.id == self.melli_channel_id:
+
+            # Respond if the message mentions Melli or contains trigger words
+            if any(keyword in message.content.lower() for keyword in ["hello", "help"]) or random.random() < 0.2:
+                memory = self.get_memory(message.author.id)
+                previous_message = memory.get("last_message", None)
+
+                prompt = (
+                    f"You are Melli, a chill assistant. Respond to the message casually, "
+                    f"keeping it short and fun. You never use emojis and should respond naturally. "
+                    f"Message: {message.content}"
                 )
-                melli_response = response.choices[0].message.content.strip()
-                # Store conversation in memory
-                self.update_memory(message.author.id, {"last_message": message.content, "response": melli_response})
-                await message.channel.send(melli_response)
-            except Exception as e:
-                error_message = f"Error responding to message '{message.content}' by {message.author}: {e}"
-                print(error_message)
-                await self.send_error_webhook(error_message)
+
+                if previous_message:
+                    prompt += f"\n\nRemember the last message from this user: '{previous_message}'"
+
+                try:
+                    response = client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[{"role": "system", "content": "You are a playful and chill assistant named Melli."},
+                                  {"role": "user", "content": prompt}],
+                        max_tokens=50,
+                    )
+                    melli_response = response.choices[0].message.content.strip()
+
+                    # Store the conversation in memory
+                    self.update_memory(message.author.id, {"last_message": message.content, "response": melli_response})
+
+                    await message.channel.send(melli_response)
+                except Exception as e:
+                    error_message = f"Error responding to message '{message.content}' by {message.author}: {e}"
+                    print(error_message)
+                    await self.send_error_webhook(error_message)
 
         await self.bot.process_commands(message)
 
@@ -64,37 +91,39 @@ class ChatCog(commands.Cog):
         """Melli occasionally sends random, relaxed messages."""
         while True:
             await asyncio.sleep(random.randint(300, 900))  # Wait 5–15 mins
-            available_channels = [
-                channel for guild in self.bot.guilds for channel in guild.text_channels
-                if channel.permissions_for(guild.me).send_messages
-            ]
-            if not available_channels:
-                continue
-
-            channel = random.choice(available_channels)
-            prompt = (
-                f"You are Melli, a playful assistant. Say something fun, casual, or engaging, "
-                f"without using emojis. Make it sound natural."
-            )
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-4",
-                    messages=[{"role": "system", "content": "You are a fun and casual assistant named Melli."},
-                              {"role": "user", "content": prompt}],
-                    max_tokens=50,
+            # Get the Melli channel by ID and send random messages there
+            channel = self.bot.get_channel(self.melli_channel_id)
+            if channel:
+                prompt = (
+                    f"You are Melli, a playful assistant. Say something fun, casual, or engaging, "
+                    f"without using emojis. Make it sound natural."
                 )
-                melli_response = response.choices[0].message.content.strip()
-                await channel.send(melli_response)
-            except Exception as e:
-                error_message = f"Error sending random message: {e}"
-                print(error_message)
-                await self.send_error_webhook(error_message)
+                try:
+                    response = client.chat.completions.create(
+                        model="gpt-4",
+                        messages=[{"role": "system", "content": "You are a fun and casual assistant named Melli."},
+                                  {"role": "user", "content": prompt}],
+                        max_tokens=50,
+                    )
+                    melli_response = response.choices[0].message.content.strip()
+                    await channel.send(melli_response)
+                except Exception as e:
+                    error_message = f"Error sending random message: {e}"
+                    print(error_message)
+                    await self.send_error_webhook(error_message)
+
+    async def save_memory_task(self):
+        """Task to save memory to the file every 5 minutes."""
+        while True:
+            await asyncio.sleep(300)  # Sleep for 5 minutes
+            self.save_memory()  # Save the memory
 
     @commands.Cog.listener()
     async def on_ready(self):
-        """Starts Melli's random message task."""
+        """Starts Melli's random message task and memory save task."""
         if not self.task_started:
             self.bot.loop.create_task(self.random_message_task())
+            self.bot.loop.create_task(self.save_memory_task())  # Start memory save task
             self.task_started = True
 
     async def send_error_webhook(self, error_message: str):
