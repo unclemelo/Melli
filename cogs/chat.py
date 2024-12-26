@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key='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')
 import json
 import random
 import asyncio
@@ -16,7 +18,6 @@ class ChatCog(commands.Cog):
             self.melli_profile = json.load(file)
 
         # Set your OpenAI API key
-        openai.api_key = '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'
 
         # Random message triggers (can be adjusted)
         self.keywords = ["hello", "melli", "help", "chat", "bot"]
@@ -60,15 +61,13 @@ class ChatCog(commands.Cog):
             Respond as Melli in a helpful or playful way.
             """
             try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {"role": "system", "content": "You are Melli, a virtual assistant."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=150
-                )
-                melli_response = response['choices'][0]['message']['content'].strip()
+                response = client.chat.completions.create(model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": "You are Melli, a virtual assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=150)
+                melli_response = response.choices[0].message.content.strip()
                 await message.channel.send(melli_response)
 
             except Exception as e:
@@ -99,15 +98,13 @@ class ChatCog(commands.Cog):
             Say something playful or engaging to the members of the server.
             """
             try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-4",
-                    messages=[
-                        {"role": "system", "content": "You are Melli, a virtual assistant."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=150
-                )
-                melli_response = response['choices'][0]['message']['content'].strip()
+                response = client.chat.completions.create(model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are Melli, a virtual assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=150)
+                melli_response = response.choices[0].message.content.strip()
                 await channel.send(melli_response)
 
             except Exception as e:
