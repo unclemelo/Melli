@@ -6,7 +6,7 @@ import random
 import asyncio
 import aiohttp  # For sending webhook messages
 
-client = OpenAI(api_key='your-api-key-here')
+client = OpenAI(api_key='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')
 
 class ChatCog(commands.Cog):
     def __init__(self, bot):
