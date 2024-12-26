@@ -10,7 +10,7 @@ class ChatCog(commands.Cog):
         self.bot = bot
 
         # Load Melli's profile from a JSON file
-        with open('/data/melli_profile.json', 'r') as file:
+        with open('data/melli_profile.json', 'r') as file:
             self.melli_profile = json.load(file)
 
         # Set your OpenAI API key
