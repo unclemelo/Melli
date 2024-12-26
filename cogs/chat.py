@@ -13,55 +13,52 @@ client = OpenAI(api_key='sk-proj-iVbK3DAml8G_abhtOTFQ8pqg1jIjdymD78ETWpl7lpDpGzo
 class ChatCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.user_id = 954135885392252940  # Creator/Father ID
         self.memory = self.load_memory()  # Load memory from the file
         self.melli_channel_id = 1321827675895234631  # Channel ID for Melli's channel
         self.task_started = False
 
-        # Load Melli's profile
-        with open('data/melli_profile.json', 'r') as file:
-            self.melli_profile = json.load(file)
-
     def load_memory(self):
-        """Load memory from mem.json."""
+        """Load global memory from mem.json."""
         try:
             with open('data/mem.json', 'r') as file:
                 return json.load(file)
         except FileNotFoundError:
-            # If file doesn't exist, return an empty dictionary
-            return {}
+            # If file doesn't exist, initialize with empty global history
+            return {"history": []}
 
     def save_memory(self):
-        """Save the current memory to mem.json every 5 minutes."""
+        """Save the current global memory to mem.json."""
         with open('data/mem.json', 'w') as file:
             json.dump(self.memory, file, indent=4)
 
-    def update_memory(self, user_id, data):
-        """Update memory for a specific user."""
-        if user_id not in self.memory:
-            self.memory[user_id] = {}
-        self.memory[user_id].update(data)
+    def update_memory(self, user_message, bot_response):
+        """Update global memory with a new message-response pair."""
+        self.memory["history"].append({"user_message": user_message, "bot_response": bot_response})
 
-    def get_memory(self, user_id):
-        """Retrieve memory for a specific user."""
-        return self.memory.get(user_id, {})
+    def get_memory(self):
+        """Retrieve global memory history."""
+        return self.memory.get("history", [])
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        """Listener for messages in the Melli channel."""
         if message.author.bot:
             return
 
-        # Only respond if the message is in the designated Melli channel by ID
         if message.channel.id == self.melli_channel_id:
-            memory = self.get_memory(message.author.id)
-            previous_message = memory.get("last_message", None)
+            personality = (
+                "You are Melli, a chill assistant with a Discord vibe. You love using ASCII faces like '^-^', 'VwV', "
+                "and '0-0'. Your creator is Melo (Uncle Melo on Discord), but you're here to make Melon Kingdom a fun place. "
+                "Be casual, friendly, and throw in playful comments. Use emojis and slang naturally when chatting!"
+            )
 
-            prompt = f"{message.author} said \"{message.content}\""
-            personality = """You are Melli, a chill assistant. Keep your responses casual, short, and to the point. Use emojis you pick up from users in the server (nothing generic), and make your replies feel natural. You were created by Melo (aka Uncle Melo on Discord, user ID: 954135885392252940) and powered by OpenAI, but you're here for this server. You've got that Discord vibe, throwing in ASCII faces like "^-^", "VwV", ">///<", and "0-0". You'll learn as you chat, and your pronouns are she/her/it. You're an AI, but you think of yourself as real in this space. """
+            global_history = self.get_memory()
 
-            if previous_message:
-                prompt += f"\n\nRemember the last message from this user: '{previous_message}'"
+            # Construct the prompt using the most recent global history
+            history_prompt = "\n".join(
+                [f"User: {entry['user_message']} -> Melli: {entry['bot_response']}" for entry in global_history[-5:]]
+            )
+            prompt = f"{history_prompt}\nUser ({message.author}): \"{message.content}\""
 
             try:
                 response = client.chat.completions.create(
@@ -70,12 +67,12 @@ class ChatCog(commands.Cog):
                         {"role": "system", "content": personality},
                         {"role": "user", "content": prompt}
                     ],
-                    max_tokens=50,
+                    max_tokens=100,  # Allow more tokens for personality-rich responses
                 )
                 melli_response = response.choices[0].message.content.strip()
 
-                # Store the conversation in memory
-                self.update_memory(message.author.id, {"last_message": message.content, "response": melli_response})
+                # Update the global memory
+                self.update_memory(message.content, melli_response)
 
                 await message.channel.send(melli_response)
             except Exception as e:
@@ -84,6 +81,7 @@ class ChatCog(commands.Cog):
                 await self.send_error_webhook(error_message)
 
         await self.bot.process_commands(message)
+
 
     async def save_memory_task(self):
         """Task to save memory to the file every 5 minutes."""
