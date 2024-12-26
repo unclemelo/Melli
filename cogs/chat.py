@@ -41,7 +41,7 @@ class ChatCog(commands.Cog):
             )
             try:
                 response = client.chat.completions.create(
-                    model="gpt-4-mini",
+                    model="gpt-4",
                     messages=[
                         {"role": "system", "content": "You are a playful and chill assistant named Melli."},
                         {"role": "user", "content": prompt},
