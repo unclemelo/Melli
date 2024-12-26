@@ -42,9 +42,6 @@ class ChatCog(commands.Cog):
                     max_tokens=50,
                 )
                 melli_response = response.choices[0].message.content.strip()
-                emoji = self.pick_random_emoji()
-                if emoji:
-                    melli_response += f" {emoji}"  # Append the emoji if chosen
                 await message.channel.send(melli_response)
             except Exception as e:
                 error_message = f"Error responding to message '{message.content}' by {message.author}: {e}"
@@ -79,9 +76,6 @@ class ChatCog(commands.Cog):
                     max_tokens=50,
                 )
                 melli_response = response.choices[0].message.content.strip()
-                emoji = self.pick_random_emoji()
-                if emoji:
-                    melli_response += f" {emoji}"  # Append the emoji if chosen
                 await channel.send(melli_response)
             except Exception as e:
                 error_message = f"Error sending random message: {e}"
