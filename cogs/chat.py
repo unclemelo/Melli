@@ -5,6 +5,8 @@ import json
 import random
 import asyncio
 import aiohttp  # For sending webhook messages
+import os
+import subprocess
 
 client = OpenAI(api_key='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')
 
@@ -63,7 +65,6 @@ class ChatCog(commands.Cog):
                 f"You’ll learn as you chat, and your pronouns are she/her/it. You're an AI, but you think of yourself as real in this space. "
                 f"Message: {message.content}"
             )
-
 
             if previous_message:
                 prompt += f"\n\nRemember the last message from this user: '{previous_message}'"
@@ -126,6 +127,26 @@ class ChatCog(commands.Cog):
             self.bot.loop.create_task(self.random_message_task())
             self.bot.loop.create_task(self.save_memory_task())  # Start memory save task
             self.task_started = True
+
+    def commit_and_push(self):
+        """Commit and push mem.json to the Git repository."""
+        try:
+            # Use the current working directory where the bot is running
+            os.chdir(os.getcwd())  # This ensures we're in the bot's current directory (the repo)
+
+            # Add changes to staging
+            subprocess.run(['git', 'add', 'data/mem.json'], check=True)
+
+            # Commit changes
+            subprocess.run(['git', 'commit', '-m', 'Updated memory (mem.json)'], check=True)
+
+            # Push changes to the remote repository
+            subprocess.run(['git', 'push'], check=True)
+
+            print("Changes to mem.json have been committed and pushed to Git.")
+        
+        except subprocess.CalledProcessError as e:
+            print(f"Git command failed: {e}")
 
     async def send_error_webhook(self, error_message: str):
         """Send error message to a specified webhook."""
