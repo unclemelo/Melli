@@ -36,7 +36,7 @@ class ChatCog(commands.Cog):
             You are Melli, a virtual assistant created by Melo. Here is your profile:
             {json.dumps(self.melli_profile, indent=2)}
 
-            Act accordingly to help users of Kofinisu's Cafe Discord server.
+            Act accordingly to help users of Melon Kingdom Discord server.
             A user has said: "{message.content}"
             Respond as Melli in a helpful or playful way.
             """
@@ -44,7 +44,7 @@ class ChatCog(commands.Cog):
             try:
                 # Send the prompt to the OpenAI API
                 response = openai.Completion.create(
-                    engine="text-davinci-003",
+                    engine="gpt-4-0613",
                     prompt=prompt,
                     max_tokens=150
                 )
