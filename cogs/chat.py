@@ -61,7 +61,7 @@ class ChatCog(commands.Cog):
             """
             try:
                 response = openai.ChatCompletion.create(
-                    model="gpt-4",
+                    model="gpt-4o-mini",
                     messages=[
                         {"role": "system", "content": "You are Melli, a virtual assistant."},
                         {"role": "user", "content": prompt}

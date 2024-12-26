@@ -4,4 +4,4 @@ asyncio
 python-dotenv
 pytz
 requests
-openai
+openai==0.28
