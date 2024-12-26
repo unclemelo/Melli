@@ -4,3 +4,4 @@ asyncio
 python-dotenv
 pytz
 requests
+openai
