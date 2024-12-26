@@ -94,5 +94,5 @@ class ChatCog(commands.Cog):
         self.bot.loop.create_task(self.random_message_task())
 
 # Add the cog to the bot
-def setup(bot):
-    bot.add_cog(ChatCog(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(ChatCog(bot))
