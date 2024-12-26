@@ -4,6 +4,7 @@ import openai
 import json
 import random
 import asyncio
+import aiohttp  # For sending webhook messages
 
 
 class ChatCog(commands.Cog):
@@ -21,22 +22,35 @@ class ChatCog(commands.Cog):
         self.keywords = ["hello", "melli", "help", "chat", "bot"]
         self.random_chance = 0.1  # 10% chance for Melli to respond randomly
         self.task_started = False  # Ensure the random message task runs only once
+        self.error_webhook_url = (
+            "https://discord.com/api/webhooks/1316466233574690917/LOdp5lcTuOWN0k6yeaRwXUPDw5AgRsz0a9FP-KRLx2kXJhfM30ei_zt2JMpO0lYN5lpN"
+        )
+
+    async def send_error_webhook(self, error_message: str):
+        """
+        Sends an error message to the specified webhook URL.
+        """
+        async with aiohttp.ClientSession() as session:
+            try:
+                payload = {"content": f"⚠️ **Melli Error:** {error_message}"}
+                async with session.post(self.error_webhook_url, json=payload) as response:
+                    if response.status != 204:
+                        print(f"Failed to send webhook: {response.status} {await response.text()}")
+            except Exception as e:
+                print(f"Failed to send error webhook: {e}")
 
     @commands.Cog.listener()
     async def on_message(self, message):
         """
         Listener for all messages in the server. Melli will decide when to respond.
         """
-        # Ignore messages from the bot itself
         if message.author.bot:
             return
 
         # Debugging: Log received messages
         print(f"Message received: {message.content} by {message.author}")
 
-        # Check if the message contains a keyword or Melli "feels like responding"
         if any(keyword in message.content.lower() for keyword in self.keywords) or random.random() < self.random_chance:
-            # Construct the prompt
             prompt = f"""
             You are Melli, a virtual assistant created by Melo. Here is your profile:
             {json.dumps(self.melli_profile, indent=2)}
@@ -45,9 +59,7 @@ class ChatCog(commands.Cog):
             A user has said: "{message.content}"
             Respond as Melli in a helpful or playful way.
             """
-
             try:
-                # Send the prompt to the OpenAI API
                 response = openai.ChatCompletion.create(
                     model="gpt-4",
                     messages=[
@@ -57,15 +69,13 @@ class ChatCog(commands.Cog):
                     max_tokens=150
                 )
                 melli_response = response['choices'][0]['message']['content'].strip()
-
-                # Send Melli's response to the same channel
                 await message.channel.send(melli_response)
 
             except Exception as e:
-                # Handle errors (e.g., API errors)
-                print(f"Error: {e}")
+                error_message = f"Error responding to message '{message.content}' by {message.author}: {e}"
+                print(error_message)
+                await self.send_error_webhook(error_message)
 
-        # Pass the message to the command processor
         await self.bot.process_commands(message)
 
     async def random_message_task(self):
@@ -79,7 +89,7 @@ class ChatCog(commands.Cog):
                 if channel.permissions_for(guild.me).send_messages
             ]
             if not available_channels:
-                continue  # Skip if no valid channels
+                continue
 
             channel = random.choice(available_channels)
             prompt = f"""
@@ -88,9 +98,7 @@ class ChatCog(commands.Cog):
 
             Say something playful or engaging to the members of the server.
             """
-
             try:
-                # Generate a random message
                 response = openai.ChatCompletion.create(
                     model="gpt-4",
                     messages=[
@@ -100,12 +108,12 @@ class ChatCog(commands.Cog):
                     max_tokens=150
                 )
                 melli_response = response['choices'][0]['message']['content'].strip()
-
-                # Send Melli's random message
                 await channel.send(melli_response)
 
             except Exception as e:
-                print(f"Error: {e}")
+                error_message = f"Error sending random message: {e}"
+                print(error_message)
+                await self.send_error_webhook(error_message)
 
     @commands.Cog.listener()
     async def on_ready(self):
