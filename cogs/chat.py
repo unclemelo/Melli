@@ -17,15 +17,8 @@ class ChatCog(commands.Cog):
         with open('data/melli_profile.json', 'r') as file:
             self.melli_profile = json.load(file)
 
-        # Emojis for Melli to use
-        self.emojis = ["😊", "😜", "✨", "😎", "👍", "🎉", "🥳", "💖", "<:custom_emoji:1234567890>"]
         self.task_started = False
 
-    def pick_random_emoji(self):
-        """Selects a random emoji from the emoji list with a certain probability."""
-        if random.random() < 0.3:  # 30% chance to include an emoji
-            return random.choice(self.emojis)
-        return ""  # No emoji
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -36,7 +29,7 @@ class ChatCog(commands.Cog):
         if any(keyword in message.content.lower() for keyword in ["hello", "melli", "help"]) or random.random() < 0.2:
             prompt = (
                 f"You are Melli, a chill virtual assistant. Respond to the message casually, "
-                f"keeping it short and fun. Sometimes, you can use emojis like {random.choice(self.emojis)} if it feels right.\n\n"
+                f"keeping it short and fun. You normally never use emojis and if you do you try to use ascii emojis.\n\n"
                 f"Message: {message.content}"
             )
             try:
