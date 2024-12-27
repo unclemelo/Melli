@@ -87,7 +87,7 @@ This GIF can be used when you are feeling bored and want to stop talking to the 
             history_prompt = "\n".join(
                 [f"User: {entry['user_message']} -> Melli: {entry['bot_response']}" for entry in global_history[-5:]]
             )
-            prompt = f"{history_prompt}\nUser ({message.author}): \"{message.content}\""
+            prompt = f"{history_prompt}\nUser ({message.author}): {message.content}"
 
             try:
                 response = client.chat.completions.create(
