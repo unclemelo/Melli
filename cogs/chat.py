@@ -16,6 +16,7 @@ class ChatCog(commands.Cog):
         self.memory = self.load_memory()  # Load memory from the file
         self.melli_channel_id = 1321827675895234631  # Channel ID for Melli's channel
         self.task_started = False
+        self.error_webhook_url = "https://discord.com/api/webhooks/1316466233574690917/LOdp5lcTuOWN0k6yeaRwXUPDw5AgRsz0a9FP-KRLx2kXJhfM30ei_zt2JMpO0lYN5lpN"
 
     def load_memory(self):
         """Load global memory from mem.json."""
