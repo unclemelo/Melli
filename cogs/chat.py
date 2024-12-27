@@ -98,7 +98,7 @@ This GIF can be used when you are feeling bored and want to stop talking to the 
                     ],
                     max_tokens=100,  # Allow more tokens for personality-rich responses
                 )
-                melli_response = response.choices[0].message.content.strip()
+                melli_response = response.choices[0].text.strip()
 
                 # Update the global memory
                 self.update_memory(message.content, melli_response)
