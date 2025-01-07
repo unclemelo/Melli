@@ -7,6 +7,7 @@ import requests
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from colorama import Fore
+from nermpy import start_nerimity_client
 
 ## Load Environment Variables
 load_dotenv()
@@ -33,6 +34,8 @@ async def on_ready():
 
     print(f"{Fore.GREEN}[ CONNECTED ]{Fore.RESET} {client.user.name} is online and ready!")
     print(f"Currently in {Fore.BLUE}{len(client.guilds)}{Fore.RESET} guilds.")
+
+    asyncio.create_task(start_nerimity_client())
 
 @tasks.loop(seconds=10)
 async def update_server_count():
