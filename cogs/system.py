@@ -226,36 +226,6 @@ class System(commands.Cog):
         )
         await interaction.response.send_message(embed=embed)
 
-    @tasks.loop(hours=12)
-    async def reboot_loop(self):
-        """
-        Periodically pulls updates from GitHub and reboots the bot.
-        Runs every 12 hours.
-        """
-        channel = self.bot.get_channel(1308048388637462558)
-        embed = discord.Embed(
-            title="Scheduled Reboot",
-            description="Pulling updates from GitHub and restarting.",
-            color=0x3df553
-        )
-        await channel.send(embed=embed)
-
-        # Pull latest code and check the result
-        git_response = self.update_code()
-        if "Already up to date" in git_response:
-            embed.description += "\n\nNo updates found. Restarting with the current version."
-        else:
-            embed.description += "\n\nUpdates applied successfully."
-
-        await channel.send(embed=embed)
-        print("[ SYSTEM ] Scheduled reboot initiated.")
-        self.restart_bot()
-
-    @reboot_loop.before_loop
-    async def before_reboot_loop(self):
-        """Waits until the bot is ready before starting the reboot loop."""
-        await self.bot.wait_until_ready()
-
 
 async def setup(bot: commands.Bot):
     """Adds the System cog to the bot."""
