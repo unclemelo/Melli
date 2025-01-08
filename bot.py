@@ -7,7 +7,6 @@ import requests
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 from colorama import Fore
-from nermpy import start_nerimity_client
 
 ## Load Environment Variables
 load_dotenv()
