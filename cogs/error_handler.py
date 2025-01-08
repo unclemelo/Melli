@@ -86,11 +86,6 @@ class ERROR(commands.Cog):
                 print("Error occurred but could not send to the specified error channel.")
                 print(traceback_details)
 
-    @app_commands.command(name="simulate_error", description="Testing errors")
-    @app_commands.checks.has_permissions(administrator=True)
-    async def simulate_error(self, interaction: discord.Interaction):
-        raise RuntimeError("This is a simulated error.")
-
 async def setup(bot: commands.Bot):
     error_channel_id = 1308048388637462558
     await bot.add_cog(ERROR(bot, error_channel_id))
