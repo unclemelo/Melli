@@ -19,6 +19,17 @@ class System(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.start_time = datetime.utcnow()  # Track when the bot started
+        self.bot.tree.on_error = self.on_tree_error
+
+    async def on_tree_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.", ephemeral=True)
+        elif isinstance(error, app_commands.MissingPermissions):
+            await interaction.response.send_message("LOL, you thought? Not enough perms, buddy.", ephemeral=True)
+        else:
+            await interaction.response.send_message(f"{error}")
+            print(f"An error occurred: {error}")
+            raise error
         
 
     def get_update_channel(self) -> discord.TextChannel:
@@ -164,18 +175,13 @@ class System(commands.Cog):
         uptime = now - self.start_time
         return str(timedelta(seconds=uptime.total_seconds()))
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        """Logs when the system cog is loaded."""
-        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} System cog loaded successfully.")
-
     @app_commands.command(name="reboot", description="Reboots the bot and updates its code.")
     @app_commands.checks.has_permissions(administrator=True)
     async def restart_cmd(self, interaction: discord.Interaction):
         """Reboots the bot after pulling the latest code from GitHub."""
         if interaction.user.id == 954135885392252940:
             embed = discord.Embed(
-                title="Rebooting `MelonShield`...",
+                title="Rebooting `Melli`...",
                 description="Pulling updates from GitHub and restarting.",
                 color=0x3df553
             )
@@ -205,7 +211,7 @@ class System(commands.Cog):
         """Shuts down the bot."""
         if interaction.user.id == 954135885392252940:
             embed = discord.Embed(
-                title="Shutting Down `MelonShield`...",
+                title="Shutting Down `Melli`...",
                 description="The bot is shutting down.",
                 color=0xff0000
             )
@@ -221,7 +227,7 @@ class System(commands.Cog):
         uptime = self.get_uptime()
         embed = discord.Embed(
             title="Bot Uptime",
-            description=f"`MelonShield` has been online for: **{uptime}**",
+            description=f"`Melli` has been online for: **{uptime}**",
             color=0x3df553
         )
         await interaction.response.send_message(embed=embed)

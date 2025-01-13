@@ -9,21 +9,6 @@ from discord.ext import commands
 class Royal(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.bot.tree.on_error = self.on_tree_error
-
-    async def on_tree_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.", ephemeral=True)
-        elif isinstance(error, app_commands.MissingPermissions):
-            await interaction.response.send_message("LOL, you thought? Not enough perms, buddy.", ephemeral=True)
-        else:
-            await interaction.response.send_message(f"{error}")
-            print(f"An error occurred: {error}")
-            raise error
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded royal.py - Time to wreak havoc!")
 
     @app_commands.command(name="knockout", description="Use a weapon to timeout a member for 30 seconds or more!")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
