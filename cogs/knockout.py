@@ -150,7 +150,7 @@ class Royal(commands.Cog):
                 except (discord.Forbidden, discord.HTTPException):
                     continue  # Skip members we can't reset
 
-            await interaction.followup.send("Chaos reverted. Everyone’s back to normal. For now.")
+            await interaction.followup.send("Chaos reverted. Everyone's back to normal. For now.")
         except Exception as e:
             print(f"Unexpected error: {e}")
             await interaction.followup.send("Something went wrong during chaos mode. Abort!", ephemeral=True)
