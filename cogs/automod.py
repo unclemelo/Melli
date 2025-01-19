@@ -7,10 +7,6 @@ class AutoMod(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"{Fore.GREEN}[ OK ]{Fore.RESET} Loaded automod.py")
-
     @app_commands.command(name="setup_automod", description="Automatically sets up AutoMod rules for the server.")
     @app_commands.checks.has_permissions(administrator=True)
     async def setup_automod(self, interaction: discord.Interaction, channel: discord.TextChannel):
@@ -50,10 +46,12 @@ class AutoMod(commands.Cog):
                     regex_patterns=blocked_links_regex,
                     allow_list=allowed_links
                 ),
-                actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message,channel_id=channel.id)],
                 actions=[
                     discord.AutoModRuleAction(
-                        type=discord.AutoModRuleActionType.block_message,
+                        channel_id=channel.id,
+                        type=discord.AutoModRuleActionType.block_message
+                    ), 
+                    discord.AutoModRuleAction(
                         channel_id=channel.id
                     )],
                 enabled=True,
@@ -68,10 +66,12 @@ class AutoMod(commands.Cog):
                     type=discord.AutoModRuleTriggerType.keyword,
                     regex_patterns=blocked_text_regex
                 ),
-                actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.block_message,channel_id=channel.id)],
                 actions=[
                     discord.AutoModRuleAction(
-                        type=discord.AutoModRuleActionType.block_message,
+                        channel_id=channel.id,
+                        type=discord.AutoModRuleActionType.block_message
+                    ), 
+                    discord.AutoModRuleAction(
                         channel_id=channel.id
                     )],
                 enabled=True,
