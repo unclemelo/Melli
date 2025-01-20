@@ -77,7 +77,6 @@ class AutoMod(commands.Cog):
                             keyword_filter=blocked_words,
                             allow_list=allowed_links
                         ),
-                        try:
                         actions=[
                             discord.AutoModRuleAction(
                                 channel_id=channel.id,
@@ -87,11 +86,10 @@ class AutoMod(commands.Cog):
                         enabled=True,
                         reason=f"AutoMod setup for rule: {name}"
                     )
+
+                    created_rules.append(automod_rule.name)
                 except Exception as e:
                     await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```", ephemeral=True)
-                    
-                    created_rules.append(automod_rule.name)
-                
                     
 
             embed = discord.Embed(
