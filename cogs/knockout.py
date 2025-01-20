@@ -106,7 +106,7 @@ class Royal(commands.Cog):
             await member.edit(timed_out_until=None)
             embed = discord.Embed(
                 title="✨ Resurrection Complete!",
-                description=f"`{member.mention}` has been revived by `{interaction.user.mention}`! Hopefully, they behave this time. 🤞",
+                description=f"{member.mention} has been revived by {interaction.user.mention}! Hopefully, they behave this time. 🤞",
                 color=discord.Color.green()
             )
             embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308808048030126162/love-live-static.gif?ex=673f49fb&is=673df87b&hm=e53b7c74842f2939f60c71bdad015a1013b28c0476f41244e8a8091464143f02&")

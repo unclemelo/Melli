@@ -3,11 +3,11 @@
         {
             "name": "Blocking Links, Harmful Language, and Spam",
             "regex_patterns": [
-                "regex1",
+                "(?:https?:\/\/)?[a-z0-9_\-]+\.(com|net|org|io|gov|edu|info|gg|xxx|gg)\b",
                 "regex2"
             ],
             "allowed_links": [
-                "*://example.com/*"
+                "*://c.tenor.com/*, *://cdn.discordapp.com/*, *://cdn.nekotina.com/*, *://garticphone.com/*, *://imgflip.com/*, *://media.discordapp.net/*, *://on.soundcloud.com/*, *://open.spotify.com/*, *://store.steampowered.com/*, *://tenor.com/*, *://www.bilibili.com/*, *://www.youtube.com/*, *://youtu.be/*, *://youtube.com/*"
             ],
             "blocked_words": [
                 "spam",
