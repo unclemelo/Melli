@@ -66,26 +66,31 @@ class AutoMod(commands.Cog):
                 allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
                 blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
 
-                automod_rule = await guild.create_automod_rule(
-                    name=name,
-                    event_type=discord.AutoModRuleEventType.message_send,
-                    trigger=discord.AutoModTrigger(
-                        type=discord.AutoModRuleTriggerType.keyword,
-                        regex_patterns=regex_patterns,
-                        keyword_filter=blocked_words,
-                        allow_list=allowed_links
-                    ),
-                    actions=[
-                        discord.AutoModRuleAction(
-                            channel_id=channel.id,
-                            type=discord.AutoModRuleActionType.block_message
-                        )
-                    ],
-                    enabled=True,
-                    reason=f"AutoMod setup for rule: {name}"
-                )
+                ##Test
+                try:
+                    print("TEST")
+                    automod_rule = await guild.create_automod_rule(
+                        name=name,
+                        event_type=discord.AutoModRuleEventType.message_send,
+                        trigger=discord.AutoModTrigger(
+                            type=discord.AutoModRuleTriggerType.keyword,
+                            regex_patterns=regex_patterns,
+                            keyword_filter=blocked_words,
+                            allow_list=allowed_links
+                        ),
+                        actions=[
+                            discord.AutoModRuleAction(
+                                channel_id=channel.id,
+                                type=discord.AutoModRuleActionType.block_message
+                            )
+                        ],
+                        enabled=True,
+                        reason=f"AutoMod setup for rule: {name}"
+                    )
 
-                created_rules.append(automod_rule.name)
+                    created_rules.append(automod_rule.name)
+                except:
+                    print("TEST FAILED")
 
             embed = discord.Embed(
                 title="AutoMod setup complete!",
