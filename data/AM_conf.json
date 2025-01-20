@@ -13,7 +13,7 @@
                 "spam",
                 "phishing"
             ],
-            "allowed_words": []
+            "allowed_words": ["hello"]
         },
         {
             "name": "Blocking Sexual Content and Media Filtering",
@@ -21,7 +21,7 @@
                 "regex1",
                 "regex2"
             ],
-            "allowed_links": [],
+            "allowed_links": ["*example.com*"],
             "blocked_words": [
                 "scam",
                 "malware"
@@ -32,10 +32,10 @@
         },
         {
             "name": "Blocking Sensitive Topics and Language Filtering",
-            "regex_patterns": [],
-            "allowed_links": [],
-            "blocked_words": [],
-            "allowed_words": []
+            "regex_patterns": ["regex1"],
+            "allowed_links": ["*example.com*"],
+            "blocked_words": ["scam"],
+            "allowed_words": ["hello"]
         }
     ]
 }
