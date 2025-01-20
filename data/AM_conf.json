@@ -1,7 +1,7 @@
 {
     "rules": [
         {
-            "name": "Blocking Links, Harmful Language, and Spam",
+            "name": ["Blocking Links, Harmful Language, and Spam"],
             "regex_patterns": [
                 "(?:https?:\/\/)?[a-z0-9_-]+.(com|net|org|io|gov|edu|info|gg|xxx)\b",
                 "regex2"
