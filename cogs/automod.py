@@ -71,12 +71,12 @@ class AutoMod(commands.Cog):
                     automod_rule = await guild.create_automod_rule(
                         name=name,
                         event_type=discord.AutoModRuleEventType.message_send,
-                        trigger=discord.AutoModTrigger(
-                            type=discord.AutoModRuleTriggerType.keyword,
-                            regex_patterns=regex_patterns,
-                            keyword_filter=blocked_words,
-                            allow_list=allowed_links
-                        ),
+                        #trigger=discord.AutoModTrigger(
+                            #type=discord.AutoModRuleTriggerType.keyword,
+                            #regex_patterns=regex_patterns,
+                            #keyword_filter=blocked_words,
+                            #allow_list=allowed_links
+                        #),
                         actions=[
                             discord.AutoModRuleAction(
                                 channel_id=channel.id,
