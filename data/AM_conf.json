@@ -4,15 +4,7 @@
             "name": "Blocking Links, Harmful Language, and Spam",
             "regex_patterns": [
                 "regex2"
-            ],
-            "allowed_links": [
-                "*://c.tenor.com/*"
-            ],
-            "blocked_words": [
-                "spam"
-            ],
-            "allowed_words": ["hello"]
+            ]
         }
-
     ]
 }
