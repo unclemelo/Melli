@@ -76,7 +76,7 @@ class AutoMod(commands.Cog):
 
             except Exception as e:
                 print(f"Error in AutoMod setup: {e}")
-                await interaction.response.send_message("An error occurred. Please contact an administrator.", ephemeral=True)
+                await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
         else:
             embed = discord.Embed(
                 title="Permission Denied",
