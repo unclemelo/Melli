@@ -12,7 +12,7 @@ from colorama import Fore
 from functools import wraps
 
 # Developer IDs
-devs = [667032667732312115, 954135885392252940]
+devs = [667032667732312115, 954135885392252940, 1186435491252404384]
 
 def is_dev():
     """A decorator to restrict commands to developers."""
