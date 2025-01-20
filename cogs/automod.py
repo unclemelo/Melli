@@ -73,7 +73,7 @@ class AutoMod(commands.Cog):
                         event_type=discord.AutoModRuleEventType.message_send,
                         trigger=discord.AutoModTrigger(
                             #type=discord.AutoModRuleTriggerType.keyword,
-                            #regex_patterns=regex_patterns,
+                            regex_patterns=regex_patterns,
                             keyword_filter=blocked_words,
                             allow_list=allowed_links
                         ),
