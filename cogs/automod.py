@@ -68,7 +68,7 @@ class AutoMod(commands.Cog):
 
                 ##Test
                 try:
-                    print(f"TEST")
+                    print("TEST")
                     automod_rule = await guild.create_automod_rule(
                         name=name,
                         event_type=discord.AutoModRuleEventType.message_send,
@@ -90,7 +90,7 @@ class AutoMod(commands.Cog):
 
                     created_rules.append(automod_rule.name)
                 except:
-                    print(f"TEST FAILED")
+                    print("TEST FAILED")
 
             embed = discord.Embed(
                 title="AutoMod setup complete!",
