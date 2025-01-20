@@ -6,7 +6,7 @@
                 "regex2"
             ],
             "allowed_links": [
-                "*://c.tenor.com/*"
+                "://c.tenor.com/"
             ],
             "blocked_words": [
                 "spam"
