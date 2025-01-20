@@ -43,7 +43,7 @@ class Warn(commands.Cog):
         self.warnings[guild_id][user_id].append({
             "reason": reason,
             "moderator": str(interaction.user),
-            "timestamp": interaction.message.created_at.isoformat()
+            "timestamp": discord.utils.utcnow().isoformat()
         })
         self.save_warnings()
 
