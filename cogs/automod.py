@@ -68,7 +68,6 @@ class AutoMod(commands.Cog):
 
                 ##Test
                 try:
-                    print(f"TEST")
                     automod_rule = await guild.create_automod_rule(
                         name=name,
                         event_type=discord.AutoModRuleEventType.message_send,
@@ -90,8 +89,7 @@ class AutoMod(commands.Cog):
 
                     created_rules.append(automod_rule.name)
                 except Exception as e:
-                    print(f"TEST FAILED")
-                    await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
+                    await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```", ephemeral=True)
                     
 
             embed = discord.Embed(
