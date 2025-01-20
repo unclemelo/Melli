@@ -2,16 +2,35 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from colorama import Fore
+import json
+import os
+
+CONFIG_FILE = "data/AM_conf.json"
 
 class AutoMod(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.load_config()
 
-    @app_commands.command(name="setup_automod", description="Automatically sets up AutoMod rules for the server.")
+    def load_config(self):
+        """Load AutoMod configuration from a file, or initialize defaults."""
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, "r") as file:
+                self.config = json.load(file)
+        else:
+            self.config = {"rules": []}
+            self.save_config()
+
+    def save_config(self):
+        """Save AutoMod configuration to a file."""
+        with open(CONFIG_FILE, "w") as file:
+            json.dump(self.config, file, indent=4)
+
+    @app_commands.command(name="setup_automod", description="Set up AutoMod rules from the configuration.")
     @app_commands.checks.has_permissions(administrator=True)
     async def setup_automod(self, interaction: discord.Interaction, channel: discord.TextChannel):
         """
-        Automatically sets up AutoMod rules for the server with predefined configurations.
+        Set up AutoMod rules based on the configuration file.
         """
         if interaction.user.id == 954135885392252940:
             try:
@@ -20,78 +39,126 @@ class AutoMod(commands.Cog):
                     await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
                     return
 
-                blocked_links_regex = [
-                    r"(?:https?://?)?(\S*@)?[\\a-z0-9_\-\.\%]*[a-z0-9_\-%]+(\.|%2e)[a-z(%[a-z0-9])]{2,}",
-                    r"(?:https?://)?(?:www.|ptb.|canary.)?(?:dsc\.gg|invite\.gg|discord\.link|(?:discord\.(?:gg|io|me|li|id))|disboard\.org|discord(?:app)?\.(?:com|gg)/(?:invite|servers))/[a-z0-9-_]+",
-                    r"[a-z0-9_\-\.\+]+@[a-z0-9_\-\.]*[a-z0-9_\-]+\.[a-z]{2,}",
-                    r"\[.*[a-z0-9_\-]+\.[a-z]{2,}[\/]?.*\]\(<?(?:https?://)?[a-z0-9_\-\.]*[a-z0-9_\-]+\.[a-z]{2,}.*>?\)"
-                ]
+                created_rules = []
+                for rule_config in self.config["rules"]:
+                    name = rule_config["name"]
+                    regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
+                    allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
+                    blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
 
-                blocked_text_regex = [
-                    r"^(> )?#{1,3}\s.*$",
-                    r"(?m)^-#\s.*$",
-                    r"(?s)(?i)((<a?:[a-z_0-9]+:[0-9]+>|\p{Extended_Pictographic}|[\u{1F1E6}-\u{1F1FF}]|[0-9#\*]\u{fe0f}).*){4,}",
-                    r"\p{M}{3,}"
-                ]
+                    automod_rule = await guild.create_automod_rule(
+                        name=name,
+                        event_type=discord.AutoModRuleEventType.message_send,
+                        trigger=discord.AutoModTrigger(
+                            type=discord.AutoModRuleTriggerType.keyword,
+                            regex_patterns=regex_patterns,
+                            keyword_filter=blocked_words,
+                            allow_list=allowed_links
+                        ),
+                        actions=[
+                            discord.AutoModRuleAction(
+                                channel_id=channel.id,
+                                type=discord.AutoModRuleActionType.block_message
+                            )
+                        ],
+                        enabled=True,
+                        reason=f"AutoMod setup for rule: {name}"
+                    )
 
-                allowed_links = [
-                    "*://c.tenor.com/*", "*://cdn.discordapp.com/*", "*://imgflip.com/*", "*://media.discordapp.net/*", "*://on.soundcloud.com/*", "*://open.spotify.com/*", "*://tenor.com/*", "*://treeben77.github.io/*", "*://www.bilibili.com/*", "*://www.youtube.com/*", "*://youtu.be/*", "*://youtube.com/*", "*.go*", "*.js*", "*.py*", "poly.ai"
-                ]
+                    created_rules.append(automod_rule.name)
 
-                # Create AutoMod Rule: Block Harmful Links
-                rule_1 = await guild.create_automod_rule(
-                    name="Blocked Links",
-                    event_type=discord.AutoModRuleEventType.message_send,
-                    trigger=discord.AutoModTrigger(
-                        type=discord.AutoModRuleTriggerType.keyword,
-                        regex_patterns=blocked_links_regex,
-                        allow_list=allowed_links
-                    ),
-                    actions=[
-                        discord.AutoModRuleAction(
-                            channel_id=channel.id,
-                            type=discord.AutoModRuleActionType.block_message
-                        ), 
-                        discord.AutoModRuleAction(
-                            channel_id=channel.id
-                        )],
-                    enabled=True,
-                    reason="Prevent harmful or spam links."
+                embed = discord.Embed(
+                    title="AutoMod setup complete!",
+                    description=f"Created rules:\n- " + "\n- ".join(created_rules),
+                    color=0x03fcb6
                 )
+                await interaction.response.send_message(embed=embed)
 
-                # Create AutoMod Rule: Block Spam Text
-                rule_2 = await guild.create_automod_rule(
-                    name="Blocked Text",
-                    event_type=discord.AutoModRuleEventType.message_send,
-                    trigger=discord.AutoModTrigger(
-                        type=discord.AutoModRuleTriggerType.keyword,
-                        regex_patterns=blocked_text_regex
-                    ),
-                    actions=[
-                        discord.AutoModRuleAction(
-                            channel_id=channel.id,
-                            type=discord.AutoModRuleActionType.block_message
-                        ), 
-                        discord.AutoModRuleAction(
-                            channel_id=channel.id
-                        )],
-                    enabled=True,
-                    reason="Prevent spam or malicious text."
-                )
-
-                embed = discord.Embed(title="AutoMod setup complete!", description=f"Created rules:\n- **{rule_1.name}**\n- **{rule_2.name}**", color=0x03fcb6)
-
-                await interaction.response.send_message(
-                    embed=embed
-                )
             except Exception as e:
                 print(f"Error in AutoMod setup: {e}")
                 await interaction.response.send_message("An error occurred. Please contact an administrator.", ephemeral=True)
         else:
-            embed = discord.Embed(title="!?!?!?!", description=f"**ONLY MELO CAN USE THIS COMMAND**", color=0xD2042D)
-
+            embed = discord.Embed(
+                title="Permission Denied",
+                description="**ONLY MELO CAN USE THIS COMMAND**",
+                color=0xD2042D
+            )
             await interaction.response.send_message(embed=embed)
 
+    @app_commands.command(name="update_automod", description="Apply changes from the configuration to the server's AutoMod rules.")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def update_automod(self, interaction: discord.Interaction):
+        """
+        Update AutoMod rules in the server based on the current configuration file.
+        """
+        if interaction.user.id == 954135885392252940:
+            try:
+                guild = interaction.guild
+                if not guild:
+                    await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
+                    return
+
+                existing_rules = {rule.name: rule for rule in await guild.automod_rules()}
+
+                updated_rules = []
+                for rule_config in self.config["rules"]:
+                    name = rule_config["name"]
+                    regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
+                    allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
+                    blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
+
+                    if name in existing_rules:
+                        # Update the existing rule
+                        rule = existing_rules[name]
+                        await rule.edit(
+                            trigger=discord.AutoModTrigger(
+                                type=discord.AutoModRuleTriggerType.keyword,
+                                regex_patterns=regex_patterns,
+                                keyword_filter=blocked_words,
+                                allow_list=allowed_links
+                            ),
+                            enabled=True,
+                            reason=f"Updated rule: {name}"
+                        )
+                        updated_rules.append(name)
+                    else:
+                        # Create a new rule if it doesn't exist
+                        await guild.create_automod_rule(
+                            name=name,
+                            event_type=discord.AutoModRuleEventType.message_send,
+                            trigger=discord.AutoModTrigger(
+                                type=discord.AutoModRuleTriggerType.keyword,
+                                regex_patterns=regex_patterns,
+                                keyword_filter=blocked_words,
+                                allow_list=allowed_links
+                            ),
+                            actions=[
+                                discord.AutoModRuleAction(
+                                    type=discord.AutoModRuleActionType.block_message
+                                )
+                            ],
+                            enabled=True,
+                            reason=f"Created new rule: {name}"
+                        )
+                        updated_rules.append(name)
+
+                embed = discord.Embed(
+                    title="AutoMod updated!",
+                    description=f"Updated or created rules:\n- " + "\n- ".join(updated_rules),
+                    color=0x03fcb6
+                )
+                await interaction.response.send_message(embed=embed)
+
+            except Exception as e:
+                print(f"Error in AutoMod update: {e}")
+                await interaction.response.send_message("An error occurred while updating AutoMod rules.", ephemeral=True)
+        else:
+            embed = discord.Embed(
+                title="Permission Denied",
+                description="**ONLY MELO CAN USE THIS COMMAND**",
+                color=0xD2042D
+            )
+            await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: commands.Bot):

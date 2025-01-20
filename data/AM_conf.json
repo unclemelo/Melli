@@ -1,0 +1,41 @@
+{
+    "rules": [
+        {
+            "name": "Blocking Links, Harmful Language, and Spam",
+            "regex_patterns": [
+                "regex1",
+                "regex2"
+            ],
+            "allowed_links": [
+                "*://example.com/*"
+            ],
+            "blocked_words": [
+                "spam",
+                "phishing"
+            ],
+            "allowed_words": []
+        },
+        {
+            "name": "Blocking Sexual Content and Media Filtering",
+            "regex_patterns": [
+                "regex1",
+                "regex2"
+            ],
+            "allowed_links": [],
+            "blocked_words": [
+                "scam",
+                "malware"
+            ],
+            "allowed_words": [
+                "hello"
+            ]
+        },
+        {
+            "name": "Blocking Sensitive Topics and Language Filtering",
+            "regex_patterns": [],
+            "allowed_links": [],
+            "blocked_words": [],
+            "allowed_words": []
+        }
+    ]
+}
