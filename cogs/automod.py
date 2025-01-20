@@ -90,6 +90,7 @@ class AutoMod(commands.Cog):
 
                     created_rules.append(automod_rule.name)
                 except:
+                    await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
                     print("TEST FAILED")
 
             embed = discord.Embed(
