@@ -7,9 +7,6 @@
             ],
             "allowed_links": [
                 "://c.tenor.com/"
-            ],
-            "blocked_words": [
-                "spam"
             ]
         }
 
