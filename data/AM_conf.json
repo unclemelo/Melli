@@ -32,10 +32,18 @@
         },
         {
             "name": "Blocking Sensitive Topics and Language Filtering",
-            "regex_patterns": ["regex1"],
-            "allowed_links": ["*example.com*"],
-            "blocked_words": ["scam"],
-            "allowed_words": ["hello"]
+            "regex_patterns": [
+                "regex1"
+            ],
+            "allowed_links": [
+                "*example.com*"
+            ],
+            "blocked_words": [
+                "scam"
+            ],
+            "allowed_words": [
+                "hello"
+            ]
         }
     ]
 }
