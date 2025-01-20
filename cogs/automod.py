@@ -90,8 +90,9 @@ class AutoMod(commands.Cog):
 
                     created_rules.append(automod_rule.name)
                 except Exception as e:
-                    await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
                     print("TEST FAILED")
+                    await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
+                    
 
             embed = discord.Embed(
                 title="AutoMod setup complete!",
@@ -171,7 +172,6 @@ class AutoMod(commands.Cog):
         except Exception as e:
             print(f"Error in AutoMod update: {e}")
             await interaction.response.send_message("An error occurred while updating AutoMod rules.", ephemeral=True)
-
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AutoMod(bot))
