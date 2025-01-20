@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-class Warn(commands.Cog):
+class Mod(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         
@@ -35,4 +35,4 @@ class Warn(commands.Cog):
         
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Warn(bot))
+    await bot.add_cog(Mod(bot))
