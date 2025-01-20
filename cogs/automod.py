@@ -71,31 +71,27 @@ class AutoMod(commands.Cog):
                     automod_rule = await guild.create_automod_rule(
                         name=name,
                         event_type=discord.AutoModRuleEventType.message_send,
+                        trigger=discord.AutoModTrigger(
+                            type=discord.AutoModRuleTriggerType.keyword,
+                            regex_patterns=regex_patterns,
+                            keyword_filter=blocked_words,
+                            allow_list=allowed_links
+                        ),
                         try:
-                            trigger=discord.AutoModTrigger(
-                                type=discord.AutoModRuleTriggerType.keyword,
-                                regex_patterns=regex_patterns,
-                                keyword_filter=blocked_words,
-                                allow_list=allowed_links
-                            ),
-                        except Exception as e:
-                            await interaction.response.send_message(f"An error occurred. Trigger.\n```{e}```", ephemeral=True)
-                        try:
-                            actions=[
-                                discord.AutoModRuleAction(
-                                    channel_id=channel.id,
-                                    type=discord.AutoModRuleActionType.block_message
-                                )
-                            ],
-                            enabled=True,
-                            reason=f"AutoMod setup for rule: {name}"
-                        except Exception as e:
-                            await interaction.response.send_message(f"An error occurred. Action.\n```{e}```", ephemeral=True)
+                        actions=[
+                            discord.AutoModRuleAction(
+                                channel_id=channel.id,
+                                type=discord.AutoModRuleActionType.block_message
+                            )
+                        ],
+                        enabled=True,
+                        reason=f"AutoMod setup for rule: {name}"
                     )
-
-                    created_rules.append(automod_rule.name)
                 except Exception as e:
                     await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```", ephemeral=True)
+                    
+                    created_rules.append(automod_rule.name)
+                
                     
 
             embed = discord.Embed(
