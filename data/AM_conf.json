@@ -10,8 +10,7 @@
             ],
             "blocked_words": [
                 "spam"
-            ],
-            "allowed_words": []
+            ]
         }
 
     ]
