@@ -48,7 +48,7 @@ class Warn(commands.Cog):
         self.save_warnings()
 
         # Send confirmation
-        embed = Embed(title="User Warned", color=discord.Color.yellow())
+        embed = discord.Embed(title="User Warned", color=discord.Color.yellow())
         embed.add_field(name="User", value=f"{member.mention}", inline=True)
         embed.add_field(name="Reason", value=reason, inline=True)
         embed.add_field(name="Moderator", value=str(interaction.user), inline=True)
@@ -62,7 +62,7 @@ class Warn(commands.Cog):
         guild_id = str(interaction.guild.id)
         user_id = str(member.id)
         if guild_id in self.warnings and user_id in self.warnings[guild_id] and self.warnings[guild_id][user_id]:
-            embed = Embed(title=f"Warnings for {member.display_name}", color=discord.Color.orange())
+            embed = discord.Embed(title=f"Warnings for {member.display_name}", color=discord.Color.orange())
             for i, warn in enumerate(self.warnings[guild_id][user_id], start=1):
                 embed.add_field(
                     name=f"Warning {i}",
@@ -85,7 +85,7 @@ class Warn(commands.Cog):
             removed_warn = self.warnings[guild_id][user_id].pop(warn_index - 1)
             self.save_warnings()
 
-            embed = Embed(title="Warning Removed", color=discord.Color.green())
+            embed = discord.Embed(title="Warning Removed", color=discord.Color.green())
             embed.add_field(name="User", value=f"{member.mention}", inline=True)
             embed.add_field(name="Removed Reason", value=removed_warn['reason'], inline=True)
             embed.add_field(name="Moderator", value=removed_warn['moderator'], inline=True)
