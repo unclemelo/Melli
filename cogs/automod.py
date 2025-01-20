@@ -72,10 +72,10 @@ class AutoMod(commands.Cog):
                         name=name,
                         event_type=discord.AutoModRuleEventType.message_send,
                         trigger=discord.AutoModTrigger(
-                            type=discord.AutoModRuleTriggerType.keyword,
-                            regex_patterns=regex_patterns,
-                            #keyword_filter=blocked_words,
-                            #allow_list=allowed_links
+                            #type=discord.AutoModRuleTriggerType.keyword,
+                            #regex_patterns=regex_patterns,
+                            keyword_filter=blocked_words,
+                            allow_list=allowed_links
                         ),
                         actions=[
                             discord.AutoModRuleAction(
