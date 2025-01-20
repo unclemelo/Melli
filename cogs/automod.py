@@ -89,7 +89,7 @@ class AutoMod(commands.Cog):
                     )
 
                     created_rules.append(automod_rule.name)
-                except:
+                except Exception as e:
                     await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
                     print("TEST FAILED")
 
