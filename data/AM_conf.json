@@ -3,15 +3,13 @@
         {
             "name": "Blocking Links, Harmful Language, and Spam",
             "regex_patterns": [
-                "(?:https?:\/\/)?[a-z0-9_-]+.(com|net|org|io|gov|edu|info|gg|xxx)\b",
                 "regex2"
             ],
             "allowed_links": [
                 "*://c.tenor.com/*"
             ],
             "blocked_words": [
-                "spam",
-                "phishing"
+                "spam"
             ],
             "allowed_words": ["hello"]
         }
