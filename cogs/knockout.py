@@ -160,17 +160,28 @@ class Royal(commands.Cog):
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     async def prank_cmd(self, interaction: discord.Interaction, member: discord.Member):
         await interaction.response.defer()
-        prank_nick = f"{member.mention} 🤡"
-        try:
-            await member.edit(nick=prank_nick)
-            await interaction.followup.send(f"`{member.mention}` is now known as `{prank_nick}`. Let the giggles begin!")
-            await asyncio.sleep(60)
-            await member.edit(nick=None)
-            await interaction.followup.send("Prank over. Nickname restored!")
-        except discord.Forbidden:
-            await interaction.followup.send("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
-        except Exception as e:
-            print(f"Error: {e}")
+        if member.id == 1230672301364871188:
+            prank_nick = f"{member.mention} 🤡"
+            try:
+                await member.edit(nick=prank_nick)
+                await interaction.followup.send(f"`{member.mention}` is now known as `{prank_nick}`. Let the giggles begin!")
+            except discord.Forbidden:
+                await interaction.followup.send("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
+            except Exception as e:
+                print(f"Error: {e}")
+
+        else:
+            prank_nick = f"{member.mention} 🤡"
+            try:
+                await member.edit(nick=prank_nick)
+                await interaction.followup.send(f"`{member.mention}` is now known as `{prank_nick}`. Let the giggles begin!")
+                await asyncio.sleep(60)
+                await member.edit(nick=None)
+                await interaction.followup.send("Prank over. Nickname restored!")
+            except discord.Forbidden:
+                await interaction.followup.send("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
+            except Exception as e:
+                print(f"Error: {e}")
 
 
 async def setup(bot: commands.Bot):
