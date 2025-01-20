@@ -77,7 +77,7 @@ class Mod(commands.Cog):
             embed = discord.Embed(
                 title=f"🔊 {member.name} has been unmuted!",
                 description="They can now speak freely... for better or worse. 🤔",
-                color=discord.Color.green()
+                color=discord.Color.green()# colour
             )
             await interaction.response.send_message(embed=embed)
         except Exception as e:
