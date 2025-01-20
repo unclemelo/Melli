@@ -80,17 +80,17 @@ class AutoMod(commands.Cog):
                                 keyword_filter=blocked_words,
                                 allow_list=allowed_links
                             ),
+
+                            actions=[
+                                discord.AutoModRuleAction(
+                                    channel_id=channel.id,
+                                    type=discord.AutoModRuleActionType.block_message
+                                )
+                            ],
+                            enabled=True,
+                            reason=f"AutoMod setup for rule: {name}"
                         except:
                             print(f"TEST 2 FAILED")
-
-                        actions=[
-                            discord.AutoModRuleAction(
-                                channel_id=channel.id,
-                                type=discord.AutoModRuleActionType.block_message
-                            )
-                        ],
-                        enabled=True,
-                        reason=f"AutoMod setup for rule: {name}"
                     )
 
                     created_rules.append(automod_rule.name)
