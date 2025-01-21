@@ -7,7 +7,7 @@
                 "regex2"
             ],
             "allowed_links": [
-                "*://c.tenor.com/*, *://cdn.discordapp.com/*, *://cdn.nekotina.com/*, *://garticphone.com/*, *://imgflip.com/*, *://media.discordapp.net/*, *://on.soundcloud.com/*, *://open.spotify.com/*, *://store.steampowered.com/*, *://tenor.com/*, *://www.bilibili.com/*, *://www.youtube.com/*, *://youtu.be/*, *://youtube.com/*"
+                "*://c.tenor.com/*"
             ],
             "blocked_words": [
                 "spam",

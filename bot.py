@@ -3,8 +3,8 @@ import discord
 import os
 import asyncio
 import requests
-
 from discord.ext import commands, tasks
+from discord import Webhook
 from dotenv import load_dotenv
 from colorama import Fore
 
@@ -55,42 +55,60 @@ async def update_status_loop():
     except Exception as e:
         print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Could not update presence: {e}")
 
-def send_webhook_log(message):
-    """Sends a log message to the specified Discord webhook."""
-    data = {
-        "content": message
+def send_webhook_log(embed: discord.Embed):
+    """Sends an embed message to the specified webhook."""
+    headers = {
+        "Content-Type": "application/json"
     }
-    try:
-        response = requests.post(WEBHOOK_URL, json=data)
-        if response.status_code not in range(200, 299):
-            print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Failed to send webhook log: {response.status_code} {response.text}")
-    except Exception as e:
-        print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Exception while sending webhook log: {e}")
+
+    payload = {
+        "embeds": [embed.to_dict()]  # Convert the embed to a dictionary format that Discord's API expects
+    }
+
+    response = requests.post(WEBHOOK_URL, json=payload, headers=headers)
+
+    if response.status_code != 204:
+        print(f"Failed to send webhook. Status code: {response.status_code}, Response: {response.text}")
+    else:
+        print("Webhook sent successfully!")
 
 async def load_cogs():
-    """Loads all cog files from the 'cogs' directory."""
+    """Loads all cog files from the 'cogs' directory and logs the results using a webhook."""
     for filename in os.listdir('cogs'):
         if filename.endswith('.py'):
+            embed = discord.Embed()
+            embed.set_footer(text="Cog Loader")
+
             try:
                 await client.load_extension(f'cogs.{filename[:-3]}')
-                message = f":white_check_mark: Successfully loaded cog: `{filename}`"
-                print(f"{Fore.GREEN}[ LOADED ]{Fore.RESET} cogs/{filename}")
+                embed.title = "✅ Cog Loaded Successfully"
+                embed.description = f"Successfully loaded cog: `{filename}`"
+                embed.color = discord.Color.green()
+                print(f"[ LOADED ] cogs/{filename}")
             except Exception as e:
-                message = f":x: Failed to load cog: `{filename}`\nError: `{e}`"
-                print(f"{Fore.RED}[ FAILED TO LOAD ]{Fore.RESET} cogs/{filename}: {e}")
+                embed.title = "❌ Cog Failed to Load"
+                embed.description = f"Failed to load cog: `{filename}`\nError: `{e}`"
+                embed.color = discord.Color.red()
+                print(f"[ FAILED TO LOAD ] cogs/{filename}: {e}")
             finally:
-                send_webhook_log(message)
+                send_webhook_log(embed)  # We no longer need async for this
 
 async def main():
     """Main function to initialize the bot."""
-    async with client:
-        try:
-            await load_cogs()
-        except Exception as e:
-            error_message = f":x: Critical error during cog loading: `{e}`"
-            print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Failed to load cogs: {e}")
-            send_webhook_log(error_message)
-        await client.start(TOKEN)
+    try:
+        await load_cogs()
+    except Exception as e:
+        embed = discord.Embed(
+            title="❌ Critical Error Loading Cogs",
+            description=f"An error occurred while loading cogs: `{e}`",
+            color=discord.Color.red(),
+        )
+        embed.set_footer(text="Cog Loader")
+        print(f"[ CRITICAL ERROR ] {e}")
+        send_webhook_log(embed)
 
-if __name__ == '__main__':
+    await client.start(TOKEN)
+
+# Run the bot
+if __name__ == "__main__":
     asyncio.run(main())

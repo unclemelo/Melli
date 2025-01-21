@@ -66,6 +66,8 @@ class AutoMod(commands.Cog):
                 allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
                 blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
 
+                ##Test
+                created_rules=[]
                 automod_rule = await guild.create_automod_rule(
                     name=name,
                     event_type=discord.AutoModRuleEventType.message_send,
@@ -86,7 +88,7 @@ class AutoMod(commands.Cog):
                 )
 
                 created_rules.append(automod_rule.name)
-
+                    
             embed = discord.Embed(
                 title="AutoMod setup complete!",
                 description=f"Created rules:\n- " + "\n- ".join(created_rules),
@@ -165,7 +167,6 @@ class AutoMod(commands.Cog):
         except Exception as e:
             print(f"Error in AutoMod update: {e}")
             await interaction.response.send_message("An error occurred while updating AutoMod rules.", ephemeral=True)
-
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AutoMod(bot))
