@@ -36,3 +36,6 @@ class Commands(commands.Cog):
                 /warnings", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Commands(bot))
