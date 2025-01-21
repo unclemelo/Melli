@@ -1,6 +1,6 @@
-# MelonShield
+# Melli
 
-**MelonShield** is a private Discord bot built for managing and enhancing the experience of your community. This README provides step-by-step instructions to set up and run the bot locally.
+**Melli** is a private Discord bot built for managing and enhancing the experience of your community. This README provides step-by-step instructions to set up and run the bot locally.
 
 ---
 
@@ -30,8 +30,8 @@ Follow these steps to set up and run the bot:
  ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/unclemelo/MelonShield
-cd MelonShield
+git clone https://github.com/unclemelo/Melli
+cd Melli
 ```
 
  ### 2. Set Up a Virtual Environment (Optional, Recommended)
