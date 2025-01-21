@@ -166,7 +166,7 @@ class AutoMod(commands.Cog):
 
         except Exception as e:
             print(f"Error in AutoMod update: {e}")
-            await interaction.response.send_message("An error occurred while updating AutoMod rules.", ephemeral=True)
+            await interaction.response.send_message(f"An error occurred while updating AutoMod rules.\nError: {e}", ephemeral=True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AutoMod(bot))
