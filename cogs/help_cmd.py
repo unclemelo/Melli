@@ -12,10 +12,10 @@ class Help(commands.Cog):
     async def helpcmd(self, interaction: discord.Interaction):
         """Show list of cmds"""
         try:
-            cmd_list=["/ban", "/chaos", "/clear", "/clearwarns", "/delwarn", "/kick",  "/knockout", 
+            cmd_list=", ".join(["/ban", "/chaos", "/clear", "/clearwarns", "/delwarn", "/kick",  "/knockout", 
                       "/mute", "/prank", "/reboot", "/revive", "/setup_automod", "/shutdown", "/unban", 
-                      "/unmute", "/update_automod", "/uptime", "/votekick", "/warn", "/warnings"]
-            cmd_list=", ".join(cmd_list)
+                      "/unmute", "/update_automod", "/uptime", "/votekick", "/warn", "/warnings"])
+            
             embed = discord.Embed(title="List of Commands", description=f"{cmd_list}", color=0x3474eb)
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
