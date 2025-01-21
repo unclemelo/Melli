@@ -27,14 +27,14 @@ Before you begin, ensure you have the following installed on your system:
 
 Follow these steps to set up and run the bot:
 
-### 1. Clone the Repository
+ ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/unclemelo/MelonShield
 cd MelonShield
 ```
 
-### 2. Set Up a Virtual Environment (Optional, Recommended)
+ ### 2. Set Up a Virtual Environment (Optional, Recommended)
 
 Create a virtual environment to isolate dependencies:
 
@@ -44,7 +44,7 @@ source venv/bin/activate  # On Linux/Mac
 venv\Scripts\activate     # On Windows
 ```
 
-### 3. Install Dependencies
+ ### 3. Install Dependencies
 
 Install the required Python packages:
 
@@ -56,7 +56,7 @@ pip install -r requirements.txt
 
 ## Configuration
 
-### 1. Create a .env File
+ ### 1. Create a .env File
 
 The `.env` file holds sensitive information such as your bot token. Create it in the project root if it doesn't already exist and add the following:
 
@@ -85,7 +85,7 @@ python bot.py # On Windows
 python3 bot.py # On Linux/Mac
 ```
 
-The bot should now start and connect to your Discord server. Check the console output for any errors or confirmation that the bot is online.
+*The bot should now start and connect to your Discord server. Check the console output for any errors or confirmation that the bot is online.*
 
 ---
 
@@ -116,5 +116,5 @@ This bot is private for now, but contributions may be considered in the future. 
 
 ---
 
-Let me know if you'd like help improving or adding functionality!
+*Let me know if you'd like help improving or adding functionality!*
 
