@@ -3,6 +3,7 @@ import discord
 import os
 import asyncio
 import requests
+import psutil
 from discord.ext import commands, tasks
 from discord import Webhook
 from dotenv import load_dotenv
@@ -41,13 +42,35 @@ async def on_ready():
     if not update_status_loop.is_running():
         update_status_loop.start()
 
-
 @tasks.loop(seconds=10)
 async def update_status_loop():
     """Updates the bot's presence with a rotating status every 10 seconds."""
     try:
+        # Static data
         guild_count = len(client.guilds)
-        current_message = status_messages[update_status_loop.current_loop % len(status_messages)].format(guild_count=guild_count)
+        latency = round(client.latency * 1000)  # Convert latency to ms
+
+        # System stats
+        cpu_usage = psutil.cpu_percent(interval=None)
+        memory = psutil.virtual_memory()
+        memory_usage = memory.percent
+        disk = psutil.disk_usage('/')
+        disk_usage = disk.percent
+
+        # Status messages with system stats
+        dynamic_statuses = [
+            f"📡 | Ping: {latency}ms",
+            f"💻 | CPU Usage: {cpu_usage}%",
+            f"🧠 | Memory Usage: {memory_usage}%",
+            f"💾 | Disk Usage: {disk_usage}%",
+            f"🐛 | Debugging... Check logs for details."
+        ]
+
+        # Combine static and dynamic statuses
+        all_status_messages = status_messages + dynamic_statuses
+
+        # Cycle through messages
+        current_message = all_status_messages[update_status_loop.current_loop % len(all_status_messages)].format(guild_count=guild_count)
         await client.change_presence(
             status=discord.Status.dnd,
             activity=discord.Activity(type=discord.ActivityType.watching, name=current_message)
