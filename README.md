@@ -68,7 +68,7 @@ WEBHOOK=your_webhook_url
 Replace your_discord_bot_token with your actual Discord bot token. (You can get this from the [Discord Developer Portal](https://discord.com/developers/docs/intro).)
 Replace your_webhook_url with your actual Discord webhook url.
 
-### 2. Set Up the Database
+ ### 2. Set Up the Database
 
 Ensure the `data/warns.json`, `data/config.json`, and `AM_conf.json` files exists. If it's missing, you may need to generate it or let the bot handle database creation on first launch (if supported).
 ---
