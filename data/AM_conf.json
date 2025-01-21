@@ -3,6 +3,7 @@
         {
             "name": "Blocking Links, Harmful Language, and Spam",
             "regex_patterns": [
+                "(?:https?:\/\/)?[a-z0-9_-]+.(com|net|org|io|gov|edu|info|gg|xxx)\b",
                 "regex2"
             ],
             "allowed_links": [
@@ -13,6 +14,36 @@
                 "phishing"
             ],
             "allowed_words": ["hello"]
+        },
+        {
+            "name": "Blocking Sexual Content and Media Filtering",
+            "regex_patterns": [
+                "regex1",
+                "regex2"
+            ],
+            "allowed_links": ["*example.com*"],
+            "blocked_words": [
+                "scam",
+                "malware"
+            ],
+            "allowed_words": [
+                "hello"
+            ]
+        },
+        {
+            "name": "Blocking Sensitive Topics and Language Filtering",
+            "regex_patterns": [
+                "regex1"
+            ],
+            "allowed_links": [
+                "*example.com*"
+            ],
+            "blocked_words": [
+                "scam"
+            ],
+            "allowed_words": [
+                "hello"
+            ]
         }
     ]
 }
