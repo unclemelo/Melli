@@ -72,7 +72,6 @@ class AutoMod(commands.Cog):
                         name=name,
                         event_type=discord.AutoModRuleEventType.message_send,
                         trigger=discord.AutoModTrigger(
-                            type=discord.AutoModRuleTriggerType.keyword,
                             keyword_filter=["regex1"]
                         ),
                         actions=[
