@@ -4,3 +4,4 @@ cogs/inactive
 ms
 melli
 __pycache__
+data/warns.json
