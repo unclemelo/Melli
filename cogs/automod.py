@@ -73,7 +73,7 @@ class AutoMod(commands.Cog):
                         event_type=discord.AutoModRuleEventType.message_send,
                         trigger=discord.AutoModTrigger(
                             type=discord.AutoModRuleTriggerType.keyword,
-                            regex_patterns="regex1"
+                            regex_patterns=["regex1"]
                         ),
                         actions=[
                             discord.AutoModRuleAction(
@@ -85,7 +85,7 @@ class AutoMod(commands.Cog):
                         reason=f"AutoMod setup for rule: {name}"
                     )
 
-                    created_rules.append(automod_rule.name)
+                    #created_rules.append(automod_rule.name)
                 except Exception as e:
                     await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```\n```{name}```", ephemeral=True)
                     
