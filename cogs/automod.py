@@ -89,7 +89,7 @@ class AutoMod(commands.Cog):
 
                     created_rules.append(automod_rule.name)
                 except Exception as e:
-                    await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```", ephemeral=True)
+                    await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```\n```{regex_patterns}```\n```{blocked_words}```\n```{allowed_links}```", ephemeral=True)
                     
 
             embed = discord.Embed(
