@@ -73,9 +73,7 @@ class AutoMod(commands.Cog):
                         event_type=discord.AutoModRuleEventType.message_send,
                         trigger=discord.AutoModTrigger(
                             type=discord.AutoModRuleTriggerType.keyword,
-                            regex_patterns=regex_patterns,
-                            keyword_filter=blocked_words,
-                            allow_list=allowed_links
+                            regex_patterns=regex_patterns
                         ),
                         actions=[
                             discord.AutoModRuleAction(
@@ -89,7 +87,7 @@ class AutoMod(commands.Cog):
 
                     created_rules.append(automod_rule.name)
                 except Exception as e:
-                    await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```\n```{regex_patterns}```\n```{blocked_words}```\n```{allowed_links}```", ephemeral=True)
+                    await interaction.response.send_message(f"An error occurred.TEST FAILED.\n```{e}```\n```{name}```", ephemeral=True)
                     
 
             embed = discord.Embed(
