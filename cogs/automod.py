@@ -67,28 +67,27 @@ class AutoMod(commands.Cog):
                 blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
 
                 ##Test
-                try:
-                    automod_rule = await guild.create_automod_rule(
-                        name=name,
-                        event_type=discord.AutoModRuleEventType.message_send,
-                        trigger=discord.AutoModTrigger(
-                            keyword_filter=["regex1"]
-                        ),
-                        actions=[
-                            discord.AutoModRuleAction(
-                                channel_id=channel.id,
-                                type=discord.AutoModRuleActionType.block_message
-                            )
-                        ],
-                        enabled=True,
-                        reason=f"AutoMod setup for rule: {name}"
-                    )
+                created_rules=[]
+                automod_rule = await guild.create_automod_rule(
+                    name=name,
+                    event_type=discord.AutoModRuleEventType.message_send,
+                    trigger=discord.AutoModTrigger(
+                        regex_patterns=regex_patterns,
+                        keyword_filter=blocked_words,
+                        allow_list=allowed_links
+                    ),
+                    actions=[
+                        discord.AutoModRuleAction(
+                            channel_id=channel.id,
+                            type=discord.AutoModRuleActionType.block_message
+                        )
+                    ],
+                    enabled=True,
+                    reason=f"AutoMod setup for rule: {name}"
+                )
 
-                    #created_rules.append(automod_rule.name)
-                except Exception as e:
-                    await interaction.response.send_message(f"An error occurred. Trigger makes me triggered.\n```{e}```", ephemeral=True)
+                created_rules.append(automod_rule.name)
                     
-
             embed = discord.Embed(
                 title="AutoMod setup complete!",
                 description=f"Created rules:\n- " + "\n- ".join(created_rules),
