@@ -10,7 +10,7 @@ class Help(commands.Cog):
 
     @app_commands.command(name="help", description="Shows the list of commands")
     async def helpcmd(self, interaction: discord.Interaction):
-        """Starts a vote to kick a specified member."""
+        """Show list of cmds"""
         try:
             await interaction.response.send_message(
                 f"List of comands:
