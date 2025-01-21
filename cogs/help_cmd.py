@@ -12,28 +12,11 @@ class Help(commands.Cog):
     async def helpcmd(self, interaction: discord.Interaction):
         """Show list of cmds"""
         try:
-            await interaction.response.send_message(
-                f"List of comands:
-                /ban
-                /chaos
-                /clear
-                /clearwarns
-                /delwarn
-                /kick
-                /knockout
-                /mute
-                /prank
-                /reboot
-                /revive
-                /setup_automod
-                /shutdown
-                /unban
-                /unmute
-                /update_automod
-                /uptime
-                /votekick
-                /warn
-                /warnings", ephemeral=True)
+            cmd_list=["/ban", "/chaos", "/clear", "/clearwarns", "/delwarn", "/kick",  "/knockout", 
+                      "/mute", "/prank", "/reboot", "/revive", "/setup_automod", "/shutdown", "/unban", 
+                      "/unmute", "/update_automod", "/uptime", "/votekick", "/warn", "/warnings"]
+            cmd_list="\n".join(cmd_list)
+            await interaction.response.send_message(f"List of comands:\n{cmd_list}", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
 
