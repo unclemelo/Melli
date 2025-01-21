@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord import app_commands
 from colorama import Fore
 
-class Commands(commands.Cog):
+class Help(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -38,4 +38,4 @@ class Commands(commands.Cog):
             await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(Commands(bot))
+    await bot.add_cog(Help(bot))
