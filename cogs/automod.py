@@ -108,12 +108,16 @@ class AutoMod(commands.Cog):
         Update AutoMod rules in the server based on the current configuration file.
         """
         try:
-            guild = interaction.guild
-            if not guild:
-                await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
-                return
+            try:
+                guild = interaction.guild
+                if not guild:
+                    await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
+                    return
 
-            existing_rules = {rule.name: rule for rule in await guild.automod_rules()}
+                existing_rules = {rule.name: rule for rule in await guild.automod_rules()}
+            except Exception as e:
+                await interaction.response.send_message(f"An error occurred while updating AutoMod rules between lines 112 - 117.\nError: {e}", ephemeral=True)
+                
 
             updated_rules = []
             for rule_config in self.config["rules"]:
@@ -166,7 +170,7 @@ class AutoMod(commands.Cog):
 
         except Exception as e:
             print(f"Error in AutoMod update: {e}")
-            await interaction.response.send_message("An error occurred while updating AutoMod rules.", ephemeral=True)
+            await interaction.response.send_message(f"An error occurred while updating AutoMod rules.\nError: {e}", ephemeral=True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AutoMod(bot))

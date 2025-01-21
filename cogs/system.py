@@ -92,7 +92,7 @@ class System(commands.Cog):
         embed = discord.Embed(
             title="🔄 Bot Updated",
             description="The bot has successfully pulled updates from GitHub and restarted.",
-            color=0x3df553,
+            color=0x3474eb,
             timestamp=datetime.utcnow()
         )
 
@@ -177,7 +177,7 @@ class System(commands.Cog):
         embed = discord.Embed(
             title="Rebooting `Melli`...",
             description="Pulling updates from GitHub and restarting.",
-            color=0x3df553
+            color=0x3474eb
         )
         await interaction.response.send_message(embed=embed)
 
@@ -212,7 +212,7 @@ class System(commands.Cog):
         embed = discord.Embed(
             title="Bot Uptime",
             description=f"`Melli` has been online for: **{uptime}**",
-            color=0x3df553
+            color=0x3474eb
         )
         await interaction.response.send_message(embed=embed)
 

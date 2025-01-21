@@ -1,12 +1,12 @@
-# MelonShield
+# Melli
 
-**MelonShield** is a private Discord bot built for managing and enhancing the experience of your community. This README provides step-by-step instructions to set up and run the bot locally.
+**Melli** is a private Discord bot built for managing and enhancing the experience of your community. This README provides step-by-step instructions to set up and run the bot locally.
 
 ---
 
 ## Features
 
-- **Automod**: Automatically moderates chat messages based on customizable rules.
+- **Automod**: Automatically moderates chat messages based on customizable rules. (Melli Devs Only | No release yet)
 - **Error Handling**: Graceful handling of errors to ensure a seamless experience.
 - **Custom Commands**: Miscellaneous commands for fun and utility.
 - **Royal System**: Special module for unique server mechanics.
@@ -17,7 +17,7 @@
 
 Before you begin, ensure you have the following installed on your system:
 
-1. **Python 3.8+**
+1. **Python 3.11+**
 2. **pip** (Python package manager)
 3. **Git** (optional, but recommended for cloning this repository)
 
@@ -27,14 +27,14 @@ Before you begin, ensure you have the following installed on your system:
 
 Follow these steps to set up and run the bot:
 
-### 1. Clone the Repository
+ ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/unclemelo/MelonShield
-cd MelonShield
+git clone https://github.com/unclemelo/Melli
+cd Melli
 ```
 
-### 2. Set Up a Virtual Environment (Optional, Recommended)
+ ### 2. Set Up a Virtual Environment (Recommended)
 
 Create a virtual environment to isolate dependencies:
 
@@ -44,7 +44,7 @@ source venv/bin/activate  # On Linux/Mac
 venv\Scripts\activate     # On Windows
 ```
 
-### 3. Install Dependencies
+ ### 3. Install Dependencies (Sumbit an issue if outdated libs)
 
 Install the required Python packages:
 
@@ -56,24 +56,21 @@ pip install -r requirements.txt
 
 ## Configuration
 
-### 1. Create a .env File
+ ### 1. Create a .env File
 
 The `.env` file holds sensitive information such as your bot token. Create it in the project root if it doesn't already exist and add the following:
 
 ```env
-DISCORD_TOKEN=your_discord_bot_token
+TOKEN=your_discord_bot_token
+WEBHOOK=your_webhook_url
 ```
 
 Replace your_discord_bot_token with your actual Discord bot token. (You can get this from the [Discord Developer Portal](https://discord.com/developers/docs/intro).)
-
-### 2. Set Up the Database
-
-Ensure the `data/levels.db` file exists. If it's missing, you may need to generate it or let the bot handle database creation on first launch (if supported).
-
-### 3. Configure Additional Settings
-
-Review the `data/weapon_stats.json` file or other configuration files and customize them according to your needs.
-
+Replace your_webhook_url with your actual Discord webhook url.
+ 
+ ### 2. Set Up the Database
+ 
+#### Ensure the `data/warns.json`, `data/config.json`, and `AM_conf.json` files exists. If it's missing, you may need to generate it or let the bot handle database creation on first launch (if supported).
 ---
 
 ## Running the Bot
@@ -85,7 +82,7 @@ python bot.py # On Windows
 python3 bot.py # On Linux/Mac
 ```
 
-The bot should now start and connect to your Discord server. Check the console output for any errors or confirmation that the bot is online.
+*The bot should now start and connect to your Discord server. Check the console output for any errors or confirmation that the bot is online.*
 
 ---
 
@@ -106,7 +103,7 @@ The bot should now start and connect to your Discord server. Check the console o
 
 2. Missing Dependencies: Run `pip install -r requirements.txt` again.
 
-3. Database Issues: Verify the `data/levels.db` file exists and is properly configured.
+3. Database Issues: Verify the `data/warns.json`, `data/config.json`, and `AM_conf.json` files exists and is properly configured.
 
 ---
 
@@ -116,5 +113,5 @@ This bot is private for now, but contributions may be considered in the future. 
 
 ---
 
-Let me know if you'd like help improving or adding functionality!
+*Let me know if you'd like help improving or adding functionality!*
 
