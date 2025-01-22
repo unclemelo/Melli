@@ -52,11 +52,10 @@ class Mod(commands.Cog):
 
     @app_commands.command(name="mute", description="Temporarily mutes a user using Discord's timeout feature.")
     @app_commands.checks.has_permissions(moderate_members=True)
-    async def mute_cmd(self, interaction: discord.Interaction, member: discord.Member, time: int, *, reason: str = "No reason provided"):
+    async def mute_cmd(self, interaction: discord.Interaction, member: discord.Member, minutes: int, *, reason: str = "No reason provided"):
         try:
             # Apply timeout
-            timeout_duration = timedelta(minutes=time)
-            await member.edit(timeout_until=discord.utils.utcnow() + timeout_duration, reason=reason)
+            await member.timeout(discord.utils.utcnow() + timedelta(minutes=minutes), reason=reason)
             
             embed = discord.Embed(
                 title=f"🤐 {member.name} has been muted!",
