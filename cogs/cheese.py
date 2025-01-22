@@ -10,7 +10,7 @@ class Cheese(commands.Cog):
     @app_commands.command(name="cheese", description="cheese")
     async def cheesecmd(self, interaction: discord.Interaction):
         try:            
-            embed = discord.Embed(title="Cheese", description="Do you like cheese?")
+            embed = discord.Embed(title="Cheese", description="Cheese")
             embed.set_image(url="https://cdn.discordapp.com/attachments/1330523346890395764/1331709220785229994/cheese.gif?ex=67929a5c&is=679148dc&hm=3362790ed38cab48622004e784c336fafea720fe0dd2672795ce29a2dbce47f9&")
             await interaction.response.send_message(embed=embed, ephemeral=False)
         except Exception as e:
