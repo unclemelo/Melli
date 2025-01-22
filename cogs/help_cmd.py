@@ -12,7 +12,7 @@ class Help(commands.Cog):
     async def helpcmd(self, interaction: discord.Interaction):
         """Show list of cmds"""
         try:
-            cmd_list=", ".join(["/ban", "/chaos", "/clear", "/clearwarns", "/delwarn", "/kick",  "/knockout", 
+            cmd_list=", ".join(["/ban", "/chaos", "cheese", "/clear", "/clearwarns", "/delwarn", "/kick",  "/knockout", 
                       "/mute", "/prank", "/reboot", "/revive", "/setup_automod", "/shutdown", "/unban", 
                       "/unmute", "/update_automod", "/uptime", "/votekick", "/warn", "/warnings"])
             
