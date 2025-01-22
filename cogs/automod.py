@@ -66,7 +66,6 @@ class AutoMod(commands.Cog):
                 allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
                 blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
 
-                ##Test
                 created_rules=[]
                 automod_rule = await guild.create_automod_rule(
                     name=name,
@@ -107,6 +106,14 @@ class AutoMod(commands.Cog):
         """
         Update AutoMod rules in the server based on the current configuration file.
         """
+        # TODO | Search for existing rules
+        #exsiting_rules = rule.name: rule for rule in await guild.automod_rules()
+        # TODO | If rule exist, delete
+        #for existing_rules in self.config:
+            
+        # TODO | Update rules by reinstating data/AM_conf.json
+
+        # TODO | End command with fancy embed msg
         await interaction.response.send_message("Currently under maintenance...", ephemeral=True)
 
 async def setup(bot: commands.Bot):
