@@ -59,7 +59,7 @@ class Mod(commands.Cog):
             
             embed = discord.Embed(
                 title=f"🤐 {member.name} has been muted!",
-                description=f"Reason: {reason}\nDuration: {time} minutes.",
+                description=f"Reason: {reason}\nDuration: {minutes} minutes.",
                 color=discord.Color.blue()
             )
             await interaction.response.send_message(embed=embed)
