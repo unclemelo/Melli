@@ -7,7 +7,7 @@ from colorama import Fore
 class Cheese(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-     @app_commands.command(name="cheese", description="cheese")
+    @app_commands.command(name="cheese", description="cheese")
     async def cheesecmd(self, interaction: discord.Interaction):
         try:            
             embed = discord.Embed(title="cCheese", description=f"{https://tenor.com/view/cheese-gif-25732604}", color=0x3474eb)
