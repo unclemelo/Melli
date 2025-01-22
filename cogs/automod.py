@@ -107,70 +107,7 @@ class AutoMod(commands.Cog):
         """
         Update AutoMod rules in the server based on the current configuration file.
         """
-        try:
-            try:
-                guild = interaction.guild
-                if not guild:
-                    await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
-                    return
-
-                existing_rules = {rule.name: rule for rule in await guild.automod_rules()}
-            except Exception as e:
-                await interaction.response.send_message(f"An error occurred while updating AutoMod rules between lines 112 - 117.\nError: {e}", ephemeral=True)
-                
-
-            updated_rules = []
-            for rule_config in self.config["rules"]:
-                name = rule_config["name"]
-                regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
-                allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
-                blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
-
-                if name in existing_rules:
-                    # Update the existing rule
-                    rule = existing_rules[name]
-                    await rule.edit(
-                        trigger=discord.AutoModTrigger(
-                            type=discord.AutoModRuleTriggerType.keyword,
-                            regex_patterns=regex_patterns,
-                            keyword_filter=blocked_words,
-                            allow_list=allowed_links
-                        ),
-                        enabled=True,
-                        reason=f"Updated rule: {name}"
-                    )
-                    updated_rules.append(name)
-                else:
-                    # Create a new rule if it doesn't exist
-                    await guild.create_automod_rule(
-                        name=name,
-                        event_type=discord.AutoModRuleEventType.message_send,
-                        trigger=discord.AutoModTrigger(
-                            type=discord.AutoModRuleTriggerType.keyword,
-                            regex_patterns=regex_patterns,
-                            keyword_filter=blocked_words,
-                            allow_list=allowed_links
-                        ),
-                        actions=[
-                            discord.AutoModRuleAction(
-                                type=discord.AutoModRuleActionType.block_message
-                            )
-                        ],
-                        enabled=True,
-                        reason=f"Created new rule: {name}"
-                    )
-                    updated_rules.append(name)
-
-            embed = discord.Embed(
-                title="AutoMod updated!",
-                description=f"Updated or created rules:\n- " + "\n- ".join(updated_rules),
-                color=0x03fcb6
-            )
-            await interaction.response.send_message(embed=embed)
-
-        except Exception as e:
-            print(f"Error in AutoMod update: {e}")
-            await interaction.response.send_message(f"An error occurred while updating AutoMod rules.\nError: {e}", ephemeral=True)
+        await interaction.response.send_message("Currently under maintenance...", ephemeral=True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AutoMod(bot))
