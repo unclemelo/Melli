@@ -10,7 +10,8 @@ class Cheese(commands.Cog):
     @app_commands.command(name="cheese", description="cheese")
     async def cheesecmd(self, interaction: discord.Interaction):
         try:            
-            embed = discord.Embed(title="Cheese", description="https://tenor.com/view/cheese-gif-25732604")
+            embed = discord.Embed(title="Cheese", description="Do you like cheese?")
+            embed.set_image(url="https://tenor.com/view/cheese-gif-25732604")
             await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
