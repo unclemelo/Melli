@@ -71,7 +71,7 @@ class Mod(commands.Cog):
     async def unmute_cmd(self, interaction: discord.Interaction, member: discord.Member):
         try:
             # Remove timeout
-            await member.edit(timeout_until=None)
+            await member.timeout(discord.utils.utcnow() + timedelta(minutes=0))
             
             embed = discord.Embed(
                 title=f"🔊 {member.name} has been unmuted!",
