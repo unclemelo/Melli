@@ -90,7 +90,7 @@ class Royal(commands.Cog):
 
             elif tool.value == 'stuffing':
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=15), reason="stuffed full of veggies!")
-                embed.title = ":stuffing: Get stuffed full of veggies!"
+                embed.title = ":broccoli: Get stuffed full of veggies!"
                 embed.description = f"{member.mention} was stuffed full by tons of **food** cooked by {interaction.user.mention}!"
                 embed.set_image(url="https://cdn.discordapp.com/attachments/1260646069394739328/1331738867811876904/Vegan_Vegetables_GIF.gif?ex=6792b5f8&is=67916478&hm=2db3c3564e2f949eec48c664a59f5bb870a23f5b8b04e5969540328c8a2e54d7&")
 
