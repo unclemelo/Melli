@@ -19,6 +19,7 @@ class Royal(commands.Cog):
         app_commands.Choice(name="Grenade", value="grenade"),
         app_commands.Choice(name="Rocket Launcher", value="rocket"),
         app_commands.Choice(name="Club", value="club"),
+        app_commands.Choice(name="Stuffing", value="stuffing"),
     ])
     async def knockoutcmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
         # If no member is provided, pick a random member from the guild
@@ -86,6 +87,12 @@ class Royal(commands.Cog):
                 embed.title = ":hammer: Get bonked out of here!"
                 embed.description = f"{member.mention} was obliterated by a **hammer** wielded by {interaction.user.mention}!"
                 embed.set_image(url="https://cdn.discordapp.com/attachments/1290652330127003679/1326216909854736515/bonk-anime.gif?ex=677e9f3f&is=677d4dbf&hm=e1bf477e25d8c947b31b37fc8cb52d234a5393875f58b345feb1600b2e7b9aae&")
+
+            elif tool.value == 'stuffing':
+                await member.timeout(discord.utils.utcnow() + timedelta(seconds=15), reason="stuffed full of veggies!")
+                embed.title = ":stuffing: Get stuffed full of veggies!"
+                embed.description = f"{member.mention} was stuffed full by tons of **food** cooked by {interaction.user.mention}!"
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1260646069394739328/1331738867811876904/Vegan_Vegetables_GIF.gif?ex=6792b5f8&is=67916478&hm=2db3c3564e2f949eec48c664a59f5bb870a23f5b8b04e5969540328c8a2e54d7&")
 
             # Add a footer to the embed
             embed.set_footer(text="Cooldown: 10 minutes")
