@@ -179,7 +179,7 @@ class System(commands.Cog):
             description="Pulling updates from GitHub and restarting.",
             color=0x3474eb
         )
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, delete_after=5)
 
         update_results = self.update_code()
         await self.notify_updates(update_results)
@@ -202,7 +202,7 @@ class System(commands.Cog):
             description="The bot is shutting down.",
             color=0xff0000
         )
-        await interaction.response.send_message(embed=embed)
+        await interaction.response.send_message(embed=embed, delete_after=5)
         print("[ SYSTEM ] Bot shutting down...")
         await self.bot.close()
 

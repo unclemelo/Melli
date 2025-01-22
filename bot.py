@@ -62,8 +62,7 @@ async def update_status_loop():
             f"📡 | Ping: {latency}ms",
             f"💻 | CPU Usage: {cpu_usage}%",
             f"🧠 | Memory Usage: {memory_usage}%",
-            f"💾 | Disk Usage: {disk_usage}%",
-            f"🐛 | Debugging... Check logs for details."
+            f"💾 | Disk Usage: {disk_usage}%"
         ]
 
         # Combine static and dynamic statuses
