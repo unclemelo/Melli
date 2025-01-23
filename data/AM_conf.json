@@ -9,8 +9,7 @@
             "enabled": true,
             "exempt_roles": [123456789012345678],
             "exempt_channels": [987654321098765432],
-            "regex_patterns": ["[\u2800-\u28FF]+"],
-            "allowed_links": ["*example.com*"]
+            "regex_patterns": ["[\u2800-\u28FF]+"]
         },
         {
             "name": "Rule Name 2",

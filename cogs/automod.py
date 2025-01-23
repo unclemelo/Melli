@@ -63,7 +63,6 @@ class AutoMod(commands.Cog):
             for rule_config in self.config["rules"]:
                 name = rule_config["name"]
                 regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
-                allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
                 keyword_filter = rule_config["keyword_filter"][:1000]  # Limit to 1000 blocked words
 
                 created_rules=[]
@@ -74,7 +73,6 @@ class AutoMod(commands.Cog):
                         type=discord.AutoModRuleTriggerType.keyword,
                         regex_patterns=regex_patterns,
                         keyword_filter=keyword_filter,
-                        allow_list=allowed_links
                     ),
                     actions=[
                         discord.AutoModRuleAction(
@@ -137,7 +135,6 @@ class AutoMod(commands.Cog):
                 for rule_config in self.config["rules"]:
                     name = rule_config["name"]
                     regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
-                    allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
                     keyword_filter = rule_config["keyword_filter"][:1000] # Limit to 1000 blocked words
                 await guild.create_automod_rule(
                     name=rule_name,
@@ -146,7 +143,6 @@ class AutoMod(commands.Cog):
                         type=discord.AutoModRuleTriggerType.keyword,
                         regex_patterns=regex_patterns,
                         keyword_filter=keyword_filter,
-                        allow_list=allowed_links
                     ),
                     actions=actions,
                     enabled=rule_data.get("enabled", True),
