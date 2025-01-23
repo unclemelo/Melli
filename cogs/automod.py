@@ -138,14 +138,14 @@ class AutoMod(commands.Cog):
                 trigger = discord.AutoModRuleTriggerType[rule_data["trigger_type"]]
 
                 if trigger == discord.AutoModRuleTriggerType.keyword:
-                    trigger_metadata = discord.AutoModRuleTrigger(
+                    trigger_metadata = discord.AutoModRuleTriggerType.keyword(
                         keyword_filter=rule_data["keyword_filter"]
                     )
                 elif trigger == discord.AutoModRuleTriggerType.spam:
-                    trigger_metadata = discord.AutoModRuleTrigger()
+                    trigger_metadata = discord.AutoModRuleTriggerType.spam()
                 else:
                     # Handle other trigger types if necessary
-                    trigger_metadata = discord.AutoModRuleTrigger()
+                    trigger_metadata = discord.AutoModRuleTriggerType()
 
                 await guild.create_automod_rule(
                     name=rule_name,
