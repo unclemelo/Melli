@@ -113,7 +113,7 @@ class AutoMod(commands.Cog):
                 return
 
             # Fetch existing AutoMod rules
-            existing_rules = {rule.name: rule for rule in await guild.fetch_auto_mod_rules()}
+            existing_rules = {rule.name: rule for rule in await guild.fetch_automod_rules()}
 
             # Load configuration from a JSON file
             with open("data/AM_conf.json", "r") as config_file:
