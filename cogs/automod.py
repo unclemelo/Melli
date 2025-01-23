@@ -106,15 +106,76 @@ class AutoMod(commands.Cog):
         """
         Update AutoMod rules in the server based on the current configuration file.
         """
-        # TODO | Search for existing rules
-        #exsiting_rules = rule.name: rule for rule in await guild.automod_rules()
-        # TODO | If rule exist, delete
-        #for existing_rules in self.config:
-            
-        # TODO | Update rules by reinstating data/AM_conf.json
+        try:
+            guild = interaction.guild
+            if not guild:
+                await interaction.response.send_message("This command can only be run in a server.", ephemeral=True)
+                return
 
-        # TODO | End command with fancy embed msg
-        await interaction.response.send_message("Currently under maintenance...", ephemeral=True)
+            # Fetch existing AutoMod rules
+            existing_rules = {rule.name: rule for rule in await guild.automod_rules()}
+
+            # Load configuration from a JSON file
+            with open("data/AM_conf.json", "r") as config_file:
+                config = json.load(config_file)
+
+            # Delete existing rules that are being updated
+            for rule_name, rule in existing_rules.items():
+                if rule_name in config:
+                    await rule.delete(reason="Updating AutoMod rule via bot.")
+
+            # Recreate or update AutoMod rules based on the configuration
+            for rule_name, rule_data in config.items():
+                actions = [
+                    discord.AutoModRuleAction(
+                        type=discord.AutoModRuleActionType[rule_data["action_type"]],
+                        metadata=discord.AutoModRuleActionMetadata(
+                            channel_id=rule_data.get("channel_id"),
+                            custom_message=rule_data.get("custom_message")
+                        )
+                    )
+                ]
+
+                trigger = discord.AutoModRuleTriggerType[rule_data["trigger_type"]]
+
+                if trigger == discord.AutoModRuleTriggerType.keyword:
+                    trigger_metadata = discord.AutoModRuleTriggerMetadata(
+                        keyword_filter=rule_data["keyword_filter"]
+                    )
+                elif trigger == discord.AutoModRuleTriggerType.spam:
+                    trigger_metadata = discord.AutoModRuleTriggerMetadata()
+                else:
+                    # Handle other trigger types if necessary
+                    trigger_metadata = discord.AutoModRuleTriggerMetadata()
+
+                await guild.create_automod_rule(
+                    name=rule_name,
+                    trigger_type=trigger,
+                    trigger_metadata=trigger_metadata,
+                    actions=actions,
+                    enabled=rule_data.get("enabled", True),
+                    exempt_roles=[guild.get_role(role_id) for role_id in rule_data.get("exempt_roles", [])],
+                    exempt_channels=[guild.get_channel(channel_id) for channel_id in rule_data.get("exempt_channels", [])],
+                    reason="Updating AutoMod rule via bot."
+                )
+
+            # Send confirmation message
+            embed = discord.Embed(
+                title="AutoMod Rules Updated",
+                description="The AutoMod rules have been successfully updated from the configuration file.",
+                color=discord.Color.green()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
+        except Exception as e:
+            # Handle errors
+            embed = discord.Embed(
+                title="Error Updating AutoMod Rules",
+                description=f"An error occurred while updating AutoMod rules:\n```\n{e}\n```",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AutoMod(bot))
