@@ -137,17 +137,9 @@ class AutoMod(commands.Cog):
 
                 trigger = discord.AutoModRuleTriggerType[rule_data["trigger_type"]]
 
-                if trigger == discord.AutoModRuleTriggerType.keyword:
-                    trigger_metadata = discord.AutoModRuleTriggerType.keyword(
-                        keyword_filter=rule_data["keyword_filter"]
-                    )
-                elif trigger == discord.AutoModRuleTriggerType.spam:
-                    trigger_metadata = discord.AutoModRuleTriggerType.spam()
-
                 await guild.create_automod_rule(
                     name=rule_name,
                     trigger_type=trigger,
-                    trigger_metadata=trigger_metadata,
                     actions=actions,
                     enabled=rule_data.get("enabled", True),
                     exempt_roles=[guild.get_role(role_id) for role_id in rule_data.get("exempt_roles", [])],
