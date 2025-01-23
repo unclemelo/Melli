@@ -134,13 +134,20 @@ class AutoMod(commands.Cog):
                         custom_message=rule_data.get("custom_message")
                     )
                 ]
-
-                trigger = discord.AutoModRuleTriggerType[rule_data["trigger_type"]]
-
+                for rule_config in self.config["rules"]:
+                    name = rule_config["name"]
+                    regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
+                    allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
+                    blocked_words = rule_config["blocked_words"][:1000] # Limit to 1000 blocked words
                 await guild.create_automod_rule(
                     name=rule_name,
                     event_type=discord.AutoModRuleEventType.message_send,
-                    trigger=trigger,
+                    trigger=discord.AutoModTrigger(
+                        type=discord.AutoModRuleTriggerType.keyword,
+                        regex_patterns=regex_patterns,
+                        keyword_filter=blocked_words,
+                        allow_list=allowed_links
+                    ),
                     actions=actions,
                     enabled=rule_data.get("enabled", True),
                     exempt_roles=[guild.get_role(role_id) for role_id in rule_data.get("exempt_roles", [])],
