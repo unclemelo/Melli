@@ -1,16 +1,18 @@
 {
-    "Rule Name 1": {
-        "trigger_type": "keyword",
-        "keyword_filter": ["badword1", "badword2"],
-        "action_type": "block_message",
-        "custom_message": "Please refrain from using that language!",
-        "enabled": true,
-        "exempt_roles": [123456789012345678],
-        "exempt_channels": [987654321098765432]
-    },
-    "Rule Name 2": {
-        "trigger_type": "spam",
-        "action_type": "timeout",
-        "enabled": true
-    }
+    "rules": [
+        "Rule Name 1"{
+            "trigger_type": "keyword",
+            "keyword_filter": ["badword1", "badword2"],
+            "action_type": "block_message",
+            "custom_message": "Please refrain from using that language!",
+            "enabled": true,
+            "exempt_roles": [123456789012345678],
+            "exempt_channels": [987654321098765432]
+        },
+        "Rule Name 2"{
+            "trigger_type": "spam",
+            "action_type": "timeout",
+            "enabled": true
+        }
+    ]
 }
