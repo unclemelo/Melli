@@ -8,13 +8,15 @@
             "custom_message": "Please refrain from using that language!",
             "enabled": true,
             "exempt_roles": [123456789012345678],
-            "exempt_channels": [987654321098765432]
+            "exempt_channels": [987654321098765432],
+            "regex_patterns": "regex1"
         },
         {
             "name": "Rule Name 2",
             "trigger_type": "spam",
             "action_type": "timeout",
-            "enabled": true
+            "enabled": true,
+            "regex_patterns": "regex1"
         }
     ]
 }
