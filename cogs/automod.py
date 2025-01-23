@@ -64,7 +64,7 @@ class AutoMod(commands.Cog):
                 name = rule_config["name"]
                 regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
                 allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
-                blocked_words = rule_config["blocked_words"][:1000]  # Limit to 1000 blocked words
+                keyword_filter = rule_config["keyword_filter"][:1000]  # Limit to 1000 blocked words
 
                 created_rules=[]
                 automod_rule = await guild.create_automod_rule(
@@ -73,7 +73,7 @@ class AutoMod(commands.Cog):
                     trigger=discord.AutoModTrigger(
                         type=discord.AutoModRuleTriggerType.keyword,
                         regex_patterns=regex_patterns,
-                        keyword_filter=blocked_words,
+                        keyword_filter=keyword_filter,
                         allow_list=allowed_links
                     ),
                     actions=[
@@ -138,14 +138,14 @@ class AutoMod(commands.Cog):
                     name = rule_config["name"]
                     regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
                     allowed_links = rule_config["allowed_links"][:100]  # Limit to 100 allowed words
-                    blocked_words = rule_config["blocked_words"][:1000] # Limit to 1000 blocked words
+                    keyword_filter = rule_config["keyword_filter"][:1000] # Limit to 1000 blocked words
                 await guild.create_automod_rule(
                     name=rule_name,
                     event_type=discord.AutoModRuleEventType.message_send,
                     trigger=discord.AutoModTrigger(
                         type=discord.AutoModRuleTriggerType.keyword,
                         regex_patterns=regex_patterns,
-                        keyword_filter=blocked_words,
+                        keyword_filter=keyword_filter,
                         allow_list=allowed_links
                     ),
                     actions=actions,
