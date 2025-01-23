@@ -10,7 +10,7 @@
             "exempt_roles": [123456789012345678],
             "exempt_channels": [987654321098765432],
             "regex_patterns": "regex1",
-            "allowed_links": true
+            "allowed_links": ["*example.com*"]
         },
         {
             "name": "Rule Name 2",
@@ -18,7 +18,7 @@
             "action_type": "timeout",
             "enabled": true,
             "regex_patterns": "regex1",
-            "allowed_links": true
+            "allowed_links": ["*example.com*"]
         }
     ]
 }
