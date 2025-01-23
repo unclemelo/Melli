@@ -139,7 +139,7 @@ class AutoMod(commands.Cog):
 
                 await guild.create_automod_rule(
                     name=rule_name,
-                    trigger_type=trigger,
+                    trigger=trigger,
                     actions=actions,
                     enabled=rule_data.get("enabled", True),
                     exempt_roles=[guild.get_role(role_id) for role_id in rule_data.get("exempt_roles", [])],
