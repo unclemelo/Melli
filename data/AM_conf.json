@@ -1,49 +1,16 @@
 {
-    "rules": [
-        {
-            "name": "Blocking Links, Harmful Language, and Spam",
-            "regex_patterns": [
-                "(?:https?:\/\/)?[a-z0-9_-]+.(com|net|org|io|gov|edu|info|gg|xxx)\b",
-                "regex2"
-            ],
-            "allowed_links": [
-                "*://c.tenor.com/*"
-            ],
-            "blocked_words": [
-                "spam",
-                "phishing"
-            ],
-            "allowed_words": ["hello"]
-        },
-        {
-            "name": "Blocking Sexual Content and Media Filtering",
-            "regex_patterns": [
-                "regex1",
-                "regex2"
-            ],
-            "allowed_links": ["*example.com*"],
-            "blocked_words": [
-                "scam",
-                "malware"
-            ],
-            "allowed_words": [
-                "hello"
-            ]
-        },
-        {
-            "name": "Blocking Sensitive Topics and Language Filtering",
-            "regex_patterns": [
-                "regex1"
-            ],
-            "allowed_links": [
-                "*example.com*"
-            ],
-            "blocked_words": [
-                "scam"
-            ],
-            "allowed_words": [
-                "hello"
-            ]
-        }
-    ]
+    "Rule Name 1": {
+        "trigger_type": "keyword",
+        "keyword_filter": ["badword1", "badword2"],
+        "action_type": "block_message",
+        "custom_message": "Please refrain from using that language!",
+        "enabled": true,
+        "exempt_roles": [123456789012345678],
+        "exempt_channels": [987654321098765432]
+    },
+    "Rule Name 2": {
+        "trigger_type": "spam",
+        "action_type": "timeout",
+        "enabled": true
+    }
 }
