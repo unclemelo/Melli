@@ -143,9 +143,6 @@ class AutoMod(commands.Cog):
                     )
                 elif trigger == discord.AutoModRuleTriggerType.spam:
                     trigger_metadata = discord.AutoModRuleTriggerType.spam()
-                else:
-                    # Handle other trigger types if necessary
-                    trigger_metadata = discord.AutoModRuleTriggerType()
 
                 await guild.create_automod_rule(
                     name=rule_name,
