@@ -10,8 +10,7 @@
             "exempt_roles": [123456789012345678],
             "exempt_channels": [987654321098765432],
             "regex_patterns": "regex1",
-            "allowed_links": ["*example.com*"],
-            "blocked_words": ["badword1", "badword2"]
+            "allowed_links": ["*example.com*"]
         },
         {
             "name": "Rule Name 2",
