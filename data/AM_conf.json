@@ -11,7 +11,7 @@
             "exempt_channels": [987654321098765432],
             "regex_patterns": "regex1",
             "allowed_links": ["*example.com*"],
-            "blocked_words": "keyword_filter"
+            "blocked_words": ["badword1", "badword2"]
         },
         {
             "name": "Rule Name 2",
