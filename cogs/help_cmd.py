@@ -14,9 +14,9 @@ class Help(commands.Cog):
         try:
             # Define command categories
             command_categories = {
-                "Moderation": ["/ban", "/kick", "/mute", "/unmute", "/warn", "/warnings", "/clear", "/clearwarns", "/delwarn", "/unban"],
-                "Fun": ["/chaos", "cheese", "/knockout", "/prank", "/revive", "/votekick"],
-                "Utility": ["/setup_automod", "/update_automod", "/uptime", "/reboot", "/shutdown"]
+                "Moderation": ["<ban:1330966727948894299>", "<kick:1330966727948894300>", "<mute:1331002213983846452>", "<unmute:1331002213983846453>", "<warn:1330897980462600299>", "<warnings:1330897980462600300>", "<clear:1331002213983846454>", "<clearwarns:1330897980945076267>", "<delwarn:1330897980945076266>", "<unban:1331002213983846450>"],
+                "Fun": ["<chaos:1326163954531176572>", "<cheese:1331705714950803496>", "<knockout:1326163954531176570>", "<prank:1326163954531176573>", "<revive:1326163954531176571>", "<votekick:1328523711216881716>", "<credits:1331872616163704874>"],
+                "Utility": ["<setup_automod:1331023235726180447>", "<update_automod:1331023235726180449>", "<uptime:1321819862628302920>", "<reboot:1316240452038561814> - **Dev Only**", "<shutdown:1321819862628302919> - **Dev Only**"]
             }
 
             # Build the embeds
@@ -49,10 +49,6 @@ class Help(commands.Cog):
                 async def next(self, interaction: discord.Interaction, button: discord.ui.Button):
                     self.current_page = (self.current_page + 1) % len(self.embeds)
                     await self.update_embed(interaction)
-
-                @discord.ui.button(label="Close", style=discord.ButtonStyle.red)
-                async def close(self, interaction: discord.Interaction, button: discord.ui.Button):
-                    await interaction.message.delete()
 
             # Send the first embed with the interactive view
             await interaction.response.send_message(embed=embeds[0], view=HelpView(embeds), ephemeral=True)
