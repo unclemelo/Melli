@@ -139,6 +139,7 @@ class AutoMod(commands.Cog):
 
                 await guild.create_automod_rule(
                     name=rule_name,
+                    event_type=discord.AutoModRuleEventType.message_send,
                     trigger=trigger,
                     actions=actions,
                     enabled=rule_data.get("enabled", True),
