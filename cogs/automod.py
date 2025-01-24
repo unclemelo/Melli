@@ -19,18 +19,7 @@ class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration")
     config_json = discord.ui.TextInput(
         label="Configuration JSON", 
         style=discord.TextStyle.paragraph, 
-        placeholder=(
-            "{\n"
-            "  \"rule1\": {\n"
-            "    \"action_type\": \"block_message\",\n"
-            "    \"regex_patterns\": [\"badword1\", \"badword2\"],\n"
-            "    \"keyword_filter\": [\"badword1\", \"badword2\"],\n"
-            "    \"enabled\": true,\n"
-            "    \"exempt_roles\": [0],\n"
-            "    \"exempt_channels\": [0]\n"
-            "  }\n"
-            "}"
-        ),
+        placeholder="Paste valid JSON here (e.g., {'rule1': {...}}).",
         required=True
     )
 
