@@ -197,19 +197,6 @@ class System(commands.Cog):
         print("[ SYSTEM ] Bot shutting down...")
         await self.bot.close()
 
-    @app_commands.command(name="uptime", description="Displays the bot's uptime.")
-    async def uptime_cmd(self, interaction: discord.Interaction):
-        """
-        Command to display the bot's uptime.
-        """
-        uptime = self.get_uptime()
-        embed = discord.Embed(
-            title="Bot Uptime",
-            description=f"`Melli` has been online for: **{uptime}**",
-            color=0x3474eb
-        )
-        await interaction.response.send_message(embed=embed)
-
 async def setup(bot: commands.Bot):
     """Adds the System cog to the bot."""
     await bot.add_cog(System(bot))
