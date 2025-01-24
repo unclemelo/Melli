@@ -127,8 +127,7 @@ class AutoMod(commands.Cog):
                 actions = [
                     discord.AutoModRuleAction(
                         type=discord.AutoModRuleActionType[rule_data["action_type"]],
-                        channel_id=rule_data.get("channel_id"),
-                        custom_message=rule_data.get("custom_message")
+                        channel_id=rule_data.get("channel_id")
                     )
                 ]
 
