@@ -101,9 +101,6 @@ class AutoMod(commands.Cog):
     @app_commands.checks.has_permissions(administrator=True)
     @is_dev()
     async def update_automod(self, interaction: discord.Interaction):
-        """
-        Update AutoMod rules in the server based on the current configuration file.
-        """
         try:
             guild = interaction.guild
             if not guild:
@@ -113,18 +110,20 @@ class AutoMod(commands.Cog):
             # Fetch existing AutoMod rules
             existing_rules = {rule.name: rule for rule in await guild.fetch_automod_rules()}
 
-
-            # Load configuration from a JSON file
+            # Load configuration from JSON file
             with open("data/AM_conf.json", "r") as config_file:
                 config = json.load(config_file)
 
-            # Delete existing rules that are being updated
+            # Delete existing rules
             for rule_name, rule in existing_rules.items():
                 if rule_name in config:
                     await rule.delete(reason="Updating AutoMod rule via bot.")
 
-            # Recreate or update AutoMod rules based on the configuration
+            # Update AutoMod rules
             for rule_name, rule_data in config.items():
+                regex_patterns = rule_data.get("regex_patterns", [])[:10]
+                keyword_filter = rule_data.get("keyword_filter", [])[:1000]
+
                 actions = [
                     discord.AutoModRuleAction(
                         type=discord.AutoModRuleActionType[rule_data["action_type"]],
@@ -132,15 +131,12 @@ class AutoMod(commands.Cog):
                         custom_message=rule_data.get("custom_message")
                     )
                 ]
-                for rule_config in self.config["rules"]:
-                    name = rule_config["name"]
-                    regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
-                    keyword_filter = rule_config["keyword_filter"][:1000] # Limit to 1000 blocked words
+
                 await guild.create_automod_rule(
                     name=rule_name,
                     event_type=discord.AutoModRuleEventType.message_send,
                     trigger=discord.AutoModTrigger(
-                        type=discord.AutoModRuleTriggerType.keyword,
+                        type=discord.AutoModTriggerType.keyword,
                         regex_patterns=regex_patterns,
                         keyword_filter=keyword_filter,
                     ),
@@ -151,22 +147,22 @@ class AutoMod(commands.Cog):
                     reason="Updating AutoMod rule via bot."
                 )
 
-            # Send confirmation message
+            # Confirmation message
             embed = discord.Embed(
                 title="AutoMod Rules Updated",
-                description="The AutoMod rules have been successfully updated from the configuration file.",
+                description="The AutoMod rules have been successfully updated.",
                 color=discord.Color.green()
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
         except Exception as e:
-            # Handle errors
             embed = discord.Embed(
                 title="Error Updating AutoMod Rules",
                 description=f"An error occurred while updating AutoMod rules:\n```\n{e}\n```",
                 color=discord.Color.red()
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
 
 async def setup(bot: commands.Bot):

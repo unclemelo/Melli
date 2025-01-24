@@ -1,22 +1,20 @@
 {
-    "rules": [
-        {
-            "name":"Rule Name 1",
-            "trigger_type": "keyword",
-            "keyword_filter": ["badword1", "badword2"],
-            "action_type": "block_message",
-            "custom_message": "Please refrain from using that language!",
-            "enabled": true,
-            "exempt_roles": [123456789012345678],
-            "exempt_channels": [987654321098765432],
-            "regex_patterns": ["[\u2800-\u28FF]+"]
-        },
-        {
-            "name": "Rule Name 2",
-            "trigger_type": "spam",
-            "action_type": "timeout",
-            "enabled": true,
-            "regex_patterns": "regex1"
-        }
-    ]
+    "rule1": {
+        "action_type": "BLOCK_MESSAGE",
+        "regex_patterns": ["badword1", "badword2"],
+        "keyword_filter": ["badword1", "badword2"],
+        "enabled": true,
+        "exempt_roles": [1312454247635484844],
+        "exempt_channels": [1308048258337345609]
+    },
+    "rule2": {
+        "action_type": "SEND_ALERT_MESSAGE",
+        "channel_id": 1308048258337345609,
+        "custom_message": "Please adhere to the rules!",
+        "regex_patterns": ["badword3", "badword4"],
+        "keyword_filter": ["badword3", "badword4"],
+        "enabled": true,
+        "exempt_roles": [],
+        "exempt_channels": []
+    }
 }
