@@ -136,7 +136,7 @@ class AutoMod(commands.Cog):
                     name=rule_name,
                     event_type=discord.AutoModRuleEventType.message_send,
                     trigger=discord.AutoModTrigger(
-                        type=discord.AutoModTriggerType.keyword,
+                        type=discord.AutoModRuleTriggerType.keyword,
                         regex_patterns=regex_patterns,
                         keyword_filter=keyword_filter,
                     ),
