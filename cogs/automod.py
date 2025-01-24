@@ -1,106 +1,68 @@
 import discord
-from discord.ext import commands
 from discord import app_commands
-from colorama import Fore
+from discord.ext import commands
 import json
-import os
 
-CONFIG_FILE = "data/AM_conf.json"
+class AutoModConfigView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
 
-from functools import wraps
+    @discord.ui.button(label="Upload Config", style=discord.ButtonStyle.primary)
+    async def upload_config(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_modal(AutoModConfigModal())
 
-# Developer IDs
-devs = [667032667732312115, 954135885392252940, 1186435491252404384]
 
-def is_dev():
-    """A decorator to restrict commands to developers."""
-    def predicate(func):
-        @wraps(func)
-        async def wrapper(self, interaction: discord.Interaction, *args, **kwargs):
-            if interaction.user.id in self.devs:
-                return await func(self, interaction, *args, **kwargs)
-            else:
-                await interaction.response.send_message(
-                    "Sorry, this command is restricted to developers.", ephemeral=True
-                )
-        return wrapper
-    return predicate
+class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration"):
+    config_json = discord.ui.TextInput(
+        label="Configuration JSON", 
+        style=discord.TextStyle.paragraph, 
+        placeholder=(
+            "{\n"
+            "  \"rule1\": {\n"
+            "    \"action_type\": \"block_message\",\n"
+            "    \"regex_patterns\": [\"badword1\", \"badword2\"],\n"
+            "    \"keyword_filter\": [\"badword1\", \"badword2\"],\n"
+            "    \"enabled\": true,\n"
+            "    \"exempt_roles\": [123456789012345678],\n"
+            "    \"exempt_channels\": [987654321098765432]\n"
+            "  }\n"
+            "}"
+        ),
+        required=True
+    )
 
-class AutoMod(commands.Cog):
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
-        self.load_config()
-        self.devs = devs
-
-    def load_config(self):
-        """Load AutoMod configuration from a file, or initialize defaults."""
-        if os.path.exists(CONFIG_FILE):
-            with open(CONFIG_FILE, "r") as file:
-                self.config = json.load(file)
-        else:
-            self.config = {"rules": []}
-            self.save_config()
-
-    def save_config(self):
-        """Save AutoMod configuration to a file."""
-        with open(CONFIG_FILE, "w") as file:
-            json.dump(self.config, file, indent=4)
-
-    @app_commands.command(name="setup_automod", description="Set up AutoMod rules from the configuration.")
-    @app_commands.checks.has_permissions(administrator=True)
-    @is_dev()
-    async def setup_automod(self, interaction: discord.Interaction, channel: discord.TextChannel):
-        """
-        Set up AutoMod rules based on the configuration file.
-        """
+    async def on_submit(self, interaction: discord.Interaction):
         try:
-            guild = interaction.guild
-            if not guild:
-                await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
-                return
+            # Load and validate the JSON input
+            config = json.loads(self.config_json.value)
 
-            created_rules = []
-            for rule_config in self.config["rules"]:
-                name = rule_config["name"]
-                regex_patterns = rule_config["regex_patterns"][:10]  # Limit to 10 regex patterns
-                keyword_filter = rule_config["keyword_filter"][:1000]  # Limit to 1000 blocked words
+            # Save to file (can also implement database storage)
+            with open("data/AM_conf.json", "w") as config_file:
+                json.dump(config, config_file, indent=4)
 
-                created_rules=[]
-                automod_rule = await guild.create_automod_rule(
-                    name=name,
-                    event_type=discord.AutoModRuleEventType.message_send,
-                    trigger=discord.AutoModTrigger(
-                        type=discord.AutoModRuleTriggerType.keyword,
-                        regex_patterns=regex_patterns,
-                        keyword_filter=keyword_filter,
-                    ),
-                    actions=[
-                        discord.AutoModRuleAction(
-                            channel_id=channel.id,
-                            type=discord.AutoModRuleActionType.block_message
-                        )
-                    ],
-                    enabled=True,
-                    reason=f"AutoMod setup for rule: {name}"
-                )
-
-                created_rules.append(automod_rule.name)
-                    
             embed = discord.Embed(
-                title="AutoMod setup complete!",
-                description=f"Created rules:\n- " + "\n- ".join(created_rules),
-                color=0x03fcb6
+                title="Configuration Uploaded",
+                description="The new AutoMod configuration has been successfully uploaded.",
+                color=discord.Color.green()
             )
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        except Exception as e:
-            print(f"Error in AutoMod setup: {e}")
-            await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
+        except json.JSONDecodeError:
+            embed = discord.Embed(
+                title="Invalid JSON",
+                description="The provided configuration is not a valid JSON. Please check and try again.",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+class AutoModManagement(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
     @app_commands.command(name="update_automod", description="Apply changes from the configuration to the server's AutoMod rules.")
     @app_commands.checks.has_permissions(administrator=True)
-    @is_dev()
-    async def update_automod(self, interaction: discord.Interaction):
+    async def update_automod(self, interaction: discord.Interaction, channel: discord.TextChannel):
         try:
             guild = interaction.guild
             if not guild:
@@ -127,7 +89,7 @@ class AutoMod(commands.Cog):
                 actions = [
                     discord.AutoModRuleAction(
                         type=discord.AutoModRuleActionType[rule_data["action_type"]],
-                        channel_id=rule_data.get("channel_id")
+                        channel_id=channel.id
                     )
                 ]
 
@@ -162,7 +124,12 @@ class AutoMod(commands.Cog):
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
+    @app_commands.command(name="automod_config", description="Open the AutoMod configuration interface.")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def automod_config(self, interaction: discord.Interaction):
+        view = AutoModConfigView()
+        await interaction.response.send_message("Use the buttons below to manage AutoMod configuration.", view=view, ephemeral=True)
 
 
-async def setup(bot: commands.Bot):
-    await bot.add_cog(AutoMod(bot))
+async def setup(bot):
+    await bot.add_cog(AutoModManagement(bot))
