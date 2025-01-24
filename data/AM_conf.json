@@ -1,6 +1,6 @@
 {
     "rule1": {
-        "action_type": "BLOCK_MESSAGE",
+        "action_type": "block_message",
         "regex_patterns": ["badword1", "badword2"],
         "keyword_filter": ["badword1", "badword2"],
         "enabled": true,
@@ -8,7 +8,7 @@
         "exempt_channels": [1308048258337345609]
     },
     "rule2": {
-        "action_type": "SEND_ALERT_MESSAGE",
+        "action_type": "send_alert_message",
         "channel_id": 1308048258337345609,
         "custom_message": "Please adhere to the rules!",
         "regex_patterns": ["badword3", "badword4"],
