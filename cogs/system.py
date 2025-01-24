@@ -166,7 +166,7 @@ class System(commands.Cog):
             description="Pulling updates from GitHub and restarting.",
             color=0x3474eb
         )
-        await interaction.response.send_message(embed=embed, delete_after=5)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
         # Update code and notify results
         update_results = self.update_code()
@@ -178,7 +178,7 @@ class System(commands.Cog):
         else:
             embed.description += "\n\n🔧 Updates applied successfully."
 
-        await interaction.followup.send(embed=embed)
+        await interaction.followup.send(embed=embed, ephemeral=True)
         print("[ SYSTEM ] Rebooting bot...")
         self.restart_bot()
 
@@ -193,7 +193,7 @@ class System(commands.Cog):
             description="The bot is shutting down.",
             color=0xff0000
         )
-        await interaction.response.send_message(embed=embed, delete_after=5)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
         print("[ SYSTEM ] Bot shutting down...")
         await self.bot.close()
 
