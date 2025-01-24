@@ -9,7 +9,10 @@ class AutoModConfigView(discord.ui.View):
 
     @discord.ui.button(label="Upload Config", style=discord.ButtonStyle.primary)
     async def upload_config(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(AutoModConfigModal())
+        try:
+            await interaction.response.send_modal(AutoModConfigModal())
+        except Exception as e:
+            await interaction.response.send_message(f"Error: {e}", ephemeral=True)
 
 
 class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration"):
@@ -23,8 +26,8 @@ class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration")
             "    \"regex_patterns\": [\"badword1\", \"badword2\"],\n"
             "    \"keyword_filter\": [\"badword1\", \"badword2\"],\n"
             "    \"enabled\": true,\n"
-            "    \"exempt_roles\": [123456789012345678],\n"
-            "    \"exempt_channels\": [987654321098765432]\n"
+            "    \"exempt_roles\": [0],\n"
+            "    \"exempt_channels\": [0]\n"
             "  }\n"
             "}"
         ),
