@@ -24,12 +24,26 @@ class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration")
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        if not interaction.guild:
+            embed = discord.Embed(
+                title="Error",
+                description="This command must be used in a server.",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
         try:
             # Load and validate the JSON input
             config = json.loads(self.config_json.value)
 
-            # Save to file (can also implement database storage)
-            with open("data/AM_conf.json", "w") as config_file:
+            # Ensure the directory exists
+            directory = "data/Automod_Configs"
+            os.makedirs(directory, exist_ok=True)
+            file_name = os.path.join(directory, f"{interaction.guild.id}.json")
+
+            # Save to file
+            with open(file_name, "w") as config_file:
                 json.dump(config, config_file, indent=4)
 
             embed = discord.Embed(
@@ -47,12 +61,20 @@ class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration")
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
+        except Exception as e:
+            embed = discord.Embed(
+                title="File Save Error",
+                description=f"An error occurred while saving the file: {e}",
+                color=discord.Color.red()
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
 class AutoModManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="update_automod", description="Apply changes from the configuration to the server's AutoMod rules.")
+    @app_commands.command(name="build_automod", description="Apply changes from the configuration to the server's AutoMod rules.")
     @app_commands.checks.has_permissions(administrator=True)
     async def update_automod(self, interaction: discord.Interaction, channel: discord.TextChannel):
         try:
