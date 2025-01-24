@@ -12,6 +12,7 @@ from colorama import Fore
 from functools import wraps
 
 # Developer IDs
+# List of user IDs with developer permissions
 devs = [667032667732312115, 954135885392252940, 1186435491252404384, 641822140362129408]
 
 def is_dev():
@@ -19,9 +20,11 @@ def is_dev():
     def predicate(func):
         @wraps(func)
         async def wrapper(self, interaction: discord.Interaction, *args, **kwargs):
+            # Check if the user is a developer
             if interaction.user.id in self.devs:
                 return await func(self, interaction, *args, **kwargs)
             else:
+                # Send an ephemeral message if the user isn't a developer
                 await interaction.response.send_message(
                     "Sorry, this command is restricted to developers.", ephemeral=True
                 )
@@ -37,46 +40,35 @@ class System(commands.Cog):
         self.bot = bot
         self.start_time = datetime.utcnow()  # Track when the bot started
         self.bot.tree.on_error = self.on_tree_error
-        self.devs = devs
+        self.devs = devs  # Store developer IDs for internal use
 
     async def on_tree_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        """
+        Handles errors occurring in app commands.
+        Provides user feedback and logs the error.
+        """
         if isinstance(error, app_commands.CommandOnCooldown):
-            await interaction.response.send_message(f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.", ephemeral=True)
+            # Notify user about cooldown period
+            await interaction.response.send_message(
+                f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.",
+                ephemeral=True
+            )
         elif isinstance(error, app_commands.MissingPermissions):
-            await interaction.response.send_message("LOL, you thought? Not enough perms, buddy.", ephemeral=True)
+            # Notify user about insufficient permissions
+            await interaction.response.send_message(
+                "LOL, you thought? Not enough perms, buddy.",
+                ephemeral=True
+            )
         else:
+            # Log and send unexpected errors
             await interaction.response.send_message(f"{error}")
             print(f"An error occurred: {error}")
             raise error
 
     def get_update_channel(self) -> discord.TextChannel:
         """Fetches the update channel."""
-        channel_id = 1308048388637462558
+        channel_id = 1308048388637462558  # Update channel ID
         return self.bot.get_channel(channel_id)
-
-    def summarize_pip_output(self, pip_output: str) -> str:
-        """
-        Summarizes pip install output for better readability, removing version constraints.
-        Args:
-            pip_output (str): The raw pip install output.
-        Returns:
-            str: A condensed summary of the pip output.
-        """
-        lines = pip_output.splitlines()
-        summary = []
-
-        for line in lines:
-            if "Requirement already satisfied" in line:
-                parts = line.split()
-                package = parts[3]  # Package name
-                version = parts[-1].strip("()")  # Version inside parentheses
-                package = re.sub(r'[<>=!~]+[0-9.]+', '', package).strip()
-                summary.append(f"- {package}: ({version})")
-            elif "Successfully installed" in line:
-                installed = line.replace("Successfully installed", "").strip()
-                summary.append(f"Installed: {installed}")
-
-        return "\n".join(summary) if summary else "No changes."
 
     async def notify_updates(self, update_results: dict):
         """
@@ -89,6 +81,7 @@ class System(commands.Cog):
             print("[ ERROR ] Update channel not found.")
             return
 
+        # Create an embed to display update results
         embed = discord.Embed(
             title="🔄 Bot Updated",
             description="The bot has successfully pulled updates from GitHub and restarted.",
@@ -96,8 +89,8 @@ class System(commands.Cog):
             timestamp=datetime.utcnow()
         )
 
+        # Add GitHub update status
         git_response = update_results.get("git_pull", "No Git response available.")
-        updated_files = update_results.get("updated_files", [])
 
         if "Already up to date." in git_response:
             embed.add_field(
@@ -106,22 +99,11 @@ class System(commands.Cog):
                 inline=False
             )
         else:
-            updates = "\n".join(f"- `{file}`" for file in updated_files) if updated_files else "No specific files listed."
-            if len(updates) > 1024:  # Truncate if necessary
-                updates = updates[:1021] + "..."
             embed.add_field(
                 name="🔧 Applied Updates",
-                value=f"**Updated Files/Commits:**\n{updates}",
+                value=f"Check the [GitHub Page](<https://github.com/unclemelo/Melli>) for updates",
                 inline=False
             )
-
-        pip_response = update_results.get("pip_install", "No dependency update response.")
-        pip_summary = self.summarize_pip_output(pip_response)
-        embed.add_field(
-            name="📦 Dependencies",
-            value=f"```{pip_summary}```" if pip_summary else "No changes.",
-            inline=False
-        )
 
         await channel.send(embed=embed)
 
@@ -141,6 +123,7 @@ class System(commands.Cog):
         results = {"git_pull": None, "pip_install": None}
 
         try:
+            # Pull the latest code from GitHub
             git_result = subprocess.run(
                 ["git", "pull"], 
                 stdout=subprocess.PIPE, 
@@ -153,6 +136,7 @@ class System(commands.Cog):
             return results
 
         try:
+            # Update dependencies using pip
             pip_result = subprocess.run(
                 ["python3", "-m", "pip", "install", "-r", "requirements.txt"], 
                 stdout=subprocess.PIPE, 
@@ -174,6 +158,9 @@ class System(commands.Cog):
     @app_commands.command(name="reboot", description="Reboots the bot and updates its code.")
     @is_dev()
     async def restart_cmd(self, interaction: discord.Interaction):
+        """
+        Command to reboot the bot and pull updates from GitHub.
+        """
         embed = discord.Embed(
             title="Rebooting `Melli`...",
             description="Pulling updates from GitHub and restarting.",
@@ -181,6 +168,7 @@ class System(commands.Cog):
         )
         await interaction.response.send_message(embed=embed, delete_after=5)
 
+        # Update code and notify results
         update_results = self.update_code()
         await self.notify_updates(update_results)
 
@@ -197,6 +185,9 @@ class System(commands.Cog):
     @app_commands.command(name="shutdown", description="Shuts down the bot.")
     @is_dev()
     async def shutdown_cmd(self, interaction: discord.Interaction):
+        """
+        Command to shut down the bot.
+        """
         embed = discord.Embed(
             title="Shutting Down `Melli`...",
             description="The bot is shutting down.",
@@ -208,6 +199,9 @@ class System(commands.Cog):
 
     @app_commands.command(name="uptime", description="Displays the bot's uptime.")
     async def uptime_cmd(self, interaction: discord.Interaction):
+        """
+        Command to display the bot's uptime.
+        """
         uptime = self.get_uptime()
         embed = discord.Embed(
             title="Bot Uptime",
