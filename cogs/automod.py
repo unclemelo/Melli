@@ -8,7 +8,7 @@ class AutoModConfigView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="Upload Config", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="Edit Config", style=discord.ButtonStyle.primary)
     async def upload_config(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             await interaction.response.send_modal(AutoModConfigModal())
@@ -16,22 +16,30 @@ class AutoModConfigView(discord.ui.View):
             await interaction.response.send_message(f"Error: {e}", ephemeral=True)
 
 
-class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration"):
+class AutoModPage1(discord.ui.Modal, title="Page 1: General Settings"):
     action_type = discord.ui.TextInput(
         label="Action Type",
         placeholder="e.g., send_alert_message",
-        required=False
+        required=True
     )
     channel_id = discord.ui.TextInput(
         label="Channel ID",
         placeholder="Enter the target channel ID",
-        required=False
+        required=True
     )
-    custom_message = discord.ui.TextInput(
-        label="Custom Message",
-        placeholder="e.g., Please adhere to the rules!",
-        required=False
-    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        # Save the current page's data to a temporary dictionary
+        interaction.client.temp_data[interaction.user.id] = {
+            "action_type": self.action_type.value,
+            "channel_id": self.channel_id.value,
+        }
+
+        # Trigger the second modal
+        await interaction.response.send_modal(AutoModPage2())
+
+
+class AutoModPage2(discord.ui.Modal, title="Page 2: Filters"):
     regex_patterns = discord.ui.TextInput(
         label="Regex Patterns (comma-separated)",
         placeholder="e.g., badword1,badword2",
@@ -42,61 +50,55 @@ class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration")
         placeholder="e.g., badword1,badword2",
         required=False
     )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        # Append the second page's data to the temporary dictionary
+        user_data = interaction.client.temp_data.get(interaction.user.id, {})
+        user_data.update({
+            "regex_patterns": self.regex_patterns.value.split(",") if self.regex_patterns.value else [],
+            "keyword_filter": self.keyword_filter.value.split(",") if self.keyword_filter.value else []
+        })
+
+        # Trigger the final modal
+        await interaction.response.send_modal(AutoModPage3())
+
+
+class AutoModPage3(discord.ui.Modal, title="Page 3: Exemptions"):
     exempt_roles = discord.ui.TextInput(
         label="Exempt Roles (comma-separated)",
-        placeholder="e.g., 123456789012345678,987654321098765432",
+        placeholder="e.g., Role1,Role2",
         required=False
     )
     exempt_channels = discord.ui.TextInput(
         label="Exempt Channels (comma-separated)",
-        placeholder="e.g., 123456789012345678,987654321098765432",
+        placeholder="e.g., Channel1,Channel2",
         required=False
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        if not interaction.guild:
-            embed = discord.Embed(
-                title="Error",
-                description="This command must be used in a server.",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-            return
+        # Append the final page's data to the temporary dictionary
+        user_data = interaction.client.temp_data.get(interaction.user.id, {})
+        user_data.update({
+            "exempt_roles": self.exempt_roles.value.split(",") if self.exempt_roles.value else [],
+            "exempt_channels": self.exempt_channels.value.split(",") if self.exempt_channels.value else []
+        })
 
-        try:
-            # Construct the configuration from input fields
-            config = {
-                "action_type": self.action_type.value or "send_alert_message",
-                "channel_id": int(self.channel_id.value) if self.channel_id.value else 0,
-                "custom_message": self.custom_message.value or "Please adhere to the rules!",
-                "regex_patterns": [x.strip() for x in self.regex_patterns.value.split(",")] if self.regex_patterns.value else [],
-                "keyword_filter": [x.strip() for x in self.keyword_filter.value.split(",")] if self.keyword_filter.value else [],
-                "exempt_roles": [x.strip() for x in self.exempt_roles.value.split(",")] if self.exempt_roles.value else [],
-                "exempt_channels": [x.strip() for x in self.exempt_channels.value.split(",")] if self.exempt_channels.value else [],
-            }
+        # Save the configuration to a file or database
+        directory = "data/Automod_Configs"
+        os.makedirs(directory, exist_ok=True)
+        file_name = f"{directory}/{interaction.guild.id}.json"
 
-            # Save configuration to a file
-            directory = "data/Automod_Configs"
-            os.makedirs(directory, exist_ok=True)
-            file_name = os.path.join(directory, f"{interaction.guild.id}.json")
+        with open(file_name, "w") as config_file:
+            json.dump(user_data, config_file, indent=4)
 
-            with open(file_name, "w") as config_file:
-                json.dump({"rule1": config}, config_file, indent=4)
+        # Notify the user of success
+        embed = discord.Embed(
+            title="Configuration Uploaded",
+            description="The AutoMod configuration has been successfully uploaded.",
+            color=discord.Color.green()
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
-            embed = discord.Embed(
-                title="Configuration Uploaded",
-                description="The new AutoMod configuration has been successfully uploaded.",
-                color=discord.Color.green()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
-
-        except Exception as e:
-            embed = discord.Embed(
-                title="Error",
-                description=f"An error occurred: {e}",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 
@@ -171,7 +173,7 @@ class AutoModManagement(commands.Cog):
     @app_commands.command(name="automod_config", description="Open the AutoMod configuration interface.")
     @app_commands.checks.has_permissions(administrator=True)
     async def automod_config(self, interaction: discord.Interaction):
-        view = AutoModConfigView()
+        view = AutoModPage1()
         await interaction.response.send_message("Use the buttons below to manage AutoMod configuration.", view=view, ephemeral=True)
 
 
