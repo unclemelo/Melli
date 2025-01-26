@@ -17,11 +17,40 @@ class AutoModConfigView(discord.ui.View):
 
 
 class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration"):
-    config_json = discord.ui.TextInput(
-        label="Configuration JSON", 
-        style=discord.TextStyle.paragraph, 
-        placeholder="Paste valid JSON here (e.g., {'rule1': {...}}).",
-        required=True
+    action_type = discord.ui.TextInput(
+        label="Action Type",
+        placeholder="e.g., send_alert_message",
+        required=False
+    )
+    channel_id = discord.ui.TextInput(
+        label="Channel ID",
+        placeholder="Enter the target channel ID",
+        required=False
+    )
+    custom_message = discord.ui.TextInput(
+        label="Custom Message",
+        placeholder="e.g., Please adhere to the rules!",
+        required=False
+    )
+    regex_patterns = discord.ui.TextInput(
+        label="Regex Patterns (comma-separated)",
+        placeholder="e.g., badword1,badword2",
+        required=False
+    )
+    keyword_filter = discord.ui.TextInput(
+        label="Keyword Filter (comma-separated)",
+        placeholder="e.g., badword1,badword2",
+        required=False
+    )
+    exempt_roles = discord.ui.TextInput(
+        label="Exempt Roles (comma-separated)",
+        placeholder="e.g., 123456789012345678,987654321098765432",
+        required=False
+    )
+    exempt_channels = discord.ui.TextInput(
+        label="Exempt Channels (comma-separated)",
+        placeholder="e.g., 123456789012345678,987654321098765432",
+        required=False
     )
 
     async def on_submit(self, interaction: discord.Interaction):
@@ -35,17 +64,24 @@ class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration")
             return
 
         try:
-            # Load and validate the JSON input
-            config = json.loads(self.config_json.value)
+            # Construct the configuration from input fields
+            config = {
+                "action_type": self.action_type.value or "send_alert_message",
+                "channel_id": int(self.channel_id.value) if self.channel_id.value else 0,
+                "custom_message": self.custom_message.value or "Please adhere to the rules!",
+                "regex_patterns": [x.strip() for x in self.regex_patterns.value.split(",")] if self.regex_patterns.value else [],
+                "keyword_filter": [x.strip() for x in self.keyword_filter.value.split(",")] if self.keyword_filter.value else [],
+                "exempt_roles": [x.strip() for x in self.exempt_roles.value.split(",")] if self.exempt_roles.value else [],
+                "exempt_channels": [x.strip() for x in self.exempt_channels.value.split(",")] if self.exempt_channels.value else [],
+            }
 
-            # Ensure the directory exists
+            # Save configuration to a file
             directory = "data/Automod_Configs"
             os.makedirs(directory, exist_ok=True)
             file_name = os.path.join(directory, f"{interaction.guild.id}.json")
 
-            # Save to file
             with open(file_name, "w") as config_file:
-                json.dump(config, config_file, indent=4)
+                json.dump({"rule1": config}, config_file, indent=4)
 
             embed = discord.Embed(
                 title="Configuration Uploaded",
@@ -54,21 +90,14 @@ class AutoModConfigModal(discord.ui.Modal, title="Upload AutoMod Configuration")
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        except json.JSONDecodeError:
+        except Exception as e:
             embed = discord.Embed(
-                title="Invalid JSON",
-                description="The provided configuration is not a valid JSON. Please check and try again.",
+                title="Error",
+                description=f"An error occurred: {e}",
                 color=discord.Color.red()
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
 
-        except Exception as e:
-            embed = discord.Embed(
-                title="File Save Error",
-                description=f"An error occurred while saving the file: {e}",
-                color=discord.Color.red()
-            )
-            await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 class AutoModManagement(commands.Cog):
