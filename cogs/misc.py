@@ -1,6 +1,8 @@
 import discord
 import asyncio
 import random
+import json
+import os
 from discord.ext import commands
 from discord import app_commands
 from colorama import Fore
@@ -8,9 +10,40 @@ from typing import List
 from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
 
+BUMP_DATA_FILE = "bump_data.json"
+
 class MISC(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        if os.path.exists(BUMP_DATA_FILE):
+            with open(BUMP_DATA_FILE, "r") as file:
+                self.bump_data = json.load(file)
+        else:
+            self.bump_data = {}
+
+    @app_commands.command(name="bump", description="bro why are you bumping???")
+    async def bumpcmd(self, interaction: discord.Interaction):
+        guild_id = str(interaction.guild.id)
+        user_id = str(interaction.user.id)
+
+        # Ensure the guild exists in the bump data
+        if guild_id not in self.bump_data:
+            self.bump_data[guild_id] = {}
+
+        # Increment the bump count for the user
+        if user_id not in self.bump_data[guild_id]:
+            self.bump_data[guild_id][user_id] = 0
+        self.bump_data[guild_id][user_id] += 1
+
+        # Save the updated bump data
+        with open(BUMP_DATA_FILE, "w") as file:
+            json.dump(self.bump_data, file, indent=4)
+
+        # Notify the user of their bump count
+        bump_count = self.bump_data[guild_id][user_id]
+        await interaction.response.send_message(
+                f"{interaction.user.mention}, you have used the `bump` command {bump_count} time(s)!"
+            )
 
     @app_commands.command(name="help", description="Shows the list of commands categorized")
     async def helpcmd(self, interaction: discord.Interaction):
