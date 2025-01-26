@@ -4,6 +4,7 @@ from discord import app_commands
 from discord.ext import commands
 import json
 
+# View for managing AutoMod configuration
 class AutoModConfigView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -11,16 +12,18 @@ class AutoModConfigView(discord.ui.View):
     @discord.ui.button(label="Edit Config", style=discord.ButtonStyle.primary)
     async def edit_config(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
+            # Trigger the first modal
             await interaction.response.send_modal(AutoModPage1())
         except Exception as e:
             await interaction.response.send_message(f"Error: {e}", ephemeral=True)
 
-
+# First Modal
 class AutoModPage1(discord.ui.Modal, title="Page 1: General Settings"):
-    def __init__(self):
-        super().__init__()
-        self.add_item(ActionTypeSelect())
-
+    action_type = discord.ui.TextInput(
+        label="Action Type",
+        placeholder="e.g., send_alert_message",
+        required=True
+    )
     channel_id = discord.ui.TextInput(
         label="Channel ID",
         placeholder="Enter the target channel ID",
@@ -32,36 +35,16 @@ class AutoModPage1(discord.ui.Modal, title="Page 1: General Settings"):
         if not hasattr(interaction.client, "temp_data"):
             interaction.client.temp_data = {}
 
-        # Save the action type selected
-        action_type = interaction.client.temp_data.get(interaction.user.id, {}).get("action_type", "send_alert_message")
-
-        # Save the data
+        # Save the data for the current user
         interaction.client.temp_data[interaction.user.id] = {
-            "action_type": action_type,
+            "action_type": self.action_type.value,
             "channel_id": self.channel_id.value,
         }
 
         # Trigger the second modal
         await interaction.response.send_modal(AutoModPage2())
 
-
-class ActionTypeSelect(discord.ui.Select):
-    def __init__(self):
-        options = [
-            discord.SelectOption(label="Send Alert Message", value="send_alert_message", description="Send a warning message"),
-            discord.SelectOption(label="Block Message", value="block_message", description="Prevent the message from being sent"),
-            discord.SelectOption(label="Timeout User", value="timeout_user", description="Temporarily mute the user"),
-        ]
-        super().__init__(placeholder="Select an action type...", min_values=1, max_values=1, options=options)
-
-    async def callback(self, interaction: discord.Interaction):
-        # Store the user's selection temporarily
-        if not hasattr(interaction.client, "temp_data"):
-            interaction.client.temp_data = {}
-        interaction.client.temp_data[interaction.user.id] = {"action_type": self.values[0]}
-        await interaction.response.send_message(f"You selected: {self.values[0]}", ephemeral=True)
-
-
+# Second Modal
 class AutoModPage2(discord.ui.Modal, title="Page 2: Filters"):
     regex_patterns = discord.ui.TextInput(
         label="Regex Patterns (comma-separated)",
@@ -75,16 +58,19 @@ class AutoModPage2(discord.ui.Modal, title="Page 2: Filters"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        # Append to temp_data
         user_data = interaction.client.temp_data.get(interaction.user.id, {})
         user_data.update({
             "regex_patterns": self.regex_patterns.value.split(",") if self.regex_patterns.value else [],
-            "keyword_filter": self.keyword_filter.value.split(",") if self.keyword_filter.value else [],
+            "keyword_filter": self.keyword_filter.value.split(",") if self.keyword_filter.value else []
         })
 
         interaction.client.temp_data[interaction.user.id] = user_data
+
+        # Trigger the third modal
         await interaction.response.send_modal(AutoModPage3())
 
-
+# Third Modal
 class AutoModPage3(discord.ui.Modal, title="Page 3: Exemptions"):
     exempt_roles = discord.ui.TextInput(
         label="Exempt Roles (comma-separated)",
@@ -98,12 +84,14 @@ class AutoModPage3(discord.ui.Modal, title="Page 3: Exemptions"):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        # Append to temp_data
         user_data = interaction.client.temp_data.get(interaction.user.id, {})
         user_data.update({
             "exempt_roles": self.exempt_roles.value.split(",") if self.exempt_roles.value else [],
-            "exempt_channels": self.exempt_channels.value.split(",") if self.exempt_channels.value else [],
+            "exempt_channels": self.exempt_channels.value.split(",") if self.exempt_channels.value else []
         })
 
+        # Save to file
         directory = "data/Automod_Configs"
         os.makedirs(directory, exist_ok=True)
         file_name = f"{directory}/{interaction.guild.id}.json"
@@ -111,6 +99,7 @@ class AutoModPage3(discord.ui.Modal, title="Page 3: Exemptions"):
         with open(file_name, "w") as config_file:
             json.dump(user_data, config_file, indent=4)
 
+        # Notify the user
         embed = discord.Embed(
             title="Configuration Uploaded",
             description="The AutoMod configuration has been successfully uploaded.",
@@ -118,7 +107,7 @@ class AutoModPage3(discord.ui.Modal, title="Page 3: Exemptions"):
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-
+# Main Cog
 class AutoModManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -126,13 +115,13 @@ class AutoModManagement(commands.Cog):
     @app_commands.command(name="automod_config", description="Open the AutoMod configuration interface.")
     @app_commands.checks.has_permissions(administrator=True)
     async def automod_config(self, interaction: discord.Interaction):
+        # Display the view with the button
         view = AutoModConfigView()
         await interaction.response.send_message(
             "Use the button below to edit AutoMod configuration.",
             view=view,
             ephemeral=True
         )
-
 
 async def setup(bot):
     await bot.add_cog(AutoModManagement(bot))
