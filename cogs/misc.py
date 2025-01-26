@@ -22,6 +22,7 @@ class MISC(commands.Cog):
             self.bump_data = {}
 
     @app_commands.command(name="bump", description="bro why are you bumping???")
+    @app_commands.checks.cooldown(1, 7200, key=lambda i: (i.guild.id))
     async def bumpcmd(self, interaction: discord.Interaction):
         guild_id = str(interaction.guild.id)
         user_id = str(interaction.user.id)
@@ -39,11 +40,19 @@ class MISC(commands.Cog):
         with open(BUMP_DATA_FILE, "w") as file:
             json.dump(self.bump_data, file, indent=4)
 
-        # Notify the user of their bump count
+        # Notify the user of their bump count and cooldown in an embed
         bump_count = self.bump_data[guild_id][user_id]
-        await interaction.response.send_message(
-                f"{interaction.user.mention}, you have used the `bump` command {bump_count} time(s)!"
-            )
+        embed = Embed(
+            title="Bump Command Usage",
+            description=f"{interaction.user.mention}, you have used the `bump` command {bump_count} time(s)!",
+            color=discord.Color.green()
+        )
+        embed.add_field(
+            name="Cooldown",
+            value="You can use this command again in 2 hours.",
+            inline=False
+        )
+        await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="help", description="Shows the list of commands categorized")
     async def helpcmd(self, interaction: discord.Interaction):
