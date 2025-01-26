@@ -25,7 +25,7 @@ class AutoModPage1(discord.ui.Modal, title="Page 1: General Settings"):
         required=True
     )
     channel_id = discord.ui.TextInput(
-        label="Channel ID",
+        label="Alert Channel (Channel ID)",
         placeholder="Enter the target channel ID",
         required=True
     )
