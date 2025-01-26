@@ -10,7 +10,7 @@ from typing import List
 from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
 
-BUMP_DATA_FILE = "bump_data.json"
+BUMP_DATA_FILE = "data/bump_data.json"
 
 class MISC(commands.Cog):
     def __init__(self, bot: commands.Bot):
