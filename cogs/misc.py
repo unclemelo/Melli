@@ -42,7 +42,7 @@ class MISC(commands.Cog):
 
         # Notify the user of their bump count and cooldown in an embed
         bump_count = self.bump_data[guild_id][user_id]
-        embed = Embed(
+        embed = discord.Embed(
             title="Bump Command Usage",
             description=f"{interaction.user.mention}, you have used the `bump` command {bump_count} time(s)!",
             color=discord.Color.green()
