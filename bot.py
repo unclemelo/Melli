@@ -42,6 +42,14 @@ async def on_ready():
     if not update_status_loop.is_running():
         update_status_loop.start()
 
+@tasks.loop(hours=2)
+async def ping_role():
+    channel_id = 1333084938144321588  # Replace with your channel ID
+    role_id = 1313894996637650985  # Replace with your role ID
+    channel = bot.get_channel(channel_id)
+    if channel:
+        await channel.send(f"<@&{role_id}>!")
+
 @tasks.loop(seconds=10)
 async def update_status_loop():
     """Updates the bot's presence with a rotating status every 10 seconds."""
