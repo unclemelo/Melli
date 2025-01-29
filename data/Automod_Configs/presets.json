@@ -1,32 +1,33 @@
 {
-    "Low Guard": {
-        "rule_name": "Low Guard AutoMod",
-        "action_type": "send_alert_message",
-        "custom_message": "Please adhere to the rules!",
-        "regex_patterns": [],
-        "keyword_filter": [],
-        "enabled": true,
-        "exempt_roles": [],
-        "exempt_channels": []
+    "Low Security": {
+      "rule_name": "Low Security AutoMod",
+      "action_type": "send_alert_message",
+      "custom_message": "Please follow the rules!",
+      "regex_patterns": [],
+      "keyword_filter": [],
+      "enabled": true,
+      "exempt_roles": [],
+      "exempt_channels": []
     },
-    "Moderate Guard": {
-        "rule_name": "Moderate Guard AutoMod",
-        "action_type": "send_alert_message",
-        "custom_message": "This message violates community guidelines.",
-        "regex_patterns": ["badword1", "badword2"],
-        "keyword_filter": ["spam", "offensive"],
-        "enabled": true,
-        "exempt_roles": [],
-        "exempt_channels": []
+    "Medium Security": {
+      "rule_name": "Medium Security AutoMod",
+      "action_type": "send_alert_message",
+      "custom_message": "This message violates community guidelines.",
+      "regex_patterns": ["badword1", "badword2"],
+      "keyword_filter": ["spam", "offensive"],
+      "enabled": true,
+      "exempt_roles": [],
+      "exempt_channels": []
     },
-    "High Guard": {
-        "rule_name": "High Guard AutoMod",
-        "action_type": "send_alert_message",
-        "custom_message": "Your message has been blocked due to policy violations.",
-        "regex_patterns": [".*badword.*", "offensive[0-9]*"],
-        "keyword_filter": ["spam", "offensive", "profanity"],
-        "enabled": true,
-        "exempt_roles": [],
-        "exempt_channels": []
+    "High Security": {
+      "rule_name": "High Security AutoMod",
+      "action_type": "send_alert_message",
+      "custom_message": "Your message has been blocked due to policy violations.",
+      "regex_patterns": [".*badword.*", "offensive[0-9]*"],
+      "keyword_filter": ["spam", "offensive", "profanity"],
+      "enabled": true,
+      "exempt_roles": [],
+      "exempt_channels": []
     }
-}
+  }
+  
