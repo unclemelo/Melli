@@ -1,0 +1,369 @@
+2025-01-30 00:42:06 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 00:42:07 [INFO] Webhook sent successfully!
+2025-01-30 00:42:07 [INFO] logging in using static token
+2025-01-30 00:42:08 [INFO] Shard ID None has connected to Gateway (Session ID: ab4efae6e7b0730b249ba91236ddcd60).
+2025-01-30 00:42:10 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 00:42:10 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 00:42:11 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 00:42:48 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 90, in callback
+    selected_preset = bot.temp_data.get(user_id, {}).get("preset")
+                      ^^^^^^^^^^^^^
+AttributeError: 'Bot' object has no attribute 'temp_data'
+2025-01-30 00:43:01 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 135, in callback
+    metadata=discord.AutoModActionMetadata(channel_id=interaction.channel.id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'discord' has no attribute 'AutoModActionMetadata'
+2025-01-30 00:43:35 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 135, in callback
+    metadata=discord.AutoModActionMetadata(channel_id=interaction.channel.id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'discord' has no attribute 'AutoModActionMetadata'
+2025-01-30 00:46:00 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 00:46:02 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 00:46:02 [INFO] Webhook sent successfully!
+2025-01-30 00:46:02 [INFO] logging in using static token
+2025-01-30 00:46:03 [INFO] Shard ID None has connected to Gateway (Session ID: 683fb0af8cea8c651c93a6a3cb59a4c7).
+2025-01-30 00:46:06 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 00:46:06 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 00:46:06 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 00:46:25 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 152, in callback
+    actions=actions,
+            ^^^^^^^
+UnboundLocalError: cannot access local variable 'actions' where it is not associated with a value
+2025-01-30 00:48:04 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 00:48:06 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 00:48:06 [INFO] Webhook sent successfully!
+2025-01-30 00:48:06 [INFO] logging in using static token
+2025-01-30 00:48:07 [INFO] Shard ID None has connected to Gateway (Session ID: d43196ec72fb7d5bb7fb4e2617c89690).
+2025-01-30 00:48:09 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 00:48:10 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 00:48:10 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 00:48:28 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 152, in callback
+    actions=actions,
+            ^^^^^^^
+UnboundLocalError: cannot access local variable 'actions' where it is not associated with a value
+2025-01-30 00:53:14 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 00:53:16 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 00:53:16 [INFO] Webhook sent successfully!
+2025-01-30 00:53:16 [INFO] logging in using static token
+2025-01-30 00:53:17 [INFO] Shard ID None has connected to Gateway (Session ID: 7a1e9ecb2b59911b5656e11865f6e891).
+2025-01-30 00:53:20 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 00:53:20 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 00:53:20 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 00:53:23 [ERROR] Unhandled Exception: Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/app_commands/commands.py", line 857, in _do_call
+    return await self._callback(self.binding, interaction, **params)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 173, in automod_setup
+    view = AutoModSettingsView(log_channel)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 31, in __init__
+    self.add_item(SaveAutoModConfigButton())
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: SaveAutoModConfigButton.__init__() missing 1 required positional argument: 'log_channel'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/app_commands/tree.py", line 1310, in _call
+    await command._invoke_with_namespace(interaction, namespace)
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/app_commands/commands.py", line 883, in _invoke_with_namespace
+    return await self._do_call(interaction, transformed_values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/app_commands/commands.py", line 872, in _do_call
+    raise CommandInvokeError(self, e) from e
+discord.app_commands.errors.CommandInvokeError: Command 'automod_setup' raised an exception: TypeError: SaveAutoModConfigButton.__init__() missing 1 required positional argument: 'log_channel'
+
+2025-01-30 00:56:21 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 00:56:23 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 00:56:23 [INFO] Webhook sent successfully!
+2025-01-30 00:56:24 [INFO] logging in using static token
+2025-01-30 00:56:25 [INFO] Shard ID None has connected to Gateway (Session ID: ee517d11c9f52299f2d60ce1878dfa3c).
+2025-01-30 00:56:27 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 00:56:27 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 00:56:27 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 00:56:46 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 120, in callback
+    discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 01:01:21 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 01:01:23 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 01:01:24 [INFO] Webhook sent successfully!
+2025-01-30 01:01:24 [INFO] logging in using static token
+2025-01-30 01:01:25 [INFO] Shard ID None has connected to Gateway (Session ID: 1d0b4f0301c499d0a6e96dc76b5a20e2).
+2025-01-30 01:01:27 [INFO] [32m[ SYNCED ][39m 22 commands successfully.
+2025-01-30 01:01:27 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 01:01:27 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 01:02:38 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 01:02:40 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 01:02:41 [INFO] Webhook sent successfully!
+2025-01-30 01:02:41 [INFO] logging in using static token
+2025-01-30 01:02:42 [INFO] Shard ID None has connected to Gateway (Session ID: 10a44790b9c7663d696c3667fc5cdf97).
+2025-01-30 01:02:44 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 01:02:44 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 01:02:44 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 01:03:41 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 121, in callback
+    discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 01:07:17 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 01:07:19 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 01:07:19 [INFO] Webhook sent successfully!
+2025-01-30 01:07:20 [INFO] logging in using static token
+2025-01-30 01:07:20 [INFO] Shard ID None has connected to Gateway (Session ID: e886e8629b63a28559004ed7a5b7bb94).
+2025-01-30 01:07:23 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 01:07:23 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 01:07:23 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 01:07:39 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=2> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 121, in callback
+    discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 01:20:24 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 01:20:26 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 01:20:26 [INFO] Webhook sent successfully!
+2025-01-30 01:20:26 [INFO] logging in using static token
+2025-01-30 01:20:28 [INFO] Shard ID None has connected to Gateway (Session ID: e8f8fd82da04a9f07d51e1db03148314).
+2025-01-30 01:20:30 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 01:20:30 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 01:20:30 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 01:21:16 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 133, in callback
+    actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 01:21:18 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 133, in callback
+    actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)],
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 01:28:08 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 01:28:09 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 01:28:10 [INFO] Webhook sent successfully!
+2025-01-30 01:28:10 [INFO] logging in using static token
+2025-01-30 01:28:10 [INFO] Shard ID None has connected to Gateway (Session ID: 642e8ca07c643c08a5c7b9b85335a7d8).
+2025-01-30 01:28:13 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 01:28:13 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 01:28:13 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 02:28:01 [INFO] Shard ID None has successfully RESUMED session 642e8ca07c643c08a5c7b9b85335a7d8.
+2025-01-30 05:06:59 [INFO] Shard ID None has successfully RESUMED session 642e8ca07c643c08a5c7b9b85335a7d8.
+2025-01-30 05:07:44 [INFO] Shard ID None has successfully RESUMED session 642e8ca07c643c08a5c7b9b85335a7d8.
+2025-01-30 05:35:53 [INFO] Shard ID None has successfully RESUMED session 642e8ca07c643c08a5c7b9b85335a7d8.
+2025-01-30 06:07:57 [INFO] Shard ID None has successfully RESUMED session 642e8ca07c643c08a5c7b9b85335a7d8.
+2025-01-30 06:40:00 [INFO] Shard ID None has successfully RESUMED session 642e8ca07c643c08a5c7b9b85335a7d8.
+2025-01-30 09:04:26 [INFO] Shard ID None has successfully RESUMED session 642e8ca07c643c08a5c7b9b85335a7d8.
+2025-01-30 10:49:01 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 10:49:03 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 10:49:04 [INFO] Webhook sent successfully!
+2025-01-30 10:49:04 [INFO] logging in using static token
+2025-01-30 10:49:05 [INFO] Shard ID None has connected to Gateway (Session ID: 2b60e8eb792fe8fa74c21779f83337df).
+2025-01-30 10:49:08 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 10:49:08 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 10:49:08 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 10:49:26 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <AutoModRoleSelector placeholder='Choose exempt roles...' min_values=0 max_values=6 disabled=False>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 72, in callback
+    interaction.client.temp_data[interaction.user.id]["exempt_roles"] = selected_roles
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Bot' object has no attribute 'temp_data'
+2025-01-30 10:51:58 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:51:59 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:11 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:12 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:13 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:14 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:15 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:16 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:44 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:52:45 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:53:08 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 10:59:02 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 10:59:04 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 10:59:05 [INFO] Webhook sent successfully!
+2025-01-30 10:59:05 [INFO] logging in using static token
+2025-01-30 10:59:06 [INFO] Shard ID None has connected to Gateway (Session ID: 0db6b6f812275a852c258946248cf6e2).
+2025-01-30 10:59:09 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 10:59:09 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 10:59:09 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 11:00:42 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 11:00:44 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 134, in callback
+    discord.AutoModRuleAction(
+TypeError: AutoModRuleAction.__init__() got an unexpected keyword argument 'channel'
+2025-01-30 11:02:52 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 11:02:54 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 11:02:54 [INFO] Webhook sent successfully!
+2025-01-30 11:02:55 [INFO] logging in using static token
+2025-01-30 11:02:57 [INFO] Shard ID None has connected to Gateway (Session ID: b73a98dd0a5084845a687f2252a457c3).
+2025-01-30 11:02:59 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 11:03:00 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 11:03:00 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 11:03:27 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 11:03:29 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 11:03:30 [INFO] Webhook sent successfully!
+2025-01-30 11:03:30 [INFO] logging in using static token
+2025-01-30 11:03:31 [INFO] Shard ID None has connected to Gateway (Session ID: e855f0608c5c789c9427cbe398a0e08d).
+2025-01-30 11:03:35 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 11:03:35 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 11:03:35 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 11:03:48 [INFO] [ SYSTEM ] Rebooting bot...
+2025-01-30 11:03:51 [INFO] [ LOADED ] cogs/error_handler.py
+2025-01-30 11:03:51 [INFO] Webhook sent successfully!
+2025-01-30 11:03:51 [INFO] logging in using static token
+2025-01-30 11:03:53 [INFO] Shard ID None has connected to Gateway (Session ID: 7d4e9e7b424e68c9459145cb6c04a002).
+2025-01-30 11:04:28 [ERROR] Ignoring exception in view <AutoModSettingsView timeout=900.0 children=4> for item <SaveAutoModConfigButton style=<ButtonStyle.success: 3> url=None disabled=False label='Apply AutoMod Settings' emoji=None row=None sku_id=None>
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/ui/view.py", line 430, in _scheduled_task
+    await item.callback(interaction)
+  File "/home/unlcemelo/Desktop/MelonShield/cogs/automod.py", line 108, in callback
+    selected_preset = bot.temp_data.get(user_id, {}).get("preset")
+                      ^^^^^^^^^^^^^
+AttributeError: 'Bot' object has no attribute 'temp_data'
+2025-01-30 11:04:34 [INFO] [32m[ SYNCED ][39m 23 commands successfully.
+2025-01-30 11:04:34 [INFO] [32m[ CONNECTED ][39m Melli is online and ready!
+2025-01-30 11:04:34 [INFO] Currently in [34m6[39m guilds.
+2025-01-30 11:06:32 [CRITICAL] Uncaught Exception: Traceback (most recent call last):
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/unlcemelo/Desktop/MelonShield/bot.py", line 140, in main
+    await client.start(TOKEN)
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/client.py", line 787, in start
+    await self.connect(reconnect=reconnect)
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/client.py", line 667, in connect
+    await self.ws.poll_event()
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/discord/gateway.py", line 621, in poll_event
+    msg = await self.socket.receive(timeout=self._max_heartbeat_timeout)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/unlcemelo/Desktop/MelonShield/ms/lib/python3.12/site-packages/aiohttp/client_ws.py", line 332, in receive
+    msg = await self._reader.read()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "aiohttp/_websocket/reader_c.py", line 112, in read
+  File "aiohttp/_websocket/reader_c.py", line 109, in aiohttp._websocket.reader_c.WebSocketDataQueue.read
+asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/unlcemelo/Desktop/MelonShield/bot.py", line 144, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 123, in run
+    raise KeyboardInterrupt()
+KeyboardInterrupt
+

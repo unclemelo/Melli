@@ -1,0 +1,16 @@
+{
+    "action_type": "send_alert_message",
+    "channel_id": 1330523346890395764,
+    "custom_message": "This message violates community guidelines.",
+    "regex_patterns": [
+        "badword1",
+        "badword2"
+    ],
+    "keyword_filter": [
+        "spam",
+        "offensive"
+    ],
+    "enabled": true,
+    "exempt_roles": [],
+    "exempt_channels": []
+}
