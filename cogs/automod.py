@@ -3,19 +3,14 @@ from discord import app_commands
 from discord.ext import commands
 import json
 # Load AutoMod preset configurations from file
-PRESETS_FILE = "data/presets.json"
 
-def load_presets():
-    """Load AutoMod presets from the given JSON file."""
-    try:
-        with open(PRESETS_FILE, "r") as file:
-            return json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        # Return an empty dict if file is not found or invalid JSON
-        return {}
-
-preset_configurations = load_presets()
-
+"""Load AutoMod presets from the given JSON file."""
+try:
+    with open("data/presets.json", "r") as file:
+        Pretesets = json.load(file)
+except discord.HTTPException as e:
+    # Return an empty dict if file is not found or invalid JSON
+    print("JSON didnt load")
 # UI for AutoMod settings
 class AutoModSettingsView(discord.ui.View):
     """UI view that includes preset selection, role selection, channel selection, and save button for AutoMod settings."""
@@ -50,7 +45,7 @@ class AutoModPresetSelector(discord.ui.Select):
         selected_preset = self.values[0]
         interaction.client.temp_data[interaction.user.id] = {"preset": selected_preset}
         # Store the selected preset in temporary data for later use
-        interaction.client.temp_data[interaction.user.id]["config"] = preset_configurations.get(selected_preset, {})
+        interaction.client.temp_data[interaction.user.id]["config"] = Pretesets.get(selected_preset, {})
 
 # Dropdown menu to select exempt roles
 class AutoModRoleSelector(discord.ui.Select):
@@ -111,7 +106,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
             await interaction.followup.send("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
             return
         # Load rule data for the selected preset
-        rule_data = preset_configurations.get(selected_preset, {})
+        rule_data = Pretesets.get(selected_preset, {})
         if not rule_data:
             # Missing or empty preset data
             await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
