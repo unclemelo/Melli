@@ -6,6 +6,7 @@ import json
 
 # Load AutoMod preset configurations from file
 PRESETS_FILE = "data/Automod_Configs/presets.json"
+DEBUG_CHANNEL_ID = 1308048388637462558 
 
 def load_presets():
     try:
@@ -15,6 +16,12 @@ def load_presets():
         return {}
 
 preset_configurations = load_presets()
+
+async def send_debug_log(bot, message):
+    """Helper function to send debug logs to a specific channel."""
+    channel = bot.get_channel(DEBUG_CHANNEL_ID)
+    if channel:
+        await channel.send(f"🛠️ **Debug Log:** {message}")
 
 # UI for AutoMod settings
 class AutoModSettingsView(discord.ui.View):
@@ -46,6 +53,9 @@ class AutoModPresetSelector(discord.ui.Select):
 
         selected_preset = self.values[0]
         interaction.client.temp_data[interaction.user.id] = {"preset": selected_preset}
+
+        # Debug log
+        await send_debug_log(interaction.client, f"{interaction.user} selected `{selected_preset}` preset.")
 
         # Detailed descriptions of each preset
         preset_explanations = {
@@ -92,6 +102,9 @@ class SaveAutoModConfigButton(discord.ui.Button):
         with open(PRESETS_FILE, "w") as config_file:
             json.dump(preset_configurations, config_file, indent=4)
 
+        # Debug log
+        await send_debug_log(interaction.client, f"Applying `{selected_preset}` AutoMod settings.")
+
         embed = discord.Embed(
             title="✅ AutoMod Settings Applied",
             description=f"AutoMod is now using the **{selected_preset}** security level.",
@@ -123,7 +136,9 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 exempt_channels=exempt_channels,
                 reason="Updating AutoMod settings via bot."
             )
+            await send_debug_log(interaction.client, f"✅ Successfully created AutoMod rule `{rule_name}`.")
         except discord.HTTPException as e:
+            await send_debug_log(interaction.client, f"❌ Failed to create AutoMod rule: {e}")
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
 
 # AutoMod Command Cog
@@ -141,7 +156,10 @@ class AutoModManager(commands.Cog):
             description="Select a filtering level and apply the settings below.",
             color=discord.Color.blue()
         )
+
+        await send_debug_log(self.bot, f"{interaction.user} initiated AutoMod setup.")
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(AutoModManager(bot))
+    await send_debug_log(bot, "📢 AutoModManager cog loaded.")
