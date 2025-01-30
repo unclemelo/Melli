@@ -80,17 +80,28 @@ class SaveAutoModConfigButton(discord.ui.Button):
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
 
     async def callback(self, interaction: discord.Interaction):
-        selected_preset = interaction.client.temp_data.get(interaction.user.id, {}).get("preset")
+        user_id = interaction.user.id
+        bot = interaction.client
+        
+        # ✅ Defer the response to prevent interaction timeout
+        await interaction.response.defer(ephemeral=True)
+        await send_debug_log(bot, f"⏳ Processing AutoMod settings for {interaction.user}...")
+
+        selected_preset = bot.temp_data.get(user_id, {}).get("preset")
         if not selected_preset:
-            await interaction.response.send_message("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
+            await send_debug_log(bot, "⚠ No preset selected - skipping AutoMod rule creation.")
+            await interaction.followup.send("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
             return
         
         guild = interaction.guild
         rule_data = preset_configurations.get(selected_preset, {})
 
         if not rule_data:
-            await interaction.response.send_message("⚠ Error: Preset settings not found!", ephemeral=True)
+            await send_debug_log(bot, f"⚠ Preset `{selected_preset}` is empty or missing in `presets.json`.")
+            await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
             return
+
+        await send_debug_log(bot, f"📜 Loaded rule data for `{selected_preset}`: {rule_data}")
 
         rule_name = rule_data.get("rule_name", "AutoMod Rule")
         regex_patterns = rule_data.get("regex_patterns", [])
@@ -98,12 +109,16 @@ class SaveAutoModConfigButton(discord.ui.Button):
         exempt_roles = [guild.get_role(role_id) for role_id in rule_data.get("exempt_roles", []) if guild.get_role(role_id)]
         exempt_channels = [guild.get_channel(channel_id) for channel_id in rule_data.get("exempt_channels", []) if guild.get_channel(channel_id)]
 
-        # Save settings to file
-        with open(PRESETS_FILE, "w") as config_file:
-            json.dump(preset_configurations, config_file, indent=4)
+        await send_debug_log(bot, f"✅ Exempt Roles: {exempt_roles}")
+        await send_debug_log(bot, f"✅ Exempt Channels: {exempt_channels}")
 
-        # Debug log
-        await send_debug_log(interaction.client, f"Applying `{selected_preset}` AutoMod settings.")
+        # ✅ Save settings and check for errors
+        try:
+            with open(PRESETS_FILE, "w") as config_file:
+                json.dump(preset_configurations, config_file, indent=4)
+            await send_debug_log(bot, "💾 Preset configuration saved successfully.")
+        except Exception as e:
+            await send_debug_log(bot, f"❌ Failed to save presets: {e}")
 
         embed = discord.Embed(
             title="✅ AutoMod Settings Applied",
@@ -111,9 +126,9 @@ class SaveAutoModConfigButton(discord.ui.Button):
             color=discord.Color.green()
         )
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await send_debug_log(bot, f"⚙️ Preparing to create AutoMod rule `{rule_name}`.")
 
-        # Create AutoMod Rule in Discord
+        # ✅ AutoMod Rule Setup
         actions = [
             discord.AutoModRuleAction(
                 type=discord.AutoModRuleActionType.send_alert_message,
@@ -136,9 +151,10 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 exempt_channels=exempt_channels,
                 reason="Updating AutoMod settings via bot."
             )
-            await send_debug_log(interaction.client, f"✅ Successfully created AutoMod rule `{rule_name}`.")
+            await send_debug_log(bot, f"✅ Successfully created AutoMod rule `{rule_name}`.")
+            await interaction.followup.send(embed=embed)  # ✅ Send success message after processing
         except discord.HTTPException as e:
-            await send_debug_log(interaction.client, f"❌ Failed to create AutoMod rule: {e}")
+            await send_debug_log(bot, f"❌ Failed to create AutoMod rule: {e}")
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
 
 # AutoMod Command Cog
