@@ -4,7 +4,7 @@ from discord.ext import commands
 import json
 print("automod inicialization print")
 # Load AutoMod preset configurations from file
-PRESETS_FILE = "data/Automod_Configs/presets.json"
+PRESETS_FILE = "data/presets.json"
 
 def load_presets():
     """Load AutoMod presets from the given JSON file."""
