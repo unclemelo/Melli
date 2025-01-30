@@ -117,12 +117,15 @@ class SaveAutoModConfigButton(discord.ui.Button):
             # Missing or empty preset data
             await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
             return
+        try:
+            rule_name = rule_data.get("rule_name", "AutoMod Rule")
+            keyword_filter = rule_data.get("keyword_filter", [])
+            exempt_roles = bot.temp_data.get(user_id, {}).get("exempt_roles", [])
+            exempt_channels = bot.temp_data.get(user_id, {}).get("exempt_channels", [])
 
-        rule_name = rule_data.get("rule_name", "AutoMod Rule")
-        keyword_filter = rule_data.get("keyword_filter", [])
-        exempt_roles = bot.temp_data.get(user_id, {}).get("exempt_roles", [])
-        exempt_channels = bot.temp_data.get(user_id, {}).get("exempt_channels", [])
-
+        except discord.HTTPException as e:
+            await interaction.followup.send("Stop breaking my code", ephemeral=True)
+            
         # Attempt to create the AutoMod rule
         try:
             rule = await guild.create_automod_rule(
