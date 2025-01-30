@@ -41,7 +41,7 @@ class AutoModPresetSelector(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         """Handle the preset selection and store it temporarily for later use."""
         interaction.client.temp_data = Presets
-
+        
         selected_preset = self.values[0]
         interaction.client.temp_data[interaction.user.id] = {"preset": selected_preset}
         # Store the selected preset in temporary data for later use
@@ -89,7 +89,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
     def __init__(self, log_channel: discord.TextChannel):
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
         self.log_channel = log_channel
-        print("AAAAAAAAAAA")
+        print("Melo, you baka")
 
     async def callback(self, interaction: discord.Interaction):
         """Handle the save button callback to apply the AutoMod settings."""
