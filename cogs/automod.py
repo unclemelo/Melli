@@ -2,7 +2,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import json
-print("automod inicialization print")
 # Load AutoMod preset configurations from file
 PRESETS_FILE = "data/presets.json"
 
@@ -93,10 +92,9 @@ class AutoModChannelSelector(discord.ui.Select):
 class SaveAutoModConfigButton(discord.ui.Button):
     """Button to save and apply the AutoMod settings."""
     def __init__(self, log_channel: discord.TextChannel):
-        print("AAAAAAAAAAA")
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
         self.log_channel = log_channel
-        
+        print("AAAAAAAAAAA")
 
     async def callback(self, interaction: discord.Interaction):
         """Handle the save button callback to apply the AutoMod settings."""

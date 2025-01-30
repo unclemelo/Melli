@@ -5,3 +5,5 @@ ms
 melli
 __pycache__
 data/warns.json
+bot_errors.log
+data/bump_data.json
