@@ -129,12 +129,16 @@ class SaveAutoModConfigButton(discord.ui.Button):
         await send_debug_log(bot, f"⚙️ Preparing to create AutoMod rule `{rule_name}`.")
 
         # ✅ AutoMod Rule Setup
-        actions = [
-            discord.AutoModRuleAction(
-                type=discord.AutoModRuleActionType.send_alert_message,
-                metadata=discord.AutoModActionMetadata(channel_id=interaction.channel.id)
-            )
-        ]
+        try:
+            actions = [
+                discord.AutoModRuleAction(
+                    type=discord.AutoModRuleActionType.send_alert_message,
+                    metadata=discord.AutoModActionMetadata(channel_id=interaction.channel.id)
+                )
+            ]
+        except Exception as e:
+            await send_debug_log(bot, f"❌ Failed to create Automod actions: {e}")
+
 
         try:
             await guild.create_automod_rule(
