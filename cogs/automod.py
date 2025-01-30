@@ -76,7 +76,7 @@ class AutoModPresetSelector(discord.ui.Select):
 
 # Button to save AutoMod settings
 class SaveAutoModConfigButton(discord.ui.Button):
-    def __init__(self):
+    def __init__(self, log_channel: discord.TextChannel):
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
 
     async def callback(self, interaction: discord.Interaction):
@@ -132,8 +132,8 @@ class SaveAutoModConfigButton(discord.ui.Button):
         try:
             actions = [
                 discord.AutoModRuleAction(
-                    type=discord.AutoModRuleActionType.send_alert_message,
-                    metadata=discord.AutoModAction(channel_id=interaction.channel.id)
+                    channel_id=self.log_channel.id,
+                    type=discord.AutoModRuleActionType.send_alert_message
                 )
             ]
         except Exception as e:
