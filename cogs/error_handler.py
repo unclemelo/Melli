@@ -2,8 +2,13 @@ import discord
 import datetime
 import pytz
 import traceback
+import sys
+import logging
+import requests
 from discord import app_commands, Interaction
 from discord.ext import commands
+
+WEBHOOK_URL = "https://discord.com/api/webhooks/1334413086999838771/7SFMnOltSnpdUxvbNjIV8rud6jmogrrTm559U79_0LgAmmxkOHFvc23akJz304VjfuXk"
 
 class ERROR(commands.Cog):
     def __init__(self, bot: commands.Bot, error_channel_id: int):
@@ -11,9 +16,22 @@ class ERROR(commands.Cog):
         self.error_channel_id = error_channel_id
         self.bot.tree.on_error = self.global_app_command_error
 
-    async def global_app_command_error(
-        self, interaction: Interaction, error: Exception
-    ):
+        # Setup logging
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s [%(levelname)s] %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+            handlers=[logging.FileHandler("bot_errors.log"), logging.StreamHandler()]
+        )
+
+        # Redirect stdout & stderr
+        sys.stdout = self
+        sys.stderr = self
+
+        # Handle uncaught exceptions
+        sys.excepthook = self.handle_uncaught_exception
+
+    async def global_app_command_error(self, interaction: Interaction, error: Exception):
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(
                 f"Take a chill pill! Command is cooling off. Try again in **{error.retry_after:.2f}** seconds.",
@@ -25,66 +43,47 @@ class ERROR(commands.Cog):
                 ephemeral=True
             )
         else:
-
             await interaction.response.send_message(
-                "There was an unexpected error, we have sent the errors to the devs of the bot.\nThey will work a on a patch soon.",
+                "An unexpected error occurred. The devs have been notified.",
                 ephemeral=True
             )
+
             # Gather error details
             error_type = type(error).__name__
             traceback_details = "".join(traceback.format_exception(type(error), error, error.__traceback__))
 
-            # Primary embed: Summary of the error
-            summary_embed = discord.Embed(
-                title="Command Error",
-                description=f"An error occurred in the following command: `{interaction.command}`",
-                color=discord.Color.red(),
-            )
-            summary_embed.add_field(name="Error Type", value=f"`{error_type}`", inline=False)
-            summary_embed.add_field(
-                name="Error Message",
-                value=f"```ansi\n[2;31m{str(error)}\n[0m[2;31m[0m```",
-                inline=False,
-            )
+            # Logging to console and file
+            logging.error(f"Unhandled Exception: {traceback_details}")
 
-            if interaction.user:
-                summary_embed.add_field(
-                    name="User",
-                    value=f"Name: `{interaction.user}`\nID: `{interaction.user.id}`",
-                    inline=False,
-                )
+            # Send to webhook
+            self.send_to_webhook(f"**[ERROR]** {error_type}: ```py\n{traceback_details[:1900]}```")
 
-            if interaction.guild:
-                summary_embed.add_field(
-                    name="Guild",
-                    value=f"Name: `{interaction.guild.name}`\nID: `{interaction.guild.id}`",
-                    inline=False,
-                )
+    def handle_uncaught_exception(self, exctype, value, tb):
+        """Logs any uncaught exceptions and sends to webhook."""
+        traceback_details = "".join(traceback.format_exception(exctype, value, tb))
+        logging.critical(f"Uncaught Exception: {traceback_details}")
 
-            utc_time = datetime.datetime.utcnow()
-            target_timezone = pytz.timezone('America/Chicago')
-            cst_time = utc_time.replace(tzinfo=pytz.utc).astimezone(target_timezone)
+        self.send_to_webhook(f"**[CRITICAL ERROR]** ```py\n{traceback_details[:1900]}```")
 
-            summary_embed.set_footer(text=f"{cst_time.strftime('%m/%d/%Y | %H:%M%p [CST]')}")
-            summary_embed.set_thumbnail(
-                url="https://cdn.discordapp.com/attachments/1255215236370141236/1255216537376129127/1200px-No_icon_28white_X_on_red_circle29.png"
-            )
+    def send_to_webhook(self, message):
+        """Sends logs to the Melli Console webhook using requests."""
+        payload = {"content": message, "username": "Melli Console"}
+        try:
+            response = requests.post(WEBHOOK_URL, json=payload)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Failed to send log to webhook: {e}")
 
-            # Secondary embed: Traceback details
-            traceback_embed = discord.Embed(
-                title="Error Traceback",
-                description=f"```py\n{traceback_details[:3900]}```",  # Discord has a 4000 character limit; truncate if needed
-                color=discord.Color.dark_red(),
-            )
-            traceback_embed.set_footer(text="Truncated if too long.")
+    def write(self, message):
+        """Redirects print() and errors to the webhook."""
+        message = message.strip()
+        if message:
+            logging.info(message)  # Log to file
+            self.send_to_webhook(f"**[LOG]** ```{message[:1900]}```")
 
-            # Send to the specified error channel
-            error_channel = self.bot.get_channel(self.error_channel_id)
-            if error_channel:
-                await error_channel.send(embeds=[summary_embed, traceback_embed])
-            else:
-                print("Error occurred but could not send to the specified error channel.")
-                print(traceback_details)
+    def flush(self):
+        """Required for sys.stdout override."""
+        pass
 
 async def setup(bot: commands.Bot):
     error_channel_id = 1308048388637462558
