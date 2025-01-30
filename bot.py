@@ -100,7 +100,7 @@ def send_webhook_log(embed: discord.Embed):
     if response.status_code != 204:
         print(f"Failed to send webhook. Status code: {response.status_code}, Response: {response.text}")
     else:
-        print("Webhook sent successfully!")
+        continue
 
 async def load_cogs():
     """Loads all cog files from the 'cogs' directory and logs the results using a webhook."""
@@ -114,7 +114,6 @@ async def load_cogs():
                 embed.title = "✅ Cog Loaded Successfully"
                 embed.description = f"Successfully loaded cog: `{filename}`"
                 embed.color = discord.Color.green()
-                print(f"[ LOADED ] cogs/{filename}")
             except Exception as e:
                 embed.title = "❌ Cog Failed to Load"
                 embed.description = f"Failed to load cog: `{filename}`\nError: `{e}`"
