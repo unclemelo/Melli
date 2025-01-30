@@ -130,7 +130,12 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 event_type=discord.AutoModRuleEventType.message_send,
                 trigger_type=discord.AutoModRuleTriggerType.keyword,
                 keyword_filter=keyword_filter,
-                actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)],
+                actions=[
+                        discord.AutoModRuleAction(
+                            type=discord.AutoModRuleActionType.send_alert_message, 
+                            channel=self.log_channel.id
+                        )
+                    ],
                 enabled=True,
                 exempt_roles=exempt_roles,
                 exempt_channels=exempt_channels,
