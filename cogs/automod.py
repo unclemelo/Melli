@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import json
-
+print("automod inicialization print")
 # Load AutoMod preset configurations from file
 PRESETS_FILE = "data/Automod_Configs/presets.json"
 
@@ -93,8 +93,10 @@ class AutoModChannelSelector(discord.ui.Select):
 class SaveAutoModConfigButton(discord.ui.Button):
     """Button to save and apply the AutoMod settings."""
     def __init__(self, log_channel: discord.TextChannel):
+        print("AAAAAAAAAAA")
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
         self.log_channel = log_channel
+        
 
     async def callback(self, interaction: discord.Interaction):
         """Handle the save button callback to apply the AutoMod settings."""
@@ -110,14 +112,12 @@ class SaveAutoModConfigButton(discord.ui.Button):
             # No preset selected, notify the user
             await interaction.followup.send("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
             return
-
         # Load rule data for the selected preset
         rule_data = preset_configurations.get(selected_preset, {})
         if not rule_data:
             # Missing or empty preset data
             await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
             return
-
         rule_name = rule_data.get("rule_name", "AutoMod Rule")
         keyword_filter = rule_data.get("keyword_filter", [])
         exempt_roles = bot.temp_data.get(user_id, {}).get("exempt_roles", [])
