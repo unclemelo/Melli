@@ -135,3 +135,24 @@ class SaveAutoModConfigButton(discord.ui.Button):
         except discord.HTTPException as e:
             await send_debug_log(bot, f"❌ Failed to create AutoMod rule: {e}")
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
+
+
+class AutoModManager(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @app_commands.command(name="automod_setup", description="Configure AutoMod settings for the server.")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def automod_setup(self, interaction: discord.Interaction, log_channel: discord.TextChannel):
+        view = AutoModSettingsView(log_channel)
+        embed = discord.Embed(
+            title="🔧 AutoMod Configuration",
+            description="Select a filtering level and apply the settings below.",
+            color=discord.Color.blue()
+        )
+        await send_debug_log(self.bot, f"{interaction.user} initiated AutoMod setup.")
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+async def setup(bot):
+    await bot.add_cog(AutoModManager(bot))
+    await send_debug_log(bot, "📢 AutoModManager cog loaded.")
