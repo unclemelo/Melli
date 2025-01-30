@@ -133,7 +133,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
             actions = [
                 discord.AutoModRuleAction(
                     type=discord.AutoModRuleActionType.send_alert_message,
-                    metadata=discord.AutoModActionMetadata(channel_id=interaction.channel.id)
+                    metadata=discord.AutoModAction(channel_id=interaction.channel.id)
                 )
             ]
         except Exception as e:
