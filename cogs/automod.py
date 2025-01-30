@@ -44,7 +44,7 @@ class AutoModPresetSelector(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         """Handle the preset selection and store it temporarily for later use."""
-        if not hasattr(interaction.client, "temp_data"):
+        if hasattr(interaction.client, "temp_data"):
             interaction.client.temp_data = {}
 
         selected_preset = self.values[0]
