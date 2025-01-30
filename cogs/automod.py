@@ -1,40 +1,36 @@
 import discord
-import os
 from discord import app_commands
 from discord.ext import commands
 import json
 
 # Load AutoMod preset configurations from file
 PRESETS_FILE = "data/Automod_Configs/presets.json"
-DEBUG_CHANNEL_ID = 1308048388637462558 
 
 def load_presets():
+    """Load AutoMod presets from the given JSON file."""
     try:
         with open(PRESETS_FILE, "r") as file:
             return json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
+        # Return an empty dict if file is not found or invalid JSON
         return {}
 
 preset_configurations = load_presets()
 
-async def send_debug_log(bot, message):
-    """Helper function to send debug logs to a specific channel."""
-    channel = bot.get_channel(DEBUG_CHANNEL_ID)
-    if channel:
-        await channel.send(f"\U0001F6E0️ **Debug Log:** {message}")
-
 # UI for AutoMod settings
 class AutoModSettingsView(discord.ui.View):
-    def __init__(self, log_channel: discord.TextChannel):
+    """UI view that includes preset selection, role selection, channel selection, and save button for AutoMod settings."""
+    def __init__(self, log_channel: discord.TextChannel, guild: discord.Guild):
         super().__init__(timeout=None)
-        self.add_item(AutoModPresetSelector(log_channel))
+        self.add_item(AutoModPresetSelector())
+        self.add_item(AutoModRoleSelector(guild))
+        self.add_item(AutoModChannelSelector(guild))
         self.add_item(SaveAutoModConfigButton(log_channel))
 
 # Dropdown menu to select AutoMod presets
 class AutoModPresetSelector(discord.ui.Select):
-    def __init__(self, log_channel: discord.TextChannel):
-        self.log_channel = log_channel
-
+    """Dropdown menu to select the AutoMod security preset."""
+    def __init__(self):
         options = [
             discord.SelectOption(label="Low Security", description="Minimal filtering for casual servers"),
             discord.SelectOption(label="Medium Security", description="Balanced filtering for general use"),
@@ -48,84 +44,98 @@ class AutoModPresetSelector(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        """Handle the preset selection and store it temporarily for later use."""
         if not hasattr(interaction.client, "temp_data"):
             interaction.client.temp_data = {}
 
         selected_preset = self.values[0]
         interaction.client.temp_data[interaction.user.id] = {"preset": selected_preset}
-
-        # Debug log
-        await send_debug_log(interaction.client, f"{interaction.user} selected `{selected_preset}` preset.")
-
-        # Detailed descriptions of each preset
-        preset_explanations = {
-            "Low Security": "**Low Security Mode**\n- Allows most messages\n- Minimal keyword filtering\n- Best for casual servers",
-            "Medium Security": "**Medium Security Mode**\n- Blocks common offensive words\n- Uses basic pattern recognition\n- Suitable for most communities",
-            "High Security": "**High Security Mode**\n- Strict message filtering\n- Advanced pattern detection\n- Best for high-moderation servers"
-        }
-
+        # Store the selected preset in temporary data for later use
         interaction.client.temp_data[interaction.user.id]["config"] = preset_configurations.get(selected_preset, {})
 
-        embed = discord.Embed(
-            title="AutoMod Preset Selected",
-            description=preset_explanations.get(selected_preset, "Unknown preset"),
-            color=discord.Color.orange()
+# Dropdown menu to select exempt roles
+class AutoModRoleSelector(discord.ui.Select):
+    """Dropdown menu to select exempt roles."""
+    def __init__(self, guild: discord.Guild):
+        self.guild = guild
+        roles = [discord.SelectOption(label=role.name, value=str(role.id)) for role in guild.roles if role.name != "@everyone"]
+        super().__init__(
+            placeholder="Choose exempt roles...",
+            min_values=0,
+            max_values=len(roles),
+            options=roles
         )
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+    async def callback(self, interaction: discord.Interaction):
+        """Store the selected exempt roles."""
+        selected_roles = [self.guild.get_role(int(role_id)) for role_id in self.values]
+        interaction.client.temp_data[interaction.user.id]["exempt_roles"] = selected_roles
+
+# Dropdown menu to select exempt channels
+class AutoModChannelSelector(discord.ui.Select):
+    """Dropdown menu to select exempt channels."""
+    def __init__(self, guild: discord.Guild):
+        self.guild = guild
+        channels = [discord.SelectOption(label=channel.name, value=str(channel.id)) for channel in guild.text_channels]
+        super().__init__(
+            placeholder="Choose exempt channels...",
+            min_values=0,
+            max_values=len(channels),
+            options=channels
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        """Store the selected exempt channels."""
+        selected_channels = [self.guild.get_channel(int(channel_id)) for channel_id in self.values]
+        interaction.client.temp_data[interaction.user.id]["exempt_channels"] = selected_channels
 
 # Button to save AutoMod settings
 class SaveAutoModConfigButton(discord.ui.Button):
+    """Button to save and apply the AutoMod settings."""
     def __init__(self, log_channel: discord.TextChannel):
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
         self.log_channel = log_channel
 
     async def callback(self, interaction: discord.Interaction):
+        """Handle the save button callback to apply the AutoMod settings."""
         user_id = interaction.user.id
         bot = interaction.client
         guild = interaction.guild
 
         await interaction.response.defer(ephemeral=True)
-        await send_debug_log(bot, f"⏳ Processing AutoMod settings for {interaction.user}...")
 
+        # Retrieve the selected preset from temporary data
         selected_preset = bot.temp_data.get(user_id, {}).get("preset")
         if not selected_preset:
-            await send_debug_log(bot, "⚠ No preset selected - skipping AutoMod rule creation.")
+            # No preset selected, notify the user
             await interaction.followup.send("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
             return
 
+        # Load rule data for the selected preset
         rule_data = preset_configurations.get(selected_preset, {})
         if not rule_data:
-            await send_debug_log(bot, f"⚠ Preset `{selected_preset}` is empty or missing in `presets.json`.")
+            # Missing or empty preset data
             await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
             return
 
-        await send_debug_log(bot, f"📜 Loaded rule data for `{selected_preset}`: {rule_data}")
-
         rule_name = rule_data.get("rule_name", "AutoMod Rule")
         keyword_filter = rule_data.get("keyword_filter", [])
-        exempt_roles = [guild.get_role(role_id) for role_id in rule_data.get("exempt_roles", []) if guild.get_role(role_id)]
-        exempt_channels = [guild.get_channel(channel_id) for channel_id in rule_data.get("exempt_channels", []) if guild.get_channel(channel_id)]
+        exempt_roles = bot.temp_data.get(user_id, {}).get("exempt_roles", [])
+        exempt_channels = bot.temp_data.get(user_id, {}).get("exempt_channels", [])
 
-        await send_debug_log(bot, f"✅ Exempt Roles: {exempt_roles}")
-        await send_debug_log(bot, f"✅ Exempt Channels: {exempt_channels}")
-
-        await send_debug_log(bot, "🔧 Creating AutoMod rule...")
+        # Attempt to create the AutoMod rule
         try:
-            await guild.create_automod_rule(
+            rule = await guild.create_automod_rule(
                 name=rule_name,
                 event_type=discord.AutoModRuleEventType.message_send,
                 trigger_type=discord.AutoModRuleTriggerType.keyword,
                 keyword_filter=keyword_filter,
-                actions=[
-                    discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)
-                ],
+                actions=[discord.AutoModRuleAction(type=discord.AutoModRuleActionType.send_alert_message, channel=self.log_channel)],
                 enabled=True,
                 exempt_roles=exempt_roles,
                 exempt_channels=exempt_channels,
                 reason="Updating AutoMod settings via bot."
             )
-            await send_debug_log(bot, f"✅ Successfully created AutoMod rule `{rule_name}` with ID `{rule.id}`.")
             embed = discord.Embed(
                 title="✅ AutoMod Settings Applied",
                 description=f"AutoMod is now using the **{selected_preset}** security level.",
@@ -133,26 +143,27 @@ class SaveAutoModConfigButton(discord.ui.Button):
             )
             await interaction.followup.send(embed=embed)
         except discord.HTTPException as e:
-            await send_debug_log(bot, f"❌ Failed to create AutoMod rule: {e}")
+            # Handle failure to create the rule
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
 
 
 class AutoModManager(commands.Cog):
+    """Cog to manage AutoMod setup and settings."""
     def __init__(self, bot):
         self.bot = bot
 
     @app_commands.command(name="automod_setup", description="Configure AutoMod settings for the server.")
     @app_commands.checks.has_permissions(administrator=True)
     async def automod_setup(self, interaction: discord.Interaction, log_channel: discord.TextChannel):
-        view = AutoModSettingsView(log_channel)
+        """Command to start the AutoMod setup process."""
+        view = AutoModSettingsView(log_channel, interaction.guild)
         embed = discord.Embed(
             title="🔧 AutoMod Configuration",
-            description="Select a filtering level and apply the settings below.",
+            description="Select a filtering level, exempt roles, and exempt channels, then apply the settings below.",
             color=discord.Color.blue()
         )
-        await send_debug_log(self.bot, f"{interaction.user} initiated AutoMod setup.")
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 async def setup(bot):
+    """Setup the AutoModManager cog."""
     await bot.add_cog(AutoModManager(bot))
-    await send_debug_log(bot, "📢 AutoModManager cog loaded.")
