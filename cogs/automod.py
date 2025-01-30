@@ -43,9 +43,9 @@ class AutoModPresetSelector(discord.ui.Select):
         interaction.client.temp_data = Presets
         
         selected_preset = self.values[0]
-        interaction.client.temp_data[interaction.user.id] = {"preset": selected_preset}
+        interaction.client.temp_data = {"preset": selected_preset}
         # Store the selected preset in temporary data for later use
-        interaction.client.temp_data[interaction.user.id]["config"] = Presets.get(selected_preset, {})
+        interaction.client.temp_data["config"] = Presets.get(selected_preset, {})
 
 # Dropdown menu to select exempt roles
 class AutoModRoleSelector(discord.ui.Select):
@@ -63,7 +63,7 @@ class AutoModRoleSelector(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         """Store the selected exempt roles."""
         selected_roles = [self.guild.get_role(int(role_id)) for role_id in self.values]
-        interaction.client.temp_data[interaction.user.id]["exempt_roles"] = selected_roles
+        interaction.client.temp_data["exempt_roles"] = selected_roles
 
 # Dropdown menu to select exempt channels
 class AutoModChannelSelector(discord.ui.Select):
@@ -81,7 +81,7 @@ class AutoModChannelSelector(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         """Store the selected exempt channels."""
         selected_channels = [self.guild.get_channel(int(channel_id)) for channel_id in self.values]
-        interaction.client.temp_data[interaction.user.id]["exempt_channels"] = selected_channels
+        interaction.client.temp_data["exempt_channels"] = selected_channels
 
 # Button to save AutoMod settings
 class SaveAutoModConfigButton(discord.ui.Button):
