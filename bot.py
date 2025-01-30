@@ -100,7 +100,7 @@ def send_webhook_log(embed: discord.Embed):
     if response.status_code != 204:
         print(f"Failed to send webhook. Status code: {response.status_code}, Response: {response.text}")
     else:
-        continue
+        pass
 
 async def load_cogs():
     """Loads all cog files from the 'cogs' directory and logs the results using a webhook."""
