@@ -93,8 +93,10 @@ class AutoModChannelSelector(discord.ui.Select):
 class SaveAutoModConfigButton(discord.ui.Button):
     """Button to save and apply the AutoMod settings."""
     def __init__(self, log_channel: discord.TextChannel):
+        print("AAAAAAAAAAA")
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
         self.log_channel = log_channel
+        
 
     async def callback(self, interaction: discord.Interaction):
         """Handle the save button callback to apply the AutoMod settings."""
@@ -110,22 +112,17 @@ class SaveAutoModConfigButton(discord.ui.Button):
             # No preset selected, notify the user
             await interaction.followup.send("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
             return
-
         # Load rule data for the selected preset
         rule_data = preset_configurations.get(selected_preset, {})
         if not rule_data:
             # Missing or empty preset data
             await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
             return
-        try:
-            rule_name = rule_data.get("rule_name", "AutoMod Rule")
-            keyword_filter = rule_data.get("keyword_filter", [])
-            exempt_roles = bot.temp_data.get(user_id, {}).get("exempt_roles", [])
-            exempt_channels = bot.temp_data.get(user_id, {}).get("exempt_channels", [])
+        rule_name = rule_data.get("rule_name", "AutoMod Rule")
+        keyword_filter = rule_data.get("keyword_filter", [])
+        exempt_roles = bot.temp_data.get(user_id, {}).get("exempt_roles", [])
+        exempt_channels = bot.temp_data.get(user_id, {}).get("exempt_channels", [])
 
-        except discord.HTTPException as e:
-            await interaction.followup.send("Stop breaking my code", ephemeral=True)
-            
         # Attempt to create the AutoMod rule
         try:
             rule = await guild.create_automod_rule(
