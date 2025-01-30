@@ -90,7 +90,7 @@ class System(commands.Cog):
         )
 
         # Add GitHub update status
-        git_response = update_results.get("git_pull", "No Git response available.")
+        git_response = update_results.get("git pull", "No Git response available.")
 
         if "Already up to date." in git_response:
             embed.add_field(
