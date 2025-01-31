@@ -15,13 +15,20 @@ BUMP_DATA_FILE = "data/bump_data.json"
 class MISC(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        if os.path.exists(BUMP_DATA_FILE):
-            with open(BUMP_DATA_FILE, "r") as file:
-                self.bump_data = json.load(file)
-        else:
-            self.bump_data = {}
+        self.bump_data = self.load_bump_data()
         self.bump_reminders = {}
         self.reminder_task.start()
+
+    def load_bump_data(self):
+        try:
+            with open(BUMP_DATA_FILE, "r") as file:
+                return json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return {}
+    
+    def save_bump_data(self):
+        with open(BUMP_DATA_FILE, "w") as file:
+            json.dump(self.bump_data, file, indent=4)
 
     @app_commands.command(name="bump", description="bro why are you bumping???")
     @app_commands.checks.cooldown(1, 7200, key=lambda i: (i.guild.id))
