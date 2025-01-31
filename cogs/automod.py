@@ -136,26 +136,43 @@ class SaveAutoModConfigButton(discord.ui.Button):
 
         await interaction.response.defer(ephemeral=True)
 
-        # Retrieve the selected preset from user-specific temp data
+        # ✅ Ensure temp_data exists for the user
         user_temp_data = bot.temp_data.get(user_id, {})
+        if not user_temp_data:
+            await interaction.followup.send("⚠ No AutoMod settings found. Please select a preset and try again!", ephemeral=True)
+            return
+
+        # ✅ Retrieve the selected preset
         selected_preset = user_temp_data.get("preset")
-        
         if not selected_preset:
             await interaction.followup.send("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
             return
 
-        # Load rule data for the selected preset
-        rule_data = user_temp_data.get("config", {})
+        # ✅ Load rule data
+        rule_data = Presets.get(selected_preset, {})
         if not rule_data:
             await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
             return
 
         rule_name = rule_data.get("rule_name", "AutoMod Rule")
         keyword_filter = rule_data.get("keyword_filter", [])
-        exempt_roles = user_temp_data.get("exempt_roles", [])
-        exempt_channels = user_temp_data.get("exempt_channels", [])
 
-        # Attempt to create the AutoMod rule
+        # ✅ Fetch exempt roles & channels (Ensure they are valid objects)
+        exempt_roles = [
+            guild.get_role(int(role.id)) for role in user_temp_data.get("exempt_roles", [])
+            if guild.get_role(int(role.id)) is not None
+        ]
+        exempt_channels = [
+            guild.get_channel(int(channel.id)) for channel in user_temp_data.get("exempt_channels", [])
+            if guild.get_channel(int(channel.id)) is not None
+        ]
+
+        # ✅ Validate if log_channel is set correctly
+        if not self.log_channel:
+            await interaction.followup.send("⚠ Log channel not found. Please try again!", ephemeral=True)
+            return
+
+        # ✅ Attempt to create the AutoMod rule
         try:
             rule = await guild.create_automod_rule(
                 name=rule_name,
@@ -181,6 +198,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
             await interaction.followup.send(embed=embed)
         except discord.HTTPException as e:
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
+
 
 
 
