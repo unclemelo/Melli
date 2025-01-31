@@ -4,9 +4,10 @@
         "action_type": "send_alert_message",
         "custom_message": "Please follow the rules!",
         "regex_patterns": [
-            "(?:https?://)?(?:www.|ptb.|canary.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)/(?:invite|servers))/[a-z0-9-_]+"
+            "(?:https?://)?(?:www.|ptb.|canary.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)/(?:invite|servers))/[a-z0-9-_]+",
+            "\\p{M}{3,}"
         ],
-        "keyword_filter": [],
+        "keyword_filter": ["fag*", "*nigg*"],
         "allowed_keywords": [], 
         "enabled": true,
         "exempt_roles": [],
@@ -19,9 +20,10 @@
         "regex_patterns": [
             "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|\\p{Zs})*\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b", 
             "(?:https?://)?(?:www.|ptb.|canary.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)/(?:invite|servers))/[a-z0-9-_]+",
-            "\\b(?:buy|free|cheap)\\s+(?:followers|subscribers|likes|views)\\b"
+            "\\p{M}{3,}",
+            "(?s)(?i)((<a?:[a-z_0-9]+:[0-9]+>|\\p{Extended_Pictographic}|[\\u{1F1E6}-\\u{1F1FF}]|[0-9#\\*]\\u{fe0f}).*){6,}"
         ],
-        "keyword_filter": ["spam", "offensive"],
+        "keyword_filter": ["fag*", "retard", "*retarded*", "*nigg*"],
         "allowed_keywords": ["*://c.tenor.com/*", "*://cdn.discordapp.com/*", "*://garticphone.com/*", "*://imgflip.com/*", "*://media.discordapp.net/*", "*://on.soundcloud.com/*", "*://open.spotify.com/*", "*://store.steampowered.com/*", "*://tenor.com/*", "*://www.bilibili.com/*", "*://www.tiktok.com/*", "*://www.youtube.com/*", "*://x.com/*", "*://youtu.be/*", "*://youtube.com/*"], 
         "enabled": true,
         "exempt_roles": [],
@@ -34,11 +36,10 @@
         "regex_patterns": [
             "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|\\p{Zs})*\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b", 
             "(?:https?://)?(?:www.|ptb.|canary.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)/(?:invite|servers))/[a-z0-9-_]+",
-            "\\b(?:buy|free|cheap)\\s+(?:followers|subscribers|likes|views)\\b",
-            "(.)\\1{5,}",  
-            "\\b(?:work from home|click here|investment opportunity)\\b"
+            "(?s)(?i)((<a?:[a-z_0-9]+:[0-9]+>|\\p{Extended_Pictographic}|[\\u{1F1E6}-\\u{1F1FF}]|[0-9#\\*]\\u{fe0f}).*){4,}",  
+            "\\p{M}{3,}"
         ],
-        "keyword_filter": ["spam", "offensive", "profanity"],
+        "keyword_filter": ["fag*", "retard", "*retarded*", "*nigg*"],
         "allowed_keywords": ["*://c.tenor.com/*", "*://cdn.discordapp.com/*", "*://garticphone.com/*", "*://imgflip.com/*", "*://media.discordapp.net/*", "*://on.soundcloud.com/*", "*://open.spotify.com/*", "*://store.steampowered.com/*", "*://tenor.com/*", "*://www.bilibili.com/*", "*://www.tiktok.com/*", "*://www.youtube.com/*", "*://x.com/*", "*://youtu.be/*", "*://youtube.com/*"],
         "enabled": true,
         "exempt_roles": [],

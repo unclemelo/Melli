@@ -20,6 +20,8 @@ class MISC(commands.Cog):
                 self.bump_data = json.load(file)
         else:
             self.bump_data = {}
+        self.bump_reminders = {}
+        self.reminder_task.start()
 
     @app_commands.command(name="bump", description="bro why are you bumping???")
     @app_commands.checks.cooldown(1, 7200, key=lambda i: (i.guild.id))
@@ -27,32 +29,44 @@ class MISC(commands.Cog):
         guild_id = str(interaction.guild.id)
         user_id = str(interaction.user.id)
 
-        # Ensure the guild exists in the bump data
         if guild_id not in self.bump_data:
             self.bump_data[guild_id] = {}
 
-        # Increment the bump count for the user
         if user_id not in self.bump_data[guild_id]:
             self.bump_data[guild_id][user_id] = 0
         self.bump_data[guild_id][user_id] += 1
 
-        # Save the updated bump data
-        with open(BUMP_DATA_FILE, "w") as file:
-            json.dump(self.bump_data, file, indent=4)
+        self.save_bump_data()
 
-        # Notify the user of their bump count and cooldown in an embed
-        bump_count = self.bump_data[guild_id][user_id]
         embed = discord.Embed(
             title="Bump Command Usage",
-            description=f"{interaction.user.mention}, you have used the `bump` command {bump_count} time(s)!",
+            description=f"{interaction.user.mention}, you have used the `bump` command {self.bump_data[guild_id][user_id]} time(s)!",
             color=discord.Color.green()
         )
-        embed.add_field(
-            name="Cooldown",
-            value="You can use this command again in 2 hours.",
-            inline=False
-        )
+        embed.add_field(name="Cooldown", value="You can use this command again in 2 hours.", inline=False)
+
         await interaction.response.send_message(embed=embed)
+
+        # Schedule a reminder
+        if (guild_id) not in self.bump_reminders:
+            self.bump_reminders[(guild_id)] = asyncio.create_task(self.send_bump_reminder(interaction))
+
+    async def send_bump_reminder(self, interaction):
+        await asyncio.sleep(7200)  # Wait for 2 hours
+
+        try:
+            await interaction.followup.send(f"<@&1313894996637650985>, You can bump again dummies.")
+        except discord.HTTPException:
+            pass  # Handle any errors silently
+
+        # Remove reminder tracking
+        guild_id = str(interaction.guild.id)
+        self.bump_reminders.pop((guild_id), None)
+
+    @tasks.loop(hours=1)
+    async def reminder_task(self):
+        """ Cleans up finished reminders to prevent memory leaks. """
+        self.bump_reminders = {k: v for k, v in self.bump_reminders.items() if not v.done()}
 
     @app_commands.command(name="help", description="Shows the list of commands categorized")
     async def helpcmd(self, interaction: discord.Interaction):
