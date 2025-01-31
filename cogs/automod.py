@@ -156,6 +156,8 @@ class SaveAutoModConfigButton(discord.ui.Button):
 
         rule_name = rule_data.get("rule_name", "AutoMod Rule")
         keyword_filter = rule_data.get("keyword_filter", [])
+        RegExs_list = rule_data.get("regex_patterns", [])
+        AllowList = rule_data.get("allowed_keywords", [])
 
         # ✅ Fetch exempt roles & channels (Ensure they are valid objects)
         exempt_roles = [
@@ -180,8 +182,8 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 trigger=discord.AutoModTrigger(
                     type=discord.AutoModRuleTriggerType.keyword,
                     keyword_filter=keyword_filter,
-                    allow_list=None,
-                    regex_patterns=None, 
+                    allow_list=AllowList,
+                    regex_patterns=RegExs_list, 
                     ),
                 actions=[
                     discord.AutoModRuleAction(
