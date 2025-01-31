@@ -189,6 +189,9 @@ class SaveAutoModConfigButton(discord.ui.Button):
                     discord.AutoModRuleAction(
                         type=discord.AutoModRuleActionType.send_alert_message,
                         channel_id=self.log_channel.id
+                    ),
+                    discord.AutoModRuleAction(
+                        type=discord.AutoModRuleActionType.block_message
                     )
                 ],
                 enabled=True,
