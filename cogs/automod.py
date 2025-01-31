@@ -40,12 +40,23 @@ class AutoModPresetSelector(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         """Handle the preset selection and store it temporarily for later use."""
-        interaction.client.temp_data = Presets
+        user_id = interaction.user.id  # Track data per-user
         
+        # Ensure temp storage exists and doesn't overwrite previous entries
+        if not hasattr(interaction.client, "temp_data"):
+            interaction.client.temp_data = {}
+        
+        if user_id not in interaction.client.temp_data:
+            interaction.client.temp_data[user_id] = {}
+
         selected_preset = self.values[0]
-        interaction.client.temp_data = {"preset": selected_preset}
-        # Store the selected preset in temporary data for later use
-        interaction.client.temp_data["config"] = Presets.get(selected_preset, {})
+        
+        # Store the selected preset properly
+        interaction.client.temp_data[user_id]["preset"] = selected_preset
+        interaction.client.temp_data[user_id]["config"] = Presets.get(selected_preset, {})
+        
+        await interaction.response.send_message(f"✅ Preset **{selected_preset}** selected!", ephemeral=True)
+
 
 # Dropdown menu to select exempt roles
 class AutoModRoleSelector(discord.ui.Select):
@@ -62,8 +73,21 @@ class AutoModRoleSelector(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         """Store the selected exempt roles."""
+        user_id = interaction.user.id  # Track data per-user
+        
+        # Ensure temp storage exists
+        if not hasattr(interaction.client, "temp_data"):
+            interaction.client.temp_data = {}
+        
+        if user_id not in interaction.client.temp_data:
+            interaction.client.temp_data[user_id] = {}
+
+        # Store selected roles
         selected_roles = [self.guild.get_role(int(role_id)) for role_id in self.values]
-        interaction.client.temp_data["exempt_roles"] = selected_roles
+        interaction.client.temp_data[user_id]["exempt_roles"] = selected_roles
+        
+        await interaction.response.send_message(f"✅ Exempt roles updated!", ephemeral=True)
+
 
 # Dropdown menu to select exempt channels
 class AutoModChannelSelector(discord.ui.Select):
@@ -80,8 +104,21 @@ class AutoModChannelSelector(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         """Store the selected exempt channels."""
+        user_id = interaction.user.id  # Track data per-user
+        
+        # Ensure temp storage exists
+        if not hasattr(interaction.client, "temp_data"):
+            interaction.client.temp_data = {}
+        
+        if user_id not in interaction.client.temp_data:
+            interaction.client.temp_data[user_id] = {}
+
+        # Store selected channels
         selected_channels = [self.guild.get_channel(int(channel_id)) for channel_id in self.values]
-        interaction.client.temp_data["exempt_channels"] = selected_channels
+        interaction.client.temp_data[user_id]["exempt_channels"] = selected_channels
+        
+        await interaction.response.send_message(f"✅ Exempt channels updated!", ephemeral=True)
+
 
 # Button to save AutoMod settings
 class SaveAutoModConfigButton(discord.ui.Button):
@@ -99,22 +136,24 @@ class SaveAutoModConfigButton(discord.ui.Button):
 
         await interaction.response.defer(ephemeral=True)
 
-        # Retrieve the selected preset from temporary data
-        selected_preset = bot.temp_data.get(user_id, {}).get("preset")
+        # Retrieve the selected preset from user-specific temp data
+        user_temp_data = bot.temp_data.get(user_id, {})
+        selected_preset = user_temp_data.get("preset")
+        
         if not selected_preset:
-            # No preset selected, notify the user
             await interaction.followup.send("⚠ No preset selected. Please choose a preset before saving!", ephemeral=True)
             return
+
         # Load rule data for the selected preset
-        rule_data = Presets.get(selected_preset, {})
+        rule_data = user_temp_data.get("config", {})
         if not rule_data:
-            # Missing or empty preset data
             await interaction.followup.send("⚠ Error: Preset settings not found!", ephemeral=True)
             return
+
         rule_name = rule_data.get("rule_name", "AutoMod Rule")
         keyword_filter = rule_data.get("keyword_filter", [])
-        exempt_roles = bot.temp_data.get(user_id, {}).get("exempt_roles", [])
-        exempt_channels = bot.temp_data.get(user_id, {}).get("exempt_channels", [])
+        exempt_roles = user_temp_data.get("exempt_roles", [])
+        exempt_channels = user_temp_data.get("exempt_channels", [])
 
         # Attempt to create the AutoMod rule
         try:
@@ -124,11 +163,11 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 trigger_type=discord.AutoModRuleTriggerType.keyword,
                 keyword_filter=keyword_filter,
                 actions=[
-                        discord.AutoModRuleAction(
-                            type=discord.AutoModRuleActionType.send_alert_message, 
-                            channel=self.log_channel.id
-                        )
-                    ],
+                    discord.AutoModRuleAction(
+                        type=discord.AutoModRuleActionType.send_alert_message,
+                        channel=self.log_channel.id
+                    )
+                ],
                 enabled=True,
                 exempt_roles=exempt_roles,
                 exempt_channels=exempt_channels,
@@ -141,8 +180,8 @@ class SaveAutoModConfigButton(discord.ui.Button):
             )
             await interaction.followup.send(embed=embed)
         except discord.HTTPException as e:
-            # Handle failure to create the rule
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
+
 
 
 class AutoModManager(commands.Cog):
