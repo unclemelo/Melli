@@ -177,7 +177,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
             rule = await guild.create_automod_rule(
                 name=rule_name,
                 event_type=discord.AutoModRuleEventType.message_send,
-                trigger=discord.AutoModRuleTriggerType(
+                trigger=discord.AutoModRuleTrigger(
                     type=discord.AutoModRuleTriggerType.keyword,
                     keyword_filter=keyword_filter,
                     allow_list=None,
