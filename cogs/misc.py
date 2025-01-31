@@ -3,7 +3,7 @@ import asyncio
 import random
 import json
 import os
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord import app_commands
 from colorama import Fore
 from typing import List
