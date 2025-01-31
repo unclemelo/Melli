@@ -182,7 +182,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 actions=[
                     discord.AutoModRuleAction(
                         type=discord.AutoModRuleActionType.send_alert_message,
-                        channel=self.log_channel.id
+                        channel_id=self.log_channel.id
                     )
                 ],
                 enabled=True,
