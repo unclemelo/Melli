@@ -3,7 +3,6 @@ import discord
 import os
 import asyncio
 import requests
-import psutil
 from discord.ext import commands, tasks
 from discord import Webhook
 from dotenv import load_dotenv
@@ -58,19 +57,9 @@ async def update_status_loop():
         guild_count = len(client.guilds)
         latency = round(client.latency * 1000)  # Convert latency to ms
 
-        # System stats
-        cpu_usage = psutil.cpu_percent(interval=None)
-        memory = psutil.virtual_memory()
-        memory_usage = memory.percent
-        disk = psutil.disk_usage('/')
-        disk_usage = disk.percent
-
         # Status messages with system stats
         dynamic_statuses = [
             f"📡 | Ping: {latency}ms",
-            f"💻 | CPU Usage: {cpu_usage}%",
-            f"🧠 | Memory Usage: {memory_usage}%",
-            f"💾 | Disk Usage: {disk_usage}%"
         ]
 
         # Combine static and dynamic statuses
