@@ -357,28 +357,6 @@ class MISC(commands.Cog):
         )
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="embed", description="Test of embed")
-    async def embed(self, interaction: discord.Interaction):
-        embed = discord.Embed(
-            title="Title Of Embed",
-            url="https://info.cern.ch/",
-            description="Description of Embed",
-            color=discord.Color.dark_green()
-        )
-        
-        embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/683779791576629296/1334090637741523046/image.png?ex=679e8ffa&is=679d3e7a&hm=be67b685319392dddce4a976f674d3de71d70d457b88a9ba10b2f9ee428ec755&")
-
-        # Fields in a 2-column layout
-        embed.add_field(name="Field 1 Title", value="Field 1 Value", inline=True)
-        embed.add_field(name="Field 2 Title", value="Field 2 Value", inline=True)
-        
-        embed.add_field(name="Field 3 Title", value="Field 3 Value, Inline false so new line", inline=False)
-        
-        embed.add_field(name="Field 4 Title", value="Field 4 Value", inline=True)
-        embed.add_field(name="Field 5 Title", value="Field 5 Value", inline=True)
-
-        await interaction.response.send_message(embed=embed)
-
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(MISC(bot))
