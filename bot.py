@@ -19,7 +19,7 @@ client = commands.Bot(command_prefix='mg!', intents=intents)
 client.remove_command('help')
 
 status_messages = [
-    "🍉 | Reworking Kofinisu's AutoMod...",
+    "🍉 | I'm a silly goober. :3",
     "🌐 | Active in {guild_count} servers!",
     "⚙️ | Type /help for commands!"
 ]
