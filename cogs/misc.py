@@ -357,7 +357,7 @@ class MISC(commands.Cog):
         )
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="embed", description="Test of embed", guild=GUILD_ID)
+    @app_commands.command(name="embed", description="Test of embed")
     async def embed(self, interaction: discord.Interaction):
         embed = discord.Embed(
             title="Title Of Embed",
