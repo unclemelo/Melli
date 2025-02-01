@@ -30,12 +30,12 @@ async def on_ready():
     # Sync commands
     try:
         synced_commands = await client.tree.sync()
-        print(f"{Fore.GREEN}[ SYNCED ]{Fore.RESET} {len(synced_commands)} commands successfully.")
+        print(f"[ SYNCED ] {len(synced_commands)} commands successfully.")
     except Exception as e:
-        print(f"{Fore.RED}[ SYNC FAILED ]{Fore.RESET} {e}")
+        print(f"[ SYNC FAILED ] {e}")
 
-    print(f"{Fore.GREEN}[ CONNECTED ]{Fore.RESET} {client.user.name} is online and ready!")
-    print(f"Currently in {Fore.BLUE}{len(client.guilds)}{Fore.RESET} guilds.")
+    print(f"[ CONNECTED ] {client.user.name} is online and ready!")
+    print(f"Currently in {Fore.BLUE}{len(client.guilds)} guilds.")
 
     # Start the status update loop
     if not update_status_loop.is_running():
@@ -72,7 +72,7 @@ async def update_status_loop():
             activity=discord.Activity(type=discord.ActivityType.watching, name=current_message)
         )
     except Exception as e:
-        print(f"{Fore.RED}[ ERROR ]{Fore.RESET} Could not update presence: {e}")
+        print(f"[ ERROR ] Could not update presence: {e}")
 
 def send_webhook_log(embed: discord.Embed):
     """Sends an embed message to the specified webhook."""
