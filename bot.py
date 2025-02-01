@@ -35,7 +35,7 @@ async def on_ready():
         print(f"[ SYNC FAILED ] {e}")
 
     print(f"[ CONNECTED ] {client.user.name} is online and ready!")
-    print(f"Currently in {Fore.BLUE}{len(client.guilds)} guilds.")
+    print(f"Currently in {len(client.guilds)} guilds.")
 
     # Start the status update loop
     if not update_status_loop.is_running():
