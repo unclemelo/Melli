@@ -114,10 +114,10 @@ class Updater(commands.Cog):
         
         await interaction.followup.send(embed=embed, ephemeral=True)
         if "Already up to date." in git_response:
+            pass
+        else:
             print("[ SYSTEM ] Rebooting bot...")
             self.restart_bot()
-        else:
-            pass
 
 async def setup(bot: commands.Bot):
     """Adds the Updater cog to the bot."""
