@@ -2,7 +2,6 @@ import discord, json, random
 import asyncio
 from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
-from colorama import Fore
 from discord import app_commands
 from discord.ext import commands
 

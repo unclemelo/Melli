@@ -6,7 +6,6 @@ import requests
 from discord.ext import commands, tasks
 from discord import Webhook
 from dotenv import load_dotenv
-from colorama import Fore
 
 ## Load Environment Variables
 load_dotenv()
