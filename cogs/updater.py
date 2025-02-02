@@ -58,7 +58,7 @@ class Updater(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="🔄 Bot Updated",
+            title="Bot Updated",
             description="Successfully pulled updates from GitHub and restarted.",
             color=0x3474eb,
             timestamp=datetime.utcnow()
@@ -67,9 +67,9 @@ class Updater(commands.Cog):
         git_response = update_results.get("git_pull", "No Git response available.")
         embed.add_field(
             name="GitHub Status",
-            value=("✨ No updates found. The bot is running the latest version."
+            value=("No updates found. The bot is running the latest version."
                    if "Already up to date." in git_response else
-                   "🔧 Updates applied. Check the [GitHub Page](<https://github.com/unclemelo/Melli>)"),
+                   "Updates applied. Check the [GitHub Page](<https://github.com/unclemelo/Melli>)"),
             inline=False
         )
         await channel.send(embed=embed)
@@ -100,7 +100,7 @@ class Updater(commands.Cog):
     async def restart_cmd(self, interaction: discord.Interaction):
         """Command to reboot the bot and pull updates from GitHub."""
         embed = discord.Embed(
-            title="Rebooting `Melli`...",
+            title="Rebooting...",
             description="Pulling updates from GitHub and restarting.",
             color=0x3474eb
         )
@@ -110,7 +110,7 @@ class Updater(commands.Cog):
         await self.notify_updates(update_results)
 
         git_response = update_results.get("git_pull", "No Git response available.")
-        embed.description += "\n\n✨ No updates found. Restarting with the current version." if "Already up to date." in git_response else "\n\n🔧 Updates applied successfully."
+        embed.description += "\n\nNo updates found. Restarting with the current version." if "Already up to date." in git_response else "\n\n🔧 Updates applied successfully."
         
         await interaction.followup.send(embed=embed, ephemeral=True)
         print("[ SYSTEM ] Rebooting bot...")
