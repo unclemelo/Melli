@@ -95,12 +95,12 @@ class Updater(commands.Cog):
             "pip_install": self.run_command(["python3", "-m", "pip", "install", "-r", "requirements.txt"])
         }
 
-    @app_commands.command(name="reboot", description="Reboots the bot and updates its code.")
+    @app_commands.command(name="update", description="Reboots the bot and updates its code.")
     @is_dev()
     async def restart_cmd(self, interaction: discord.Interaction):
-        """Command to reboot the bot and pull updates from GitHub."""
+        """Command to update the bot and pull updates from GitHub."""
         embed = discord.Embed(
-            title="Rebooting...",
+            title="Updating...",
             description="Pulling updates from GitHub and restarting.",
             color=0x3474eb
         )
@@ -110,11 +110,14 @@ class Updater(commands.Cog):
         await self.notify_updates(update_results)
 
         git_response = update_results.get("git_pull", "No Git response available.")
-        embed.description += "\n\nNo updates found. Restarting with the current version." if "Already up to date." in git_response else "\n\n🔧 Updates applied successfully."
+        embed.description += "\n\nNo updates found. Cancelling the reboot..." if "Already up to date." in git_response else "\n\n🔧 Updates applied successfully."
         
         await interaction.followup.send(embed=embed, ephemeral=True)
-        print("[ SYSTEM ] Rebooting bot...")
-        self.restart_bot()
+        if "Already up to date." in git_response:
+            print("[ SYSTEM ] Rebooting bot...")
+            self.restart_bot()
+        else:
+            pass
 
 async def setup(bot: commands.Bot):
     """Adds the Updater cog to the bot."""
