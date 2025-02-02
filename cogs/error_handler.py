@@ -67,7 +67,7 @@ class ERROR(commands.Cog):
 
     def send_to_webhook(self, message):
         """Sends logs to the Melli Console webhook using requests."""
-        payload = {"content": message, "username": "Melli Console"}
+        payload = {"content": message, "username": "Melli Console", "avatar_url": "https://cdn.discordapp.com/attachments/1308048388637462558/1335601521550692392/1200px-GNOME_Terminal_icon_2019.png?ex=67a0c359&is=679f71d9&hm=84393a3c012dc40632853de048d4b48ed044b6e0d28643aaba9f298813d4fb4d&"}
         try:
             response = requests.post(WEBHOOK_URL, json=payload)
             response.raise_for_status()
