@@ -29,11 +29,11 @@ async def on_ready():
     # Sync commands
     try:
         synced_commands = await client.tree.sync()
-        print(f"[ SYNCED ] {len(synced_commands)} commands successfully.")
+        print(f"+ [ SYNCED ] {len(synced_commands)} commands successfully.")
     except Exception as e:
-        print(f"[ SYNC FAILED ] {e}")
+        print(f"- [ SYNC FAILED ] {e}")
 
-    print(f"[ CONNECTED ] {client.user.name} is online and ready!")
+    print(f"+ [ CONNECTED ] {client.user.name} is online and ready!")
     print(f"Currently in {len(client.guilds)} guilds.")
 
     # Start the status update loop
@@ -121,7 +121,7 @@ async def main():
             color=discord.Color.red(),
         )
         embed.set_footer(text="Cog Loader")
-        print(f"[ CRITICAL ERROR ] {e}")
+        print(f"- [ CRITICAL ERROR ] {e}")
         send_webhook_log(embed)
 
     await client.start(TOKEN)

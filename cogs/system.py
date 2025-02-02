@@ -41,7 +41,7 @@ class System(commands.Cog):
         message = error_messages.get(type(error), str(error))
         await interaction.response.send_message(message, ephemeral=True)
         if not isinstance(error, (app_commands.CommandOnCooldown, app_commands.MissingPermissions)):
-            print(f"[ ERROR ] {error}")
+            print(f"- [ ERROR ] {error}")
             raise error
 
     @app_commands.command(name="shutdown", description="Shuts down the bot.")

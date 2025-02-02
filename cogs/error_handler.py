@@ -79,7 +79,7 @@ class ERROR(commands.Cog):
         message = message.strip()
         if message:
             logging.info(message)  # Log to file
-            self.send_to_webhook(f"**[LOG]** ```{message[:1900]}```")
+            self.send_to_webhook(f"**[SYSTEM LOG]** ```diff\n{message[:1900]}\n```")
 
     def flush(self):
         """Required for sys.stdout override."""

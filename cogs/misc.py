@@ -276,7 +276,7 @@ class MISC(commands.Cog):
         except discord.HTTPException:
             await interaction.response.send_message("Failed to revive. The afterlife is holding onto them tight.", ephemeral=True)
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"- [ERROR] {e}")
 
 
     @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
@@ -312,7 +312,7 @@ class MISC(commands.Cog):
 
             await interaction.followup.send("Chaos reverted. Everyone's back to normal. For now.")
         except Exception as e:
-            print(f"Unexpected error: {e}")
+            print(f"- [ERROR] {e}")
             await interaction.followup.send("Something went wrong during chaos mode. Abort!", ephemeral=True)
 
 
@@ -328,7 +328,7 @@ class MISC(commands.Cog):
             except discord.Forbidden:
                 await interaction.followup.send("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
             except Exception as e:
-                print(f"Error: {e}")
+                print(f"- [ERROR] {e}")
 
         else:
             prank_nick = f"{member.mention} 🤡"
@@ -341,7 +341,7 @@ class MISC(commands.Cog):
             except discord.Forbidden:
                 await interaction.followup.send("I can't prank them. They're protected by Discord gods. 🙄", ephemeral=True)
             except Exception as e:
-                print(f"Error: {e}")
+                print(f"- [ERROR] {e}")
 
     @app_commands.command(name="uptime", description="Displays the bot's uptime.")
     async def uptime_cmd(self, interaction: discord.Interaction):
