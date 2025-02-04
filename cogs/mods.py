@@ -196,8 +196,12 @@ class Mod(commands.Cog):
     @app_commands.checks.has_permissions(manage_messages=True)
     async def clear_cmd(self, interaction: discord.Interaction, amount: int):
         try:
-            await interaction.channel.purge(limit=amount)
             await interaction.response.send_message(f"🧹 Poof! Cleared {amount} messages. The chat looks spotless now!", ephemeral=True)
+            try:
+                await interaction.channel.purge(limit=amount)
+            except Exception as e:
+                print(f"[ERROR] {e}")
+                pass
         except Exception as e:
             await interaction.response.send_message(f"Yikes! Couldn't clear messages. Is the vacuum broken? 🧼\nError: {str(e)}")
 
