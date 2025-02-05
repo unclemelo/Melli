@@ -204,6 +204,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 description=f"AutoMod is now using the **{selected_preset}** security level.",
                 color=discord.Color.green()
             )
+            embed.set_footer(test="Our presets are always improving, stay updated on your preset by joining the support server. [here](https://discord.gg/PD2fpwGyx6)")
             await interaction.followup.send(embed=embed)
         except discord.HTTPException as e:
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
