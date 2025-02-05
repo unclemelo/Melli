@@ -28,7 +28,7 @@ class AutoModPresetSelector(discord.ui.Select):
     def __init__(self):
         options = [
             discord.SelectOption(label="Low Security", description="Minimal filtering for casual servers"),
-            discord.SelectOption(label="Medium Security", description="Balanced filtering for general use"),
+            discord.SelectOption(label="Medium Security (Recommended)", description="Balanced filtering for general use"),
             discord.SelectOption(label="High Security", description="Strict filtering for highly moderated servers")
         ]
         super().__init__(
@@ -204,7 +204,7 @@ class SaveAutoModConfigButton(discord.ui.Button):
                 description=f"AutoMod is now using the **{selected_preset}** security level.",
                 color=discord.Color.green()
             )
-            embed.set_footer(text="Our presets are always improving, stay updated on your preset by joining the support server. [here](https://discord.gg/PD2fpwGyx6)")
+            embed.add_field(name="Support Server", value="Our presets are always improving, stay updated on your preset by joining the support server. [here](https://discord.gg/PD2fpwGyx6)")
             await interaction.followup.send(embed=embed)
         except discord.HTTPException as e:
             await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
