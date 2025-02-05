@@ -13,7 +13,7 @@
         "exempt_roles": [],
         "exempt_channels": []
     },
-    "Medium Security": {
+    "Medium Security (Recommended)": {
         "rule_name": "Medium Security AutoMod",
         "action_type": "send_alert_message",
         "custom_message": "This message violates community guidelines.",
