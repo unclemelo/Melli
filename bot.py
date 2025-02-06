@@ -15,6 +15,7 @@ WEBHOOK_URL = os.getenv('WEBHOOK')
 ## Bot Setup
 intents = discord.Intents.all()
 client = discord.ext.commands.AutoShardedBot(command_prefix="!", shard_count=10, intents=intents)
+client.remove_command('help')
 
 status_messages = [
     "🍉 | I'm a silly goober. :3",
