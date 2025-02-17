@@ -130,7 +130,7 @@ class MISC(commands.Cog):
     async def cheesecmd(self, interaction: discord.Interaction):
         try:            
             embed = discord.Embed(title="Cheese", description="Cheese")
-            embed.set_image(url="https://tenor.com/sk/view/cheese-gif-25732604")
+            embed.set_image(url="https://media1.tenor.com/m/INzqTz5PlSEAAAAC/cheese.gif")
             await interaction.response.send_message(embed=embed, ephemeral=False)
         except Exception as e:
             await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
