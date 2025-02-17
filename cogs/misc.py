@@ -15,8 +15,6 @@ class MISC(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.bump_data = self.load_bump_data()
-        self.bump_reminders = {}
-        self.reminder_task.start()
 
     def load_bump_data(self):
         try:
