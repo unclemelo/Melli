@@ -13,7 +13,7 @@ class AddMelli(commands.Cog):
         button = discord.ui.Button(label="Add Melli", url=invite_url, style=discord.ButtonStyle.link)
         view.add_item(button)
         
-        await interaction.response.send_message("Click the button below to invite Melli to your server!", view=view, ephemeral=True)
+        await interaction.response.send_message("**:watermelon: Click the button below to invite Melli to your server! :watermelon:**", view=view, ephemeral=True)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(AddMelli(bot))

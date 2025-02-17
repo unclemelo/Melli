@@ -91,16 +91,9 @@ async def load_cogs():
 
             try:
                 await client.load_extension(f'cogs.{filename[:-3]}')
-                embed.title = "✅ Cog Loaded Successfully"
-                embed.description = f"Successfully loaded cog: `{filename}`"
-                embed.color = discord.Color.green()
+                print(f"[ OK ] cogs/{filename}")
             except Exception as e:
-                embed.title = "❌ Cog Failed to Load"
-                embed.description = f"Failed to load cog: `{filename}`\nError: `{e}`"
-                embed.color = discord.Color.red()
                 print(f"[ FAILED TO LOAD ] cogs/{filename}: {e}")
-            finally:
-                send_webhook_log(embed)  # We no longer need async for this
 
 async def main():
     """Main function to initialize the bot."""
