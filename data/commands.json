@@ -1,0 +1,16 @@
+{
+    "Moderation": [
+        "/ban", "/kick", "/mute",
+        "/unmute", "/warn", "/warnings",
+        "/clear", "/clearwarns", "/delwarn",
+        "/unban"
+    ],
+    "Fun": [
+        "/chaos", "/cheese", "/knockout",
+        "/prank", "/revive", "/votekick",
+        "/credits"
+    ],
+    "Utility": [
+        "/automod_setup", "/reboot - **Dev Only**", "/shutdown - **Dev Only**"
+    ]
+}
