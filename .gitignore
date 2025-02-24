@@ -6,3 +6,4 @@ __pycache__
 data/warns.json
 bot_errors.log
 data/bump_data.json
+data/guildConf.json
