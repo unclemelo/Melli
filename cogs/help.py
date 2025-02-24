@@ -17,7 +17,7 @@ with open("data/commands.json", "r") as file:
 class HelpCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+    ### to do: edit so it shows which cmd is available on the server and which is not
     @app_commands.command(name="help", description="Get a list of available commands")
     async def help(self, interaction: discord.Interaction):
         embed = discord.Embed(title="Help Menu", description="Click a button below to view commands in each category.", color=discord.Color.blurple())
