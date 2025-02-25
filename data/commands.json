@@ -12,8 +12,5 @@
     ],
     "Utility": [
         "/automod_setup", "/reboot - **Dev Only**", "/shutdown - **Dev Only**"
-    ],
-    "Guild_cmds": {
-        "guild_id":["cmd 1","cmd 2"]
-    }
+    ]
 }
