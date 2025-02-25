@@ -77,6 +77,7 @@ class ServerConfig(commands.Cog):
         embed = discord.Embed(title="Command Configuration",
                               description="Select commands to toggle on/off for this server.",
                               color=discord.Color.blue())
+        embed.get_footer("Currently under maintenance.")
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 async def setup(bot: commands.Bot):
