@@ -48,6 +48,9 @@ async def update_status_loop():
         guild_count = len(client.guilds)
         latency = round(client.latency * 1000)  # Convert latency to ms
 
+        if latency > 999:
+            "📡 | Ping: 999+ms"
+
         # Status messages with system stats
         dynamic_statuses = [
             f"📡 | Ping: {latency}ms",
