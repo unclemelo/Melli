@@ -94,7 +94,6 @@ async def load_cogs():
 
             try:
                 await client.load_extension(f'cogs.{filename[:-3]}')
-                print(f"[ OK ] cogs/{filename}")
             except Exception as e:
                 print(f"[ FAILED TO LOAD ] cogs/{filename}: {e}")
 
