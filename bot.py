@@ -48,15 +48,18 @@ async def update_status_loop():
         guild_count = len(client.guilds)
         latency = round(client.latency * 1000)  # Convert latency to ms
 
+        # Check latency and assign message if above 999ms
         if latency > 999:
-            "📡 | Ping: 999+ms"
+            latency_message = "📡 | Ping: 999+ms"
+        else:
+            latency_message = f"📡 | Ping: {latency}ms"
 
         # Status messages with system stats
         dynamic_statuses = [
-            f"📡 | Ping: {latency}ms",
+            latency_message,
         ]
 
-        # Combine static and dynamic statuses
+        # Combine static and dynamic statuses (status_messages should be defined elsewhere)
         all_status_messages = status_messages + dynamic_statuses
 
         # Cycle through messages
@@ -67,6 +70,7 @@ async def update_status_loop():
         )
     except Exception as e:
         print(f"[ ERROR ] Could not update presence: {e}")
+
 
 def send_webhook_log(embed: discord.Embed):
     """Sends an embed message to the specified webhook."""
