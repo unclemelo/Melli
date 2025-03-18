@@ -12,15 +12,75 @@ except discord.HTTPException as e:
     # Return an empty dict if file is not found or invalid JSON
     print("JSON didnt load")
 
+class PaginatedSelectView(discord.ui.View):
+    """Base class for paginated select menus."""
+    def __init__(self, guild, items, item_type, per_page=25):
+        super().__init__(timeout=None)
+        self.guild = guild
+        self.items = items
+        self.item_type = item_type  # 'role' or 'channel'
+        self.per_page = per_page
+        self.page = 0
+        self.max_page = (len(items) - 1) // per_page
+
+        self.select_menu = self.create_select()
+        self.update_buttons()
+        self.add_item(self.select_menu)
+
+    def create_select(self):
+        """Create a select menu for the current page."""
+        start = self.page * self.per_page
+        end = start + self.per_page
+        options = [
+            discord.SelectOption(label=item.name, value=str(item.id))
+            for item in self.items[start:end]
+        ]
+        return discord.ui.Select(
+            placeholder=f"Page {self.page + 1}/{self.max_page + 1} - Select items",
+            options=options,
+            min_values=0,
+            max_values=len(options),
+            custom_id=f"select_{self.item_type}",
+        )
+
+    @discord.ui.button(label="⬅️ Prev", style=discord.ButtonStyle.primary, disabled=True)
+    async def prev_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Go to the previous page."""
+        self.page -= 1
+        self.update_view(interaction)
+
+    @discord.ui.button(label="➡️ Next", style=discord.ButtonStyle.primary, disabled=True)
+    async def next_page(self, interaction: discord.Interaction, button: discord.ui.Button):
+        """Go to the next page."""
+        self.page += 1
+        self.update_view(interaction)
+
+    def update_buttons(self):
+        """Update button states based on the current page."""
+        self.children[0].disabled = self.page == 0
+        self.children[1].disabled = self.page == self.max_page
+
+    async def update_view(self, interaction: discord.Interaction):
+        """Refresh the view when changing pages."""
+        self.clear_items()
+        self.select_menu = self.create_select()
+        self.update_buttons()
+        self.add_item(self.select_menu)
+        for child in self.children:  # Re-add buttons
+            self.add_item(child)
+        await interaction.response.edit_message(view=self)
+
+
 # UI for AutoMod settings
 class AutoModSettingsView(discord.ui.View):
-    """UI view that includes preset selection, role selection, channel selection, and save button for AutoMod settings."""
+    """UI view including pagination support for roles & channels."""
     def __init__(self, log_channel: discord.TextChannel, guild: discord.Guild):
         super().__init__(timeout=None)
         self.add_item(AutoModPresetSelector())
         self.add_item(AutoModRoleSelector(guild))
         self.add_item(AutoModChannelSelector(guild))
         self.add_item(SaveAutoModConfigButton(log_channel))
+
 
 # Dropdown menu to select AutoMod presets
 class AutoModPresetSelector(discord.ui.Select):
@@ -59,64 +119,44 @@ class AutoModPresetSelector(discord.ui.Select):
 
 
 # Dropdown menu to select exempt roles
-class AutoModRoleSelector(discord.ui.Select):
-    """Dropdown menu to select exempt roles."""
-    def __init__(self, guild: discord.Guild):
-        self.guild = guild
-        roles = [discord.SelectOption(label=role.name, value=str(role.id)) for role in guild.roles if role.name != "@everyone"]
-        super().__init__(
-            placeholder="Choose exempt roles...",
-            min_values=0,
-            max_values=len(roles),
-            options=roles
-        )
+class AutoModRoleSelector(PaginatedSelectView):
+    def __init__(self, guild):
+        roles = [role for role in guild.roles if role.name != "@everyone"]
+        super().__init__(guild, roles, item_type="role")
 
-    async def callback(self, interaction: discord.Interaction):
-        """Store the selected exempt roles."""
-        user_id = interaction.user.id  # Track data per-user
-        
-        # Ensure temp storage exists
+    async def interaction_check(self, interaction: discord.Interaction):
+        """Handle role selection."""
+        user_id = interaction.user.id
+        selected_roles = [self.guild.get_role(int(role_id)) for role_id in interaction.data['values']]
+
         if not hasattr(interaction.client, "temp_data"):
             interaction.client.temp_data = {}
-        
+
         if user_id not in interaction.client.temp_data:
             interaction.client.temp_data[user_id] = {}
 
-        # Store selected roles
-        selected_roles = [self.guild.get_role(int(role_id)) for role_id in self.values]
         interaction.client.temp_data[user_id]["exempt_roles"] = selected_roles
-        
         await interaction.response.send_message(f"✅ Exempt roles updated!", ephemeral=True)
 
 
 # Dropdown menu to select exempt channels
-class AutoModChannelSelector(discord.ui.Select):
-    """Dropdown menu to select exempt channels."""
-    def __init__(self, guild: discord.Guild):
-        self.guild = guild
-        channels = [discord.SelectOption(label=channel.name, value=str(channel.id)) for channel in guild.text_channels]
-        super().__init__(
-            placeholder="Choose exempt channels...",
-            min_values=0,
-            max_values=len(channels),
-            options=channels
-        )
+class AutoModChannelSelector(PaginatedSelectView):
+    def __init__(self, guild):
+        channels = [channel for channel in guild.text_channels]
+        super().__init__(guild, channels, item_type="channel")
 
-    async def callback(self, interaction: discord.Interaction):
-        """Store the selected exempt channels."""
-        user_id = interaction.user.id  # Track data per-user
-        
-        # Ensure temp storage exists
+    async def interaction_check(self, interaction: discord.Interaction):
+        """Handle channel selection."""
+        user_id = interaction.user.id
+        selected_channels = [self.guild.get_channel(int(channel_id)) for channel_id in interaction.data['values']]
+
         if not hasattr(interaction.client, "temp_data"):
             interaction.client.temp_data = {}
-        
+
         if user_id not in interaction.client.temp_data:
             interaction.client.temp_data[user_id] = {}
 
-        # Store selected channels
-        selected_channels = [self.guild.get_channel(int(channel_id)) for channel_id in self.values]
         interaction.client.temp_data[user_id]["exempt_channels"] = selected_channels
-        
         await interaction.response.send_message(f"✅ Exempt channels updated!", ephemeral=True)
 
 
