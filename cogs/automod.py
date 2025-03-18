@@ -73,13 +73,16 @@ class PaginatedSelectView(discord.ui.View):
 
 # UI for AutoMod settings
 class AutoModSettingsView(discord.ui.View):
-    """UI view including pagination support for roles & channels."""
+    """UI view that includes preset selection, role selection, channel selection, and save button for AutoMod settings."""
     def __init__(self, log_channel: discord.TextChannel, guild: discord.Guild):
         super().__init__(timeout=None)
         self.add_item(AutoModPresetSelector())
-        self.add_item(AutoModRoleSelector(guild))
-        self.add_item(AutoModChannelSelector(guild))
+        self.role_selector = AutoModRoleSelector(guild)  # Instantiate separately
+        self.add_item(self.role_selector)
+        self.channel_selector = AutoModChannelSelector(guild)  # Same for channels
+        self.add_item(self.channel_selector)
         self.add_item(SaveAutoModConfigButton(log_channel))
+
 
 
 # Dropdown menu to select AutoMod presets
