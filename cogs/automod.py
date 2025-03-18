@@ -76,12 +76,20 @@ class AutoModSettingsView(discord.ui.View):
     """UI view that includes preset selection, role selection, channel selection, and save button for AutoMod settings."""
     def __init__(self, log_channel: discord.TextChannel, guild: discord.Guild):
         super().__init__(timeout=None)
-        self.add_item(AutoModPresetSelector())
-        self.role_selector = AutoModRoleSelector(guild)  # Instantiate separately
-        self.add_item(self.role_selector)
-        self.channel_selector = AutoModChannelSelector(guild)  # Same for channels
-        self.add_item(self.channel_selector)
-        self.add_item(SaveAutoModConfigButton(log_channel))
+        self.add_item(AutoModPresetSelector())  # Preset Selector
+
+        # If PaginatedSelectView is used for roles, add it as a child View instead
+        self.role_selector_view = PaginatedSelectView(guild.roles, "Choose exempt roles...", max_per_page=25)
+        self.channel_selector_view = PaginatedSelectView(guild.text_channels, "Choose exempt channels...", max_per_page=25)
+
+        self.add_item(SaveAutoModConfigButton(log_channel))  # Apply Settings Button
+
+    async def send(self, interaction: discord.Interaction):
+        """Send the main AutoMod setup view + paginated views."""
+        await interaction.response.send_message(view=self)
+        await interaction.followup.send(view=self.role_selector_view, ephemeral=True)  # Send roles selector
+        await interaction.followup.send(view=self.channel_selector_view, ephemeral=True)  # Send channels selector
+
 
 
 
