@@ -13,62 +13,61 @@ except discord.HTTPException as e:
     print("JSON didnt load")
 
 class PaginatedSelectView(discord.ui.View):
-    """Base class for paginated select menus."""
-    def __init__(self, guild, items, item_type, per_page=25):
-        super().__init__(timeout=None)
-        self.guild = guild
+    def __init__(self, items, placeholder="Select an option...", max_per_page=25, timeout=60):
+        super().__init__(timeout=timeout)
         self.items = items
-        self.item_type = item_type  # 'role' or 'channel'
-        self.per_page = per_page
-        self.page = 0
-        self.max_page = (len(items) - 1) // per_page
+        self.placeholder = placeholder
+        self.max_per_page = max_per_page
+        self.current_page = 0  # Track pagination
 
-        self.select_menu = self.create_select()
-        self.update_buttons()
+        self.select_menu = discord.ui.Select(placeholder=self.placeholder)
+        self.update_options()  # Populate select menu
         self.add_item(self.select_menu)
 
-    def create_select(self):
-        """Create a select menu for the current page."""
-        start = self.page * self.per_page
-        end = start + self.per_page
-        options = [
-            discord.SelectOption(label=item.name, value=str(item.id))
-            for item in self.items[start:end]
+        # Add pagination buttons
+        self.previous_button = discord.ui.Button(label="Previous", style=discord.ButtonStyle.primary, disabled=True)
+        self.next_button = discord.ui.Button(label="Next", style=discord.ButtonStyle.primary, disabled=True)
+
+        self.previous_button.callback = self.previous_page
+        self.next_button.callback = self.next_page
+
+        self.add_item(self.previous_button)
+        self.add_item(self.next_button)
+
+    def update_options(self):
+        """Update the select menu options based on the current page."""
+        start = self.current_page * self.max_per_page
+        end = start + self.max_per_page
+        paginated_items = self.items[start:end]
+
+        self.select_menu.options = [
+            discord.SelectOption(label=item.name, value=str(item.id)) for item in paginated_items
         ]
-        return discord.ui.Select(
-            placeholder=f"Page {self.page + 1}/{self.max_page + 1} - Select items",
-            options=options,
-            min_values=0,
-            max_values=len(options),
-            custom_id=f"select_{self.item_type}",
-        )
 
-    @discord.ui.button(label="⬅️ Prev", style=discord.ButtonStyle.primary, disabled=True)
-    async def prev_page(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Go to the previous page."""
-        self.page -= 1
-        self.update_view(interaction)
+        # Update button states
+        self.previous_button.disabled = self.current_page == 0
+        self.next_button.disabled = end >= len(self.items)
 
-    @discord.ui.button(label="➡️ Next", style=discord.ButtonStyle.primary, disabled=True)
-    async def next_page(self, interaction: discord.Interaction, button: discord.ui.Button):
-        """Go to the next page."""
-        self.page += 1
-        self.update_view(interaction)
+    async def previous_page(self, interaction: discord.Interaction):
+        """Handles the previous page button."""
+        if self.current_page > 0:
+            self.current_page -= 1
+            self.update_options()
+            await interaction.response.edit_message(view=self)
 
-    def update_buttons(self):
-        """Update button states based on the current page."""
-        self.children[0].disabled = self.page == 0
-        self.children[1].disabled = self.page == self.max_page
+    async def next_page(self, interaction: discord.Interaction):
+        """Handles the next page button."""
+        if (self.current_page + 1) * self.max_per_page < len(self.items):
+            self.current_page += 1
+            self.update_options()
+            await interaction.response.edit_message(view=self)
 
-    async def update_view(self, interaction: discord.Interaction):
-        """Refresh the view when changing pages."""
-        self.clear_items()
-        self.select_menu = self.create_select()
-        self.update_buttons()
-        self.add_item(self.select_menu)
-        for child in self.children:  # Re-add buttons
-            self.add_item(child)
-        await interaction.response.edit_message(view=self)
+    async def on_timeout(self):
+        """Disable interactions when the view times out."""
+        for child in self.children:
+            child.disabled = True
+        self.stop()
+
 
 
 # UI for AutoMod settings
