@@ -7,7 +7,7 @@ from discord.ext import commands
 from functools import wraps
 
 # Developer IDs
-devs = {667032667732312115, 954135885392252940, 1186435491252404384, 641822140362129408}
+devs = {667032667732312115, 954135885392252940, 1186435491252404384}
 
 def is_dev():
     """Decorator to restrict commands to developers."""
