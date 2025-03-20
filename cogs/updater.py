@@ -91,6 +91,7 @@ class Updater(commands.Cog):
     def update_code(self) -> dict:
         """Pulls the latest code from GitHub and updates dependencies."""
         return {
+            "update_server": self.run_command(["sudo", "apt", "update", "&&", "sudo", "apt", "upgrade"]),
             "git_pull": self.run_command(["git", "pull"]),
             "pip_install": self.run_command(["python3", "-m", "pip", "install", "-r", "requirements.txt"])
         }
@@ -101,7 +102,7 @@ class Updater(commands.Cog):
         """Command to update the bot and pull updates from GitHub."""
         embed = discord.Embed(
             title="Updating...",
-            description="Pulling updates from GitHub and restarting.",
+            description="Pulling updates from GitHub & Ubuntu and restarting.",
             color=0x3474eb
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
