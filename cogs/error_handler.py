@@ -8,7 +8,7 @@ import requests
 from discord import app_commands, Interaction
 from discord.ext import commands
 
-WEBHOOK_URL = "https://discord.com/api/webhooks/1334413086999838771/7SFMnOltSnpdUxvbNjIV8rud6jmogrrTm559U79_0LgAmmxkOHFvc23akJz304VjfuXk"
+WEBHOOK_URL = "https://discordapp.com/api/webhooks/1334413086999838771/7SFMnOltSnpdUxvbNjIV8rud6jmogrrTm559U79_0LgAmmxkOHFvc23akJz304VjfuXk"
 
 class ERROR(commands.Cog):
     def __init__(self, bot: commands.Bot, error_channel_id: int):
