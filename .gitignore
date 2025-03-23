@@ -7,3 +7,4 @@ data/warns.json
 bot_errors.log
 data/bump_data.json
 data/guildConf.json
+data/user_stats.json
