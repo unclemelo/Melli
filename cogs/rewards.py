@@ -4,7 +4,7 @@ from discord.ext import commands
 import json
 import datetime
 
-class Whois(commands.Cog):
+class Rewards(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.file = "data/user_stats.json"
@@ -142,4 +142,4 @@ class Whois(commands.Cog):
             await interaction.response.send_message("An error occurred while retrieving the profile.")
 
 async def setup(bot):
-    await bot.add_cog(Whois(bot))
+    await bot.add_cog(Rewards(bot))
