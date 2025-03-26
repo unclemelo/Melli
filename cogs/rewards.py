@@ -31,15 +31,41 @@ class Whois(commands.Cog):
                 return  # Ignore non-command interactions
             
             user_id = str(interaction.user.id)
+            user = interaction.user
+            first_use = False  # Track if it's the user's first time using the bot
+
             if user_id not in self.data:
-                self.data[user_id] = {"command_count": 1, "first_use": datetime.datetime.utcnow().isoformat()}
+                self.data[user_id] = {
+                    "command_count": 1,
+                    "first_use": datetime.datetime.utcnow().isoformat()
+                }
+                first_use = True  # This is the user's first time using the bot
             else:
-                self.data[user_id]["command_count"] = self.data[user_id].get("command_count", 0) + 1
+                self.data[user_id]["command_count"] += 1
+            
+            prev_level = self.get_level(self.data[user_id]["command_count"] - 1)
+            new_level = self.get_level(self.data[user_id]["command_count"])
             
             self.save_data()
+
+            # Announce first-time usage and reward badge
+            if first_use:
+                await self.announce_reward(interaction.channel, user, "🎉 First-time User! You've earned your first badge!")
+
+            # Announce level-up
+            if new_level > prev_level:
+                await self.announce_reward(interaction.channel, user, f"🎉 {user.mention} has leveled up to Level {new_level}! Keep it up! 🚀")
+
         except Exception as e:
             print(f"Error updating command count: {e}")
-    
+
+    async def announce_reward(self, channel, user, message):
+        """Send an announcement message in the same channel where the command was used."""
+        if channel:
+            embed = discord.Embed(title="🏆 Achievement Unlocked!", description=message, color=discord.Color.gold())
+            embed.set_thumbnail(url=user.avatar.url)
+            await channel.send(embed=embed)
+
     def get_badges(self, command_count, first_use):
         try:
             badges = []
