@@ -23,7 +23,7 @@ class Whois(commands.Cog):
                 json.dump(self.data, f, indent=4)
         except Exception as e:
             print(f"Error saving data: {e}")
-    
+
     @commands.Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
         try:
@@ -37,12 +37,24 @@ class Whois(commands.Cog):
             if user_id not in self.data:
                 self.data[user_id] = {
                     "command_count": 1,
-                    "first_use": datetime.datetime.utcnow().isoformat()
+                    "first_use": datetime.datetime.utcnow().isoformat(),
+                    "badges": ["🎉"]  # First-time user badge
                 }
                 first_use = True  # This is the user's first time using the bot
             else:
                 self.data[user_id]["command_count"] += 1
-            
+
+                # Ensure badges exist
+                if "badges" not in self.data[user_id]:
+                    self.data[user_id]["badges"] = []
+
+                # Add the 🎉 badge if the user is new
+                if first_use and "🎉" not in self.data[user_id]["badges"]:
+                    self.data[user_id]["badges"].append("🎉")
+
+                # Update other badges based on milestones
+                self.update_badges(user_id)
+
             prev_level = self.get_level(self.data[user_id]["command_count"] - 1)
             new_level = self.get_level(self.data[user_id]["command_count"])
             
@@ -66,31 +78,38 @@ class Whois(commands.Cog):
             embed.set_thumbnail(url=user.avatar.url)
             await channel.send(embed=embed)
 
-    def get_badges(self, command_count, first_use):
+    def update_badges(self, user_id):
+        """Check and update user badges based on their command count and bot usage time."""
         try:
-            badges = []
-            first_use_date = datetime.datetime.fromisoformat(first_use)
+            user_data = self.data.get(user_id, {})
+            command_count = user_data.get("command_count", 0)
+            first_use_date = datetime.datetime.fromisoformat(user_data.get("first_use", datetime.datetime.utcnow().isoformat()))
             days_using = (datetime.datetime.utcnow() - first_use_date).days
-            
+
+            badges = set(user_data.get("badges", []))  # Convert to a set to avoid duplicates
+
+            # Command count badges
             if command_count >= 100:
-                badges.append("🥉")
+                badges.add("🥉")  # Bronze
             if command_count >= 500:
-                badges.append("🥈")
+                badges.add("🥈")  # Silver
             if command_count >= 1000:
-                badges.append("🥇")
-            
+                badges.add("🥇")  # Gold
+
+            # Time-based badges
             if days_using >= 30:
-                badges.append("📅")
+                badges.add("📅")  # One month user
             if days_using >= 180:
-                badges.append("🎖️")
+                badges.add("🎖️")  # Six months user
             if days_using >= 365:
-                badges.append("🏆")
-            
-            return badges
+                badges.add("🏆")  # One year user
+
+            # Update user data
+            self.data[user_id]["badges"] = list(badges)
+
         except Exception as e:
-            print(f"Error calculating badges: {e}")
-            return []
-    
+            print(f"Error updating badges: {e}")
+
     def get_level(self, command_count):
         try:
             return command_count // 100  # 1 level per 100 commands
@@ -108,10 +127,9 @@ class Whois(commands.Cog):
                 return
             
             command_count = self.data[user_id].get("command_count", 0)
-            first_use = self.data[user_id].get("first_use", datetime.datetime.utcnow().isoformat())
-            badges = self.get_badges(command_count, first_use)
             level = self.get_level(command_count)
-            
+            badges = self.data[user_id].get("badges", [])
+
             embed = discord.Embed(title=f"{member.display_name}'s Profile", color=discord.Color.blue())
             embed.add_field(name="Commands Used", value=str(command_count), inline=False)
             embed.add_field(name="Level", value=f"{level}", inline=False)
