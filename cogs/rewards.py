@@ -25,9 +25,12 @@ class Whois(commands.Cog):
             print(f"Error saving data: {e}")
     
     @commands.Cog.listener()
-    async def on_command(self, ctx):
+    async def on_interaction(self, interaction: discord.Interaction):
         try:
-            user_id = str(ctx.author.id)
+            if interaction.command is None:
+                return  # Ignore non-command interactions
+            
+            user_id = str(interaction.user.id)
             if user_id not in self.data:
                 self.data[user_id] = {"command_count": 1, "first_use": datetime.datetime.utcnow().isoformat()}
             else:
