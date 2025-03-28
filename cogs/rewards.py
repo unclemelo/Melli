@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import json
 import datetime
+from util.command_checks import is_command_enabled
 
 class Rewards(commands.Cog):
     def __init__(self, bot):
@@ -119,6 +120,10 @@ class Rewards(commands.Cog):
 
     @app_commands.command(name="profile", description="View the profile we gave you on the bot.")
     async def profile(self, interaction: discord.Interaction, member: discord.Member = None):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "profile"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         try:
             member = member or interaction.user
             user_id = str(member.id)

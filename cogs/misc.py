@@ -8,6 +8,7 @@ from discord import app_commands
 from typing import List
 from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
+from util.command_checks import is_command_enabled
 
 BUMP_DATA_FILE = "data/bump_data.json"
 
@@ -30,6 +31,10 @@ class MISC(commands.Cog):
     @app_commands.command(name="bump", description="bro why are you bumping???")
     @app_commands.checks.cooldown(1, 7200, key=lambda i: (i.guild.id))
     async def bumpcmd(self, interaction: discord.Interaction):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "bump"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         guild_id = str(interaction.guild.id)
         user_id = str(interaction.user.id)
 
@@ -51,17 +56,12 @@ class MISC(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="cheese", description="cheese")
-    async def cheesecmd(self, interaction: discord.Interaction):
-        try:            
-            embed = discord.Embed(title="Cheese", description="Cheese")
-            embed.set_image(url="https://media1.tenor.com/m/INzqTz5PlSEAAAAC/cheese.gif")
-            await interaction.response.send_message(embed=embed, ephemeral=False)
-        except Exception as e:
-            await interaction.response.send_message(f"An error occurred. Please contact an administrator.\n```{e}```", ephemeral=True)
-
     @app_commands.command(name="credits", description="Meet the dev team.")
     async def creditscmd(self, interaction: discord.Interaction):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "credits"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         try:
             embed = discord.Embed(
                 title="✨ Credits ✨",
@@ -99,6 +99,10 @@ class MISC(commands.Cog):
     @app_commands.command(name="votekick", description="Vote to kick annoying people from the server!")
     @app_commands.checks.cooldown(1, 43200, key=lambda i: (i.guild.id))  # 12-hour cooldown
     async def votekick(self, interaction: discord.Interaction, member: discord.Member):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "votekick"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         """Starts a vote to kick a specified member."""
 
         # Check if the target has moderation permissions
@@ -187,6 +191,10 @@ class MISC(commands.Cog):
     @app_commands.command(name="revive", description="Bring back a timed-out user with flair!")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     async def revive_cmd(self, interaction: discord.Interaction, member: discord.Member):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "revive"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         try:
             await member.edit(timed_out_until=None)
             embed = discord.Embed(
@@ -207,6 +215,10 @@ class MISC(commands.Cog):
     @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     async def chaos_cmd(self, interaction: discord.Interaction):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "chaos"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         await interaction.response.defer()
         try:
             members = interaction.guild.members
@@ -244,6 +256,10 @@ class MISC(commands.Cog):
     @app_commands.command(name="prank", description="Play a harmless prank on a member!")
     @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     async def prank_cmd(self, interaction: discord.Interaction, member: discord.Member):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "prank"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         await interaction.response.defer()
         if member.id == 1230672301364871188:
             prank_nick = f"{member.mention} 🤡"

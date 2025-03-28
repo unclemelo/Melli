@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import json
+from util.command_checks import is_command_enabled
 # Load AutoMod preset configurations from file
 
 """Load AutoMod presets from the given JSON file."""
@@ -270,6 +271,10 @@ class AutoModManager(commands.Cog):
     @app_commands.command(name="automod_setup", description="Configure AutoMod settings for the server.")
     @app_commands.checks.has_permissions(administrator=True)
     async def automod_setup(self, interaction: discord.Interaction, log_channel: discord.TextChannel):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "automod_setup"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         """Command to start the AutoMod setup process."""
         view = AutoModSettingsView(log_channel, interaction.guild)
         embed = discord.Embed(

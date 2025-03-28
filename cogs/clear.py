@@ -4,6 +4,7 @@ import os
 from discord import app_commands
 from discord.ext import commands
 from datetime import timedelta
+from util.command_checks import is_command_enabled
 
 class Clear(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -12,6 +13,10 @@ class Clear(commands.Cog):
     @app_commands.command(name="clear", description="Clears a number of messages.")
     @app_commands.checks.has_permissions(manage_messages=True)
     async def clear_cmd(self, interaction: discord.Interaction, amount: int):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "clear"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         try:
             await interaction.response.send_message(f"🧹 Poof! Cleared {amount} messages. The chat looks spotless now!", ephemeral=True)
             try:

@@ -2,6 +2,7 @@ import discord
 import json
 from discord import app_commands
 from discord.ext import commands
+from util.command_checks import is_command_enabled
 
 class HelpView(discord.ui.View):
     def __init__(self):
@@ -20,6 +21,10 @@ class HelpCommand(commands.Cog):
     ### to do: edit so it shows which cmd is available on the server and which is not
     @app_commands.command(name="help", description="Get a list of available commands")
     async def help(self, interaction: discord.Interaction):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "help"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         embed = discord.Embed(title="Help Menu", description="Click a button below to view commands in each category.", color=discord.Color.blurple())
         await interaction.response.send_message(embed=embed, view=HelpView(), ephemeral=True)
 

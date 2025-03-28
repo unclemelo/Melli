@@ -4,6 +4,7 @@ import os
 from discord import app_commands
 from discord.ext import commands
 from datetime import timedelta
+from util.command_checks import is_command_enabled
 
 
 class Ban(commands.Cog):
@@ -13,6 +14,10 @@ class Ban(commands.Cog):
     @app_commands.command(name="ban", description="Bans a user.")
     @app_commands.checks.has_permissions(ban_members=True)
     async def ban_cmd(self, interaction: discord.Interaction, member: discord.Member, *, reason: str = "No reason provided"):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "ban"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         try:
             embed = discord.Embed(
                 title=f"🔨 **{member.name} was struck by the Melon Hammer!**",
@@ -27,6 +32,10 @@ class Ban(commands.Cog):
     @app_commands.command(name="unban", description="Unbans a user.")
     @app_commands.checks.has_permissions(ban_members=True)
     async def unban_cmd(self, interaction: discord.Interaction, user_id: int):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "unban"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         try:
             user = await self.bot.fetch_user(user_id)
             await interaction.guild.unban(user)

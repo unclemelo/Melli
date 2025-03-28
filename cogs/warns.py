@@ -4,6 +4,7 @@ import os
 from discord import app_commands
 from discord.ext import commands
 from datetime import timedelta
+from util.command_checks import is_command_enabled
 
 WARN_FILE = 'data/warns.json'  # File to store warnings
 
@@ -27,6 +28,10 @@ class Warns(commands.Cog):
     @app_commands.command(name="warn", description="Warn a user and log the reason.")
     @app_commands.checks.has_permissions(manage_messages=True)
     async def warn(self, interaction: discord.Interaction, member: discord.Member, *, reason: str = "No reason provided"):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "warn"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         """Warn a user and log the reason, guild-specific."""
         if member.bot:
             await interaction.response.send_message("You cannot warn a bot.")
@@ -59,6 +64,10 @@ class Warns(commands.Cog):
     @app_commands.command(name="warnings", description="Display all warnings for a user.")
     @app_commands.checks.has_permissions(manage_messages=True)
     async def warnings(self, interaction: discord.Interaction, member: discord.Member):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "warnings"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         """Display all warnings for a user, guild-specific."""
         guild_id = str(interaction.guild.id)
         user_id = str(member.id)
@@ -79,6 +88,10 @@ class Warns(commands.Cog):
     @app_commands.command(name="delwarn", description="Delete a specific warning for a user.")
     @app_commands.checks.has_permissions(manage_messages=True)
     async def delwarn(self, interaction: discord.Interaction, member: discord.Member, warn_index: int):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "delwarn"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         """Delete a specific warning for a user, guild-specific."""
         guild_id = str(interaction.guild.id)
         user_id = str(member.id)
@@ -104,6 +117,10 @@ class Warns(commands.Cog):
     @app_commands.command(name="clearwarns", description="Clear all warnings for a user.")
     @app_commands.checks.has_permissions(manage_messages=True)
     async def clearwarns(self, interaction: discord.Interaction, member: discord.Member):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "clearwarns"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         """Clear all warnings for a user, guild-specific."""
         guild_id = str(interaction.guild.id)
         user_id = str(member.id)

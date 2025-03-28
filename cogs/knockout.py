@@ -4,6 +4,7 @@ from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
 from discord import app_commands
 from discord.ext import commands
+from util.command_checks import is_command_enabled
 
 class Royal(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -20,6 +21,10 @@ class Royal(commands.Cog):
         app_commands.Choice(name="Club", value="club"),
     ])
     async def knockoutcmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
+        # ✅ Check if the command is enabled before executing, using the function itself
+        if not is_command_enabled(interaction.guild.id, "knockout"):
+            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
+            return
         # If no member is provided, pick a random member from the guild
         if member is None:
             member = random.choice(interaction.guild.members)
