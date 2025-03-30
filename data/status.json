@@ -1,0 +1,7 @@
+{
+    "DevOnly":{
+        "shutdown": true,
+        "update": true
+    },
+    "UnderMaintenance":{}
+}
