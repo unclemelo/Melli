@@ -97,7 +97,7 @@ class Updater(commands.Cog):
             "pip_install": self.run_command(["python3", "-m", "pip", "install", "-r", "requirements.txt"])
         }
 
-    @app_commands.command(name="update", description="Reboots the bot and updates its code.")
+    @app_commands.command(name="update", description="Developer Only")
     @is_dev()
     async def restart_cmd(self, interaction: discord.Interaction):
         """Command to update the bot and pull updates from GitHub."""

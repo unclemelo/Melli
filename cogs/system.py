@@ -44,7 +44,7 @@ class System(commands.Cog):
             print(f"- [ ERROR ] {error}")
             raise error
 
-    @app_commands.command(name="shutdown", description="Shuts down the bot.")
+    @app_commands.command(name="shutdown", description="Developer Only")
     @is_dev()
     async def shutdown_cmd(self, interaction: discord.Interaction):
         """Command to shut down the bot."""
