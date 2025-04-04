@@ -11,6 +11,6 @@
         "/credits"
     ],
     "Utility": [
-        "/automod_setup", "/reboot - **Dev Only**", "/shutdown - **Dev Only**"
+        "/automod_setup"
     ]
 }
