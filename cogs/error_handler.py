@@ -5,6 +5,7 @@ import traceback
 import sys
 import logging
 import requests
+import os
 from discord import app_commands, Interaction
 from discord.ext import commands
 from dotenv import load_dotenv
