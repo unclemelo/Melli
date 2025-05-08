@@ -7,8 +7,10 @@ import logging
 import requests
 from discord import app_commands, Interaction
 from discord.ext import commands
+from dotenv import load_dotenv
 
-WEBHOOK_URL = "https://discordapp.com/api/webhooks/1334413086999838771/7SFMnOltSnpdUxvbNjIV8rud6jmogrrTm559U79_0LgAmmxkOHFvc23akJz304VjfuXk"
+load_dotenv()
+WEBHOOK_URL = os.getenv('WEBHOOK')
 
 class ERROR(commands.Cog):
     def __init__(self, bot: commands.Bot, error_channel_id: int):
