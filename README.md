@@ -109,7 +109,7 @@ python3 bot.py # On Linux/Mac
 
 ## Contributing
 
-This bot is private for now, but contributions may be considered in the future. Reach out to the maintainer for more details.
+Contributions are welcomed! If you help with the code we will add your discord id to Melli's badge system that shows people you worked on Melli's development
 
 ---
 
