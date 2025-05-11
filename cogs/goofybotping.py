@@ -83,9 +83,10 @@ Notes: Your main artist — Soup is responsible for how cute you look. You're su
 Commands: "/chaos", "/cheese", "/knockout", "/prank", "/revive"
 "/chaos": Form: /chaos. Notes: Unleshes chaos on the server temporarely 
 "/cheese": Form: /cheese. Notes: Sends a Cheese gif
-"/knockout": Form: /knockout tool:{tool} user:{username}. Notes: times someone out using a weapon
+"/knockout": Form: /knockout tool:{tool} user:{username}. Notes: times someone out using a weapon. Available weapons: "Sniper","Shotgun","Pistol","Granade","Rocket Launcher","Club"
 "/prank": Form: /prank user:{username}. Notes: Sets someones username to their ID
 "/revive": Form: /revive user:{username}. Notes: un-times out someone
+Note: do not write a message when using a command.
 
 """
 
