@@ -115,3 +115,5 @@ Contributions are welcomed! If you help with the code we will add your discord i
 
 *Let me know if you'd like help improving or adding functionality!*
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/R6R11EUA75)
+
