@@ -4,7 +4,7 @@
       "action_type": "send_alert_message",
       "custom_message": "Please follow the rules!",
       "regex_patterns": [
-        "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\/[a-z0-9-_]+",
+        "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\\/[a-z0-9-_]+",
         "[\\u0300-\\u036F]{3,}"
       ],
       "keyword_filter": [
@@ -20,10 +20,10 @@
       "action_type": "send_alert_message",
       "custom_message": "This message violates community guidelines.",
       "regex_patterns": [
-        "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|[\\u0020\\u00A0])*.\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b",
-        "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\/[a-z0-9-_]+",
+        "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|[\\u0020\\u00A0])*\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b",
+        "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\\/[a-z0-9-_]+",
         "[\\u0300-\\u036F]{3,}",
-        "(?s)(?i)((<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\uD83E\\uDDFF]|[\\uD83C\\uDDE6-\\uD83C\\uDDFF]|[0-9#\\*]\\uFE0F|(?:\\*\\*|__|~~|`)).*){6,}"
+        "(<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\u231B]|[\\u23E9-\\u23FA]|[\\u24C2]|[\\u25AA-\\u27BF]|[\\u2934-\\u2935]|[\\u2B05-\\u2B55]|[\\u3030]|[\\u3297]|[\\u3299]|[\\uD83C-\\uDBFF][\\uDC00-\\uDFFF]|\\*\\*|__|~~|`).{6,}"
       ],
       "keyword_filter": [
         "fag*", "retard", "*retarded*", "*nigg*", "retards*", "*kys*", "*kill yourself*", "*cum*", "*kum*", "*pussy*", "cock", "dick", "dicks", "cocks", "anal*", "kkk", "amerikkkan*", "titt*", "xxx", "tit", "f*a*g", "k*y*s", "n*i*g*g*a"
@@ -40,9 +40,9 @@
       "action_type": "send_alert_message",
       "custom_message": "Your message has been blocked due to policy violations.",
       "regex_patterns": [
-        "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|[\\u0020\\u00A0])*.\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b",
-        "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\/[a-z0-9-_]+",
-        "(?s)(?i)((<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\uD83E\\uDDFF]|[\\uD83C\\uDDE6-\\uD83C\\uDDFF]|[0-9#\\*]\\uFE0F|(?:\\*\\*|__|~~|`)).*){4,}",
+        "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|[\\u0020\\u00A0])*\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b",
+        "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\\/[a-z0-9-_]+",
+        "(<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\u231B]|[\\u23E9-\\u23FA]|[\\u24C2]|[\\u25AA-\\u27BF]|[\\u2934-\\u2935]|[\\u2B05-\\u2B55]|[\\u3030]|[\\u3297]|[\\u3299]|[\\uD83C-\\uDBFF][\\uDC00-\\uDFFF]|\\*\\*|__|~~|`).{4,}",
         "[\\u0300-\\u036F]{3,}"
       ],
       "keyword_filter": [

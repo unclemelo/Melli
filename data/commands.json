@@ -1,16 +1,13 @@
 {
     "Moderation": [
-        "/ban", "/kick", "/mute",
-        "/unmute", "/warn", "/warnings",
-        "/clear", "/clearwarns", "/delwarn",
-        "/unban"
+        "/ban", "/kick", "/mute", "/unmute", "/warn", "/warnings",
+        "/clear", "/clearwarns", "/delwarn", "/unban"
     ],
     "Fun": [
-        "/chaos", "/cheese", "/knockout",
-        "/prank", "/revive", "/votekick",
+        "/chaos", "/cheese", "/knockout", "/prank", "/revive", "/votekick",
         "/credits"
     ],
     "Utility": [
-        "NONE"
+        "/setup", "/force_update"
     ]
 }
