@@ -23,7 +23,7 @@
         "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|[\\u0020\\u00A0])*\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b",
         "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\\/[a-z0-9-_]+",
         "[\\u0300-\\u036F]{3,}",
-        "(<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\u231B]|[\\u23E9-\\u23FA]|[\\u24C2]|[\\u25AA-\\u27BF]|[\\u2934-\\u2935]|[\\u2B05-\\u2B55]|[\\u3030]|[\\u3297]|[\\u3299]|[\\uD83C-\\uDBFF][\\uDC00-\\uDFFF]|\\*\\*|__|~~|`).{6,}"
+        "(<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\u231B]|[\\u23E9-\\u23FA]|[\\u24C2]|[\\u25AA-\\u27BF]|[\\u2934-\\u2935]|[\\u2B05-\\u2B55]|[\\u3030]|[\\u3297]|[\\u3299]|[\\uD83C-\\uDBFF][\\uDC00-\\uDFFF]|(\\*\\*|\\~\\~|\\|)).{6,}"
       ],
       "keyword_filter": [
         "fag*", "retard", "*retarded*", "*nigg*", "retards*", "*kys*", "*kill yourself*", "*cum*", "*kum*", "*pussy*", "cock", "dick", "dicks", "cocks", "anal*", "kkk", "amerikkkan*", "titt*", "xxx", "tit", "f*a*g", "k*y*s", "n*i*g*g*a"
@@ -42,7 +42,7 @@
       "regex_patterns": [
         "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|[\\u0020\\u00A0])*\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b",
         "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\\/[a-z0-9-_]+",
-        "(<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\u231B]|[\\u23E9-\\u23FA]|[\\u24C2]|[\\u25AA-\\u27BF]|[\\u2934-\\u2935]|[\\u2B05-\\u2B55]|[\\u3030]|[\\u3297]|[\\u3299]|[\\uD83C-\\uDBFF][\\uDC00-\\uDFFF]|\\*\\*|__|~~|`).{4,}",
+        "(<a?:[a-z_0-9]+:[0-9]+>|[\\u231A-\\u231B]|[\\u23E9-\\u23FA]|[\\u24C2]|[\\u25AA-\\u27BF]|[\\u2934-\\u2935]|[\\u2B05-\\u2B55]|[\\u3030]|[\\u3297]|[\\u3299]|[\\uD83C-\\uDBFF][\\uDC00-\\uDFFF]|(\\*\\*|\\~\\~|\\|)).{6,}",
         "[\\u0300-\\u036F]{3,}"
       ],
       "keyword_filter": [
