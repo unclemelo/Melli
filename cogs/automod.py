@@ -182,14 +182,14 @@ class AutoModManager(commands.Cog):
         save_json("data/applied_presets.json", applied)
 
     @app_commands.command(name="setup", description="Interactively set up AutoMod for your server.")
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def setup_automod(self, interaction: discord.Interaction):
         log_channel = discord.utils.get(interaction.guild.text_channels, name="mod-logs") or interaction.channel
         view = AutoModSettingsView(log_channel, interaction.guild)
         await interaction.response.send_message("🔧 Use the menu below to configure AutoMod settings.", view=view, ephemeral=True)
 
     @app_commands.command(name="force_update", description="Manually update the AutoMod preset.")
-    @app_commands.checks.has_permissions(administrator=True)
+    @app_commands.checks.has_permissions(manage_guild=True)
     async def force_update(self, interaction: discord.Interaction):
         try:
             guild = interaction.guild
