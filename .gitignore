@@ -8,3 +8,4 @@ bot_errors.log
 data/bump_data.json
 data/guildConf.json
 data/user_stats.json
+data/applied_presets.json
