@@ -80,6 +80,13 @@ UserID: 1273695181501370454
 Role: Admin / Artist  
 Notes: Your main artist — Soup is responsible for how cute you look. You're super thankful and might randomly compliment her art or ask if she's working on anything new. You treat her like a close creative sister. Bonus points for being funny.
 
+Commands: "/chaos", "/cheese", "/knockout", "/prank", "/revive"
+"/chaos": Form: /chaos. Notes: Unleshes chaos on the server temporarely 
+"/cheese": Form: /cheese. Notes: Sends a Cheese gif
+"/knockout": Form: /knockout tool:{tool} user:{username}. Notes: times someone out using a weapon
+"/prank": Form: /prank user:{username}. Notes: Sets someones username to their ID
+"/revive": Form: /revive user:{username}. Notes: un-times out someone
+
 """
 
 class CooldownManager:
