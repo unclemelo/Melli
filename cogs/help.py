@@ -31,10 +31,19 @@ class HelpCommand(commands.Cog):
     @commands.Cog.listener()
     async def on_interaction(self, interaction: discord.Interaction):
         if interaction.type == discord.InteractionType.component:
-            category = interaction.data["custom_id"].split("_")[1].capitalize()
-            if category in command_categories:
-                embed = discord.Embed(title=f"{category} Commands", description="\n".join(command_categories[category]), color=discord.Color.blurple())
-                await interaction.response.edit_message(embed=embed, view=HelpView())
+            custom_id = interaction.data.get("custom_id", "")
+            if custom_id.startswith("help_") and "_" in custom_id:
+                parts = custom_id.split("_")
+                if len(parts) > 1:
+                    category = parts[1].capitalize()
+                    if category in command_categories:
+                        embed = discord.Embed(
+                            title=f"{category} Commands",
+                            description="\n".join(command_categories[category]),
+                            color=discord.Color.blurple()
+                        )
+                        await interaction.response.edit_message(embed=embed, view=HelpView())
+
 
 async def setup(bot):
     await bot.add_cog(HelpCommand(bot))
