@@ -1,0 +1,98 @@
+import discord
+from discord.ext import commands
+from discord import app_commands
+
+class VCTools(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    # Move member to another VC
+    @app_commands.command(name="bump", description="Bump a member to another voice channel.")
+    @app_commands.checks.has_permissions(move_members=True)
+    async def bump(self, interaction: discord.Interaction, member: discord.Member, channel: discord.VoiceChannel):
+        if not member.voice:
+            return await interaction.response.send_message(
+                embed=discord.Embed(
+                    title="⚠️ Not in Voice",
+                    description=f"{member.mention} is not in a voice channel.",
+                    color=discord.Color.orange()
+                ),
+                ephemeral=True
+            )
+        
+        await member.move_to(channel)
+        embed = discord.Embed(
+            title="🔀 Member Bumped",
+            description=f"{member.mention} has been bumped to **{channel.name}**.",
+            color=discord.Color.green()
+        )
+        await interaction.response.send_message(embed=embed)
+
+    # Server mute
+    @app_commands.command(name="vc_mute", description="Server mute a member in VC.")
+    @app_commands.checks.has_permissions(mute_members=True)
+    async def vcmute(self, interaction: discord.Interaction, member: discord.Member):
+        if not member.voice:
+            return await interaction.response.send_message(
+                embed=discord.Embed(
+                    title="⚠️ Not in Voice",
+                    description=f"{member.mention} is not in a voice channel.",
+                    color=discord.Color.orange()
+                ),
+                ephemeral=True
+            )
+        
+        await member.edit(mute=True)
+        embed = discord.Embed(
+            title="🔇 Member Muted",
+            description=f"{member.mention} has been server muted.",
+            color=discord.Color.red()
+        )
+        await interaction.response.send_message(embed=embed)
+
+    # Server deafen
+    @app_commands.command(name="deafen", description="Server deafen a member in VC.")
+    @app_commands.checks.has_permissions(deafen_members=True)
+    async def deafen(self, interaction: discord.Interaction, member: discord.Member):
+        if not member.voice:
+            return await interaction.response.send_message(
+                embed=discord.Embed(
+                    title="⚠️ Not in Voice",
+                    description=f"{member.mention} is not in a voice channel.",
+                    color=discord.Color.orange()
+                ),
+                ephemeral=True
+            )
+        
+        await member.edit(deafen=True)
+        embed = discord.Embed(
+            title="🔕 Member Deafened",
+            description=f"{member.mention} has been server deafened.",
+            color=discord.Color.red()
+        )
+        await interaction.response.send_message(embed=embed)
+
+    # Kick member from VC (move to None)
+    @app_commands.command(name="kickvc", description="Remove a member from their voice channel.")
+    @app_commands.checks.has_permissions(move_members=True)
+    async def kickvc(self, interaction: discord.Interaction, member: discord.Member):
+        if not member.voice:
+            return await interaction.response.send_message(
+                embed=discord.Embed(
+                    title="⚠️ Not in Voice",
+                    description=f"{member.mention} is not in a voice channel.",
+                    color=discord.Color.orange()
+                ),
+                ephemeral=True
+            )
+        
+        await member.move_to(None)
+        embed = discord.Embed(
+            title="🚪 Member Removed from VC",
+            description=f"{member.mention} has been kicked from the voice channel.",
+            color=discord.Color.red()
+        )
+        await interaction.response.send_message(embed=embed)
+
+async def setup(bot: commands.Bot):
+    await bot.add_cog(VCTools(bot))
