@@ -49,6 +49,19 @@ class VCTools(commands.Cog):
             color=discord.Color.red()
         )
         await interaction.response.send_message(embed=embed)
+    
+    @app_commands.command(name="vc_unmute", description="Unmute a member in VC.")
+    @app_commands.checks.has_permissions(mute_members=True)
+    async def vcunmute(self, interaction: discord.Interaction, member: discord.Member):
+        if not member.voice:
+            return await interaction.response.send_message(embed=self._not_in_vc(member), ephemeral=True)
+        await member.edit(mute=False)
+        embed = discord.Embed(
+            title="🔊 Member Unmuted",
+            description=f"{member.mention} has been unmuted.",
+            color=discord.Color.green()
+        )
+        await interaction.response.send_message(embed=embed)
 
     # Server deafen
     @app_commands.command(name="deafen", description="Server deafen a member in VC.")
@@ -69,6 +82,19 @@ class VCTools(commands.Cog):
             title="🔕 Member Deafened",
             description=f"{member.mention} has been server deafened.",
             color=discord.Color.red()
+        )
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="undeafen", description="Undeafen a member in VC.")
+    @app_commands.checks.has_permissions(deafen_members=True)
+    async def undeafen(self, interaction: discord.Interaction, member: discord.Member):
+        if not member.voice:
+            return await interaction.response.send_message(embed=self._not_in_vc(member), ephemeral=True)
+        await member.edit(deafen=False)
+        embed = discord.Embed(
+            title="🔔 Member Undeafened",
+            description=f"{member.mention} has been undeafened.",
+            color=discord.Color.green()
         )
         await interaction.response.send_message(embed=embed)
 
