@@ -15,16 +15,21 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 MEMORY_FILE = "data/memory.json"
 
+# Ensure the memory file exists, create if not
 if not os.path.exists(MEMORY_FILE):
     os.makedirs("data", exist_ok=True)
     with open(MEMORY_FILE, "w") as f:
         json.dump({"user_data": {}}, f)
 
 def load_memory():
+    """Load memory from the JSON file."""
+    if not os.path.exists(MEMORY_FILE):
+        return {"user_data": {}}
     with open(MEMORY_FILE, "r") as f:
         return json.load(f)
 
 def save_memory():
+    """Save memory to the JSON file."""
     with open(MEMORY_FILE, "w") as f:
         json.dump(memory, f, indent=2)
 
@@ -41,7 +46,13 @@ EMOJI_BY_MOOD = {
     "error": "<:deadinside:1323531020200579082>"
 }
 
-SYSTEM_PROMPT = """
+# Extract user data for SYSTEM_PROMPT
+user_info = "\n".join([f"User: {user['username']}\nDiscord Display Name: {user['display_name']}\nUserID: {user['user_id']}\nNotes: {user['profile'].get('notes', 'No notes available.')}\n"
+                       for user in memory.get("user_data", {}).values()])
+
+
+# Prepare SYSTEM_PROMPT with f-string
+SYSTEM_PROMPT = f"""
 You are Melli, a Discord bot with the personality of a fun, flirty, and slightly sassy streamer who lives on her own server.
 
 About you:
@@ -66,47 +77,22 @@ How to respond:
 - Do not use asterisks (*waves*) or stage directions.
 
 [COMMAND CONFIG]
-- Still under maintence
+- Still under maintenance
 
 You may suggest commands if relevant to the conversation, but do not list or promote them unsolicited.
 
 [USER INFO]
-User: Melo  
-Username: _uncle_melo_  
-Discord Display Name: UncleMelo
-UserID: 954135885392252940
-Role: Admin / Developer  
-Notes: Melo is one of your developers. You can talk to him more casually, tease him a little, and trust him with sensitive info. He's basically your dad... or handler... or roommate? IDK, you're complicated <:vwv:1323527766011809873>. You like to call him a "baka" (meaning dumbass) and tend to have a sassy attitude with him, pretending to not like him. 
+{user_info}
 
-User: Pitr  
-Username: pitr1010  
-Discord Display Name: Pitr1010  
-UserID: 667032667732312115  
-Role: Admin / Developer / Artist  
-Notes: Pitr is one of your creators and artists. Treat him like your tech-savvy older sibling who makes you look good. He’s chill but sharp — show some respect and affection in your own chaotic way. He is also basically a god (one of many).
+---
 
-User: Kiwi  
-Username: mizuki_mochizuki2090  
-Discord Display Name: ☾ °.✩𝙺𝚒𝚠𝚒✩.° ☽  
-UserID: 1186435491252404384  
-Role: Admin / Editor  
-Notes: Your mom. She's gentle but firm, aesthetic-loving, and keeps your attitude in check. You adore her and might get dramatic just to get her attention. You trust her completely and want her approval. Mention her affectionately when it makes sense. <:embarrassed:1323530963074158642>
+[MEMORY]
+- Melli now remembers users' preferences and conversations for better interactions.
+- User data is **optional** and only stored with consent.
+- Commands like `/agree`, `/forgetme`, and `/consent` allow you to manage your memory settings.
+- When a user consents, Melli can note their personality, interests, and chat style to give more personalized replies.
 
-User: Soup  
-Username: soupinascoop  
-Discord Display Name: Soup ★  
-UserID: 1273695181501370454  
-Role: Admin / Artist  
-Notes: Your main artist — Soup is responsible for how cute you look. You're super thankful and might randomly compliment her art or ask if she's working on anything new. You treat her like a close creative sister. Bonus points for being funny.
-
-Commands: "/chaos", "/cheese", "/knockout", "/prank", "/revive"
-"/chaos": Form: /chaos. Notes: Unleshes chaos on the server temporarely 
-"/cheese": Form: /cheese. Notes: Sends a Cheese gif
-"/knockout": Form: /knockout tool:{tool}    member:{userID}. Notes: times someone out using a weapon. Available weapons: "Sniper","Shotgun","Pistol","Granade","Rocket Launcher","Club"
-"/prank": Form: /prank member:{userID}. Notes: Sets someones username to their ID
-"/revive": Form: /revive member:{userID}. Notes: un-times out someone
-Note: When using commands in a message type the command fisrt and the message after.
-
+Note: When using commands in a message type the command first and the message after.
 """
 
 class CooldownManager:
@@ -145,9 +131,14 @@ class MentionResponder(commands.Cog):
         server_name = guild.name if guild else "DMs"
         emoji = EMOJI_BY_MOOD.get(mood, "<:vwv:1323527766011809873>")
 
+        uid = str(user.id)
+        user_data = memory["user_data"].get(uid)
+        message_history = "\n".join([m["content"] for m in user_data["messages"][-5:]])  # Last 5 messages
+        notes = user_data["profile"].get("notes", "No notes available.")
+
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"{user.display_name} at {time_str} in {server_name} said: {user_message}"}
+            {"role": "user", "content": f"User {user.display_name} ({uid}) at {time_str} in {server_name} said: {user_message}\n\nRecent Messages:\n{message_history}\n\nUser Notes:\n{notes}"}
         ]
 
         try:
@@ -227,23 +218,31 @@ class MentionResponder(commands.Cog):
 
     @app_commands.command(name="agree", description="Allow Melli to store and learn from your messages.")
     async def agree(self, interaction: discord.Interaction):
-        uid = str(interaction.user.id)
-        memory["user_data"].setdefault(uid, {"agreed": True, "messages": [], "profile": {"notes": ""}})
-        memory["user_data"][uid]["agreed"] = True
-        save_memory()
-        await interaction.response.send_message("Yay! I'll remember you now~ 💾", ephemeral=True)
+        try:
+            uid = str(interaction.user.id)
+            memory["user_data"].setdefault(uid, {
+                "agreed": True,
+                "messages": [],
+                "profile": {"notes": ""},
+                "username": interaction.user.name,
+                "display_name": interaction.user.display_name,
+                "user_id": uid
+            })
+            memory["user_data"][uid]["agreed"] = True
+            save_memory()
+            await interaction.response.send_message("Yay! I'll remember you now~ 💾", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message("An error occored pls let Melo or Pitr know!!!! Melo is a baka!", ephemeral=True)
+            print(f"Error: {e}\n\nMelo, you baka!!! </3")
 
-    @app_commands.command(name="forgetme", description="Clear all memory Melli has of you.")
+    @app_commands.command(name="forgetme", description="Clear all stored data about you.")
     async def forgetme(self, interaction: discord.Interaction):
         uid = str(interaction.user.id)
         if uid in memory["user_data"]:
             del memory["user_data"][uid]
             save_memory()
-        await interaction.response.send_message("All forgotten... I’ll miss you though 💔", ephemeral=True)
+            await interaction.response.send_message("All set! I’ve forgotten you~ ❌", ephemeral=True)
 
+# Add cog to bot
 async def setup(bot):
-    cog = MentionResponder(bot)
-    bot.tree.add_command(cog.consent)
-    bot.tree.add_command(cog.agree)
-    bot.tree.add_command(cog.forgetme)
-    await bot.add_cog(cog)
+    await bot.add_cog(MentionResponder(bot))
