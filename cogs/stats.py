@@ -9,7 +9,7 @@ class StatsCog(commands.Cog):
         self.channel_id = 1371140885609451651
         self.message_id = None
         self.start_time = datetime.datetime.utcnow()
-        self.bot_version = "v1.2.3"  # Change as needed
+        self.bot_version = "v1.20.7"  # Change as needed
         self.update_stats.start()
 
     def cog_unload(self):
