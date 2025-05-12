@@ -1,9 +1,11 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
+from discord import app_commands
 from datetime import datetime
 import random
 import time
 import os
+import json
 from typing import Optional
 from dotenv import load_dotenv
 import openai
@@ -11,6 +13,22 @@ import openai
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+MEMORY_FILE = "data/memory.json"
+
+if not os.path.exists(MEMORY_FILE):
+    os.makedirs("data", exist_ok=True)
+    with open(MEMORY_FILE, "w") as f:
+        json.dump({"user_data": {}}, f)
+
+def load_memory():
+    with open(MEMORY_FILE, "r") as f:
+        return json.load(f)
+
+def save_memory():
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(memory, f, indent=2)
+
+memory = load_memory()
 
 EMOJI_BY_MOOD = {
     "default": "<:vwv:1323527766011809873>",
@@ -93,46 +111,33 @@ Note: When using commands in a message type the command fisrt and the message af
 
 class CooldownManager:
     def __init__(self, seconds: int = 15):
-        self.cooldowns = {}  # {(user_id, context_id): timestamp}
+        self.cooldowns = {}
         self.seconds = seconds
 
     def is_ready(self, user_id: int, context_id: str) -> bool:
-        now = time.time()
-        key = (user_id, context_id)
-        return now - self.cooldowns.get(key, 0) > self.seconds
+        return time.time() - self.cooldowns.get((user_id, context_id), 0) > self.seconds
 
     def update(self, user_id: int, context_id: str):
         self.cooldowns[(user_id, context_id)] = time.time()
-
 
 class MentionResponder(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.cooldowns = CooldownManager(seconds=15)
-        self.owner_ids = [954135885392252940]  # Melo and trusted devs
-        self.enable_logging = True
+        self.owner_ids = [954135885392252940]
+        self.tree = bot.tree
 
     def is_staff(self, member: discord.Member) -> bool:
         perms = member.guild_permissions
-        return any([
-            perms.manage_messages,
-            perms.kick_members,
-            perms.ban_members,
-            perms.moderate_members,
-            perms.administrator
-        ])
+        return any([perms.manage_messages, perms.kick_members, perms.ban_members, perms.administrator])
 
     def detect_mood(self, message: discord.Message) -> str:
-        author = message.author
-        guild = message.guild
-
-        if not guild:
+        if not message.guild:
             return "dm"
-        if author.id in self.owner_ids:
+        if message.author.id in self.owner_ids:
             return "owner"
-        if isinstance(author, discord.Member) and self.is_staff(author):
+        if isinstance(message.author, discord.Member) and self.is_staff(message.author):
             return "staff"
-
         return random.choices(["default", "happy", "sass"], weights=[0.5, 0.3, 0.2])[0]
 
     async def generate_openai_reply(self, user: discord.User, guild: Optional[discord.Guild], mood: str, user_message: str) -> str:
@@ -152,36 +157,93 @@ class MentionResponder(commands.Cog):
                 max_tokens=200,
                 temperature=0.85
             )
-            reply = response.choices[0].message.content.strip()
-            return f"{reply} {emoji}"
+            return f"{response.choices[0].message.content.strip()} {emoji}"
         except Exception as e:
             print(f"[OpenAI][ERROR]: {e}")
             return f"I'm glitching a bit... blame Melo maybe? {EMOJI_BY_MOOD['error']}"
 
+    def update_user_profile(self, user: discord.User, message: str):
+        uid = str(user.id)
+        if uid not in memory["user_data"]:
+            memory["user_data"][uid] = {"agreed": False, "messages": [], "profile": {"notes": ""}}
+
+        memory["user_data"][uid]["messages"].append({"timestamp": datetime.utcnow().isoformat(), "content": message})
+        if len(memory["user_data"][uid]["messages"]) >= 5:
+            recent = "\n".join(m["content"] for m in memory["user_data"][uid]["messages"][-10:])
+            try:
+                summary = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "Summarize this user's personality based on messages."},
+                        {"role": "user", "content": recent}
+                    ],
+                    max_tokens=100
+                ).choices[0].message.content.strip()
+                memory["user_data"][uid]["profile"]["notes"] = summary
+            except Exception as e:
+                print(f"[OpenAI][Summarization Error]: {e}")
+        save_memory()
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if message.author.bot:
+        if message.author.bot or not message.guild:
             return
 
+        uid = str(message.author.id)
+        user_data = memory["user_data"].get(uid)
+
         if self.bot.user in message.mentions or message.content.lower().startswith("melli"):
-            user = message.author
-            context_id = str(message.guild.id if message.guild else "dm")
+            context_id = str(message.guild.id)
             content = message.clean_content.replace(f"<@{self.bot.user.id}>", "").strip()
 
-            if not self.cooldowns.is_ready(user.id, context_id):
+            if not user_data or not user_data.get("agreed"):
+                await message.reply("Hey cutie~ You need to run `/agree` before I can remember our convos! <3", mention_author=False)
+                return
+
+            if not self.cooldowns.is_ready(message.author.id, context_id):
                 mood = "cooldown"
             else:
                 mood = self.detect_mood(message)
-                self.cooldowns.update(user.id, context_id)
+                self.cooldowns.update(message.author.id, context_id)
 
-            reply = await self.generate_openai_reply(user, message.guild, mood, content or "Hey!")
+            reply = await self.generate_openai_reply(message.author, message.guild, mood, content or "Hey!")
+            self.update_user_profile(message.author, content)
+            await message.reply(reply, mention_author=False)
 
-            try:
-                await message.reply(reply, mention_author=False)
-                if self.enable_logging:
-                    print(f"[MentionResponder] {user} triggered Melli | Mood: {mood} | Message: {content}")
-            except Exception as e:
-                print(f"[MentionResponder][ERROR] Failed to send reply: {e}")
+    @app_commands.command(name="consent", description="Learn how Melli handles memory and how to opt-in or out.")
+    async def consent(self, interaction: discord.Interaction):
+        embed = discord.Embed(
+            title="📘 Melli's Memory & Consent",
+            description=(
+                "Melli remembers things you’ve said to be more personal in future chats.\n\n"
+                "**What she stores:**\n"
+                "- Recent messages you send\n"
+                "- A brief summary of your vibe/behavior (generated by AI)\n\n"
+                "Use `/agree` to let Melli start remembering you or `/forgetme` to clear it all."
+            ),
+            color=discord.Color.blue()
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    @app_commands.command(name="agree", description="Allow Melli to store and learn from your messages.")
+    async def agree(self, interaction: discord.Interaction):
+        uid = str(interaction.user.id)
+        memory["user_data"].setdefault(uid, {"agreed": True, "messages": [], "profile": {"notes": ""}})
+        memory["user_data"][uid]["agreed"] = True
+        save_memory()
+        await interaction.response.send_message("Yay! I'll remember you now~ 💾", ephemeral=True)
+
+    @app_commands.command(name="forgetme", description="Clear all memory Melli has of you.")
+    async def forgetme(self, interaction: discord.Interaction):
+        uid = str(interaction.user.id)
+        if uid in memory["user_data"]:
+            del memory["user_data"][uid]
+            save_memory()
+        await interaction.response.send_message("All forgotten... I’ll miss you though 💔", ephemeral=True)
 
 async def setup(bot):
-    await bot.add_cog(MentionResponder(bot))
+    cog = MentionResponder(bot)
+    bot.tree.add_command(cog.consent)
+    bot.tree.add_command(cog.agree)
+    bot.tree.add_command(cog.forgetme)
+    await bot.add_cog(cog)
