@@ -5,13 +5,16 @@ from datetime import timedelta
 from discord import app_commands
 from discord.ext import commands
 from util.command_checks import is_command_enabled
+from util.booster_cooldown import BoosterCooldownManager
+
+cooldown_manager_user = BoosterCooldownManager(rate=1, per=600, bucket_type="user")
+cooldown_manager_guild = BoosterCooldownManager(rate=1, per=600, bucket_type="guild")
 
 class Royal(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @app_commands.command(name="knockout", description="Use a weapon to timeout a member for 30 seconds or more!")
-    @app_commands.checks.cooldown(1, 600, key=lambda i: (i.user.id, i.guild.id))
     @app_commands.choices(tool=[
         app_commands.Choice(name="Sniper", value="sniper"),
         app_commands.Choice(name="Shotgun", value="shotie"),
@@ -21,6 +24,15 @@ class Royal(commands.Cog):
         app_commands.Choice(name="Club", value="club"),
     ])
     async def knockoutcmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
+        remaining = await cooldown_manager_user.get_remaining(interaction)
+        if remaining > 0:
+            await interaction.response.send_message(
+                f"You're on cooldown! Try again in {round(remaining, 1)}s.", ephemeral=True
+            )
+            return
+
+        await cooldown_manager_user.trigger(interaction)
+
         # ✅ Check if the command is enabled before executing, using the function itself
         if not is_command_enabled(interaction.guild.id, "knockout"):
             await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
