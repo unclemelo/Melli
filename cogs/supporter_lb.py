@@ -3,7 +3,7 @@ from discord.ext import commands
 from discord import app_commands
 
 SUPPORT_GUILD_ID = 1290420853926002789
-BANNER_URL = "https://cdn.discordapp.com/attachments/1335051139183415306/1365333291053351013/207e6b5d225f34b8fb3a66414b95c8ef.png?ex=682356b7&is=68220537&hm=5b22224282b264e998213c330ef00b4e230a2a5881606c0bcf3980820fbc0b33&"  # Optional banner image
+BANNER_URL = "https://cdn.discordapp.com/attachments/1335051139183415306/1371655184849305670/image-removebg-preview.png?ex=6823ecf0&is=68229b70&hm=b68c7f47378124e4932d22d4bd89050f17aefb01ace49cf457b8d26a1c2c2102&"  # Optional banner image
 
 class SupporterLeaderboard(commands.Cog):
     def __init__(self, bot):
