@@ -1,35 +1,63 @@
 import discord
 from discord.ext import commands, tasks
 import datetime
+import json
+import os
+
+STATS_FILE = "data/bot_stats.json"
 
 class StatsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.command_usage = 0
-        self.channel_id = 1371140885609451651
+        self.channel_id = None
         self.message_id = None
+        self.bot_version = "v?.?.?"
         self.start_time = datetime.datetime.utcnow()
-        self.bot_version = "v1.20.7"  # Change as needed
+
+        self.load_stats()
         self.update_stats.start()
+
+    def load_stats(self):
+        if os.path.exists(STATS_FILE):
+            with open(STATS_FILE, "r") as f:
+                data = json.load(f)
+                self.command_usage = data.get("command_usage", 0)
+                self.channel_id = data.get("stats_channel")
+                self.bot_version = data.get("bot_version", "v?.?.?")
+                self.message_id = data.get("message_id")
+        else:
+            self.command_usage = 0
+            self.channel_id = None
+            self.bot_version = "v?.?.?"
+            self.message_id = None
+
+    def save_stats(self):
+        with open(STATS_FILE, "w") as f:
+            json.dump({
+                "command_usage": self.command_usage,
+                "stats_channel": self.channel_id,
+                "bot_version": self.bot_version,
+                "message_id": self.message_id
+            }, f, indent=4)
 
     def cog_unload(self):
         self.update_stats.cancel()
+        self.save_stats()
 
     @commands.Cog.listener()
     async def on_application_command(self, interaction: discord.Interaction):
         self.command_usage += 1
+        self.save_stats()
 
     @tasks.loop(seconds=60)
     async def update_stats(self):
         guilds = self.bot.guilds
         guild_count = len(guilds)
         member_count = sum(g.member_count or 0 for g in guilds)
-
-        # Unique user IDs across all guilds
         unique_users = {member.id for g in guilds for member in g.members}
         channel_count = sum(len(g.channels) for g in guilds)
         role_count = sum(len(g.roles) for g in guilds)
-
         avg_ping = round(self.bot.latency * 1000, 2)
         uptime = discord.utils.format_dt(self.start_time, style="R")
 
@@ -60,9 +88,12 @@ class StatsCog(commands.Cog):
             else:
                 msg = await channel.send(embed=embed)
                 self.message_id = msg.id
+                self.save_stats()
         except discord.NotFound:
+            # Message deleted or invalid ID; create a new one
             msg = await channel.send(embed=embed)
             self.message_id = msg.id
+            self.save_stats()
 
     @update_stats.before_loop
     async def before_update_stats(self):
