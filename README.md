@@ -6,10 +6,10 @@
 
 ## Features
 
-- **Automod**: Automatically moderates chat messages based on customizable rules. (Melli Devs Only | No release yet)
+- **Automod**: Automatically moderates chat messages based on preset rules. It's finally out so enjoy!
 - **Error Handling**: Graceful handling of errors to ensure a seamless experience.
 - **Custom Commands**: Miscellaneous commands for fun and utility.
-- **Royal System**: Special module for unique server mechanics.
+- **Fun Commumity Commands**: We added a Chaos, Prank, and Knockout commands. Have some fun by trying them out!
 
 ---
 
@@ -103,7 +103,7 @@ python3 bot.py # On Linux/Mac
 
 2. Missing Dependencies: Run `pip install -r requirements.txt` again.
 
-3. Database Issues: Verify the `data/warns.json`, `data/config.json`, and `AM_conf.json` files exists and is properly configured.
+3. Database Issues: Verify the `data/warns.json`, `data/user_stats.json`, `data/memory.json`, `data/guildConf.json`, `data/bot_stats.json`, and `applied_presets.json` files exists and is properly configured.
 
 ---
 
