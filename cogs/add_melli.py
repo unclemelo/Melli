@@ -13,7 +13,7 @@ class AddMelli(commands.Cog):
 
         try:
             # Invite button
-            invite_url = "https://discord.com/oauth2/authorize?client_id=1316235145778434070&permissions=8&integration_type=0&scope=bot"
+            invite_url = "https://discord.com/oauth2/authorize?client_id=1316235145778434070&permissions=412346607846&integration_type=0&scope=bot"
             github_url = "https://github.com/unclemelo/Melli"
             view = discord.ui.View()
             button = discord.ui.Button(label="➕ Add Melli", url=invite_url, style=discord.ButtonStyle.link)
