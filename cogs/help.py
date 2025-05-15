@@ -20,8 +20,9 @@ class HelpCommand(commands.Cog):
                 name="╭─💡 Utility Commands ───────────────╮",
                 value=(
                     "• `/supporters` — Show top boosters of the support server.\n"
-                    "• `/profile` — View your profile stored by Melli.\n"
-                    "• `/add_melli` — Invite Melli & view credits."
+                    "• `/profile [user]` — View your profile or another user's profile.\n"
+                    "• `/add_melli` — Invite Melli & view credits.\n"
+                    "• `/command_config` — Enable or disable commands for this server."
                 ),
                 inline=False
             )
@@ -30,18 +31,18 @@ class HelpCommand(commands.Cog):
             embed.add_field(
                 name="╭─📌 Moderation Tools ───────────────╮",
                 value=(
-                    "• `/mute` — Temporarily mute a user.\n"
-                    "• `/unmute` — Remove a timeout.\n"
-                    "• `/clear` — Delete messages in bulk.\n"
-                    "• `/warn` — Warn a member.\n"
-                    "• `/warnings` — Show warnings for a user.\n"
-                    "• `/delwarn` — Delete a specific warning.\n"
-                    "• `/clearwarns` — Clear all warnings.\n"
-                    "• `/kick` — Kick a member.\n"
-                    "• `/ban` — Ban a member.\n"
-                    "• `/unban` — Unban someone.\n"
-                    "• `/setup` — Interactive AutoMod setup.\n"
-                    "• `/forceupdate` — Refresh AutoMod rules."
+                    "• `/mute <user> <duration> [reason]` — Temporarily mute a user.\n"
+                    "• `/unmute <user>` — Remove a timeout from a user.\n"
+                    "• `/clear <amount>` — Delete messages in bulk.\n"
+                    "• `/warn <user> <reason>` — Warn a member.\n"
+                    "• `/warnings <user>` — Show warnings for a user.\n"
+                    "• `/delwarn <warning_id>` — Delete a specific warning.\n"
+                    "• `/clearwarns <user>` — Clear all warnings for a user.\n"
+                    "• `/kick <user> [reason]` — Kick a member.\n"
+                    "• `/ban <user> [reason]` — Ban a member.\n"
+                    "• `/unban <user>` — Unban a previously banned user.\n"
+                    "• `/setup` — Interactive AutoMod setup wizard.\n"
+                    "• `/forceupdate` — Refresh AutoMod rules immediately."
                 ),
                 inline=False
             )
@@ -50,12 +51,12 @@ class HelpCommand(commands.Cog):
             embed.add_field(
                 name="╭─🔊 VC Tools ───────────────────────╮",
                 value=(
-                    "• `/bump` — Move a user to another VC.\n"
-                    "• `/vc_mute` — Server mute a user in VC.\n"
-                    "• `/vc_unmute` — Unmute a user in VC.\n"
-                    "• `/deafen` — Server deafen a user.\n"
-                    "• `/undeafen` — Remove deafening.\n"
-                    "• `/kickvc` — Kick someone from VC."
+                    "• `/bump <user> <target_vc>` — Move a user to another voice channel.\n"
+                    "• `/vc_mute <user>` — Server mute a user in voice chat.\n"
+                    "• `/vc_unmute <user>` — Unmute a user in voice chat.\n"
+                    "• `/deafen <user>` — Server deafen a user in voice chat.\n"
+                    "• `/undeafen <user>` — Remove deafening from a user.\n"
+                    "• `/kickvc <user>` — Disconnect a user from voice chat."
                 ),
                 inline=False
             )
@@ -64,10 +65,10 @@ class HelpCommand(commands.Cog):
             embed.add_field(
                 name="╭─🎉 Fun & Extras ─────────────────╮",
                 value=(
-                    "• `/knockout` — Timeout a user dramatically!\n"
-                    "• `/revive` — Bring back a timed-out user.\n"
-                    "• `/prank` — Harmlessly prank a user.\n"
-                    "• `/chaos` — Temporarily unleash chaos."
+                    "• `/knockout <user>` — Timeout a user dramatically!\n"
+                    "• `/revive <user>` — Bring back a timed-out user.\n"
+                    "• `/prank <user>` — Harmlessly prank a user.\n"
+                    "• `/chaos` — Temporarily unleash chaotic actions."
                 ),
                 inline=False
             )
@@ -86,7 +87,6 @@ class HelpCommand(commands.Cog):
     ])
     @command_enabled()
     async def help(self, interaction: discord.Interaction, category: app_commands.Choice[str] = None):
-
         selected_category = category.value if category else "all"
         embed = self.build_embed(selected_category)
         await interaction.response.send_message(embed=embed, ephemeral=True)
