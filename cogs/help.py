@@ -84,6 +84,7 @@ class HelpCommand(commands.Cog):
         app_commands.Choice(name="VC Tools", value="vc"),
         app_commands.Choice(name="Fun", value="fun"),
     ])
+    @command_enabled()
     async def help(self, interaction: discord.Interaction, category: app_commands.Choice[str] = None):
 
         selected_category = category.value if category else "all"
