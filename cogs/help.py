@@ -4,46 +4,94 @@ from discord import app_commands
 from discord.ext import commands
 from util.command_checks import is_command_enabled
 
-class HelpView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-        self.add_item(discord.ui.Button(label="Moderation", custom_id="help_moderation", style=discord.ButtonStyle.primary))
-        self.add_item(discord.ui.Button(label="Fun", custom_id="help_fun", style=discord.ButtonStyle.secondary))
-        self.add_item(discord.ui.Button(label="Utility", custom_id="help_utility", style=discord.ButtonStyle.success))
-
-# Load commands from JSON file
-with open("data/commands.json", "r") as file:
-    command_categories = json.load(file)
-
 class HelpCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    ### to do: edit so it shows which cmd is available on the server and which is not
+
+    def build_embed(self, category: str) -> discord.Embed:
+        embed = discord.Embed(
+            title="📖 • Melli's Commands & Features",
+            description="Use `/add_melli` to see who helped build Melli!\n[🛠 Join the Support Server](https://discord.gg/r2q6gNp9t3)",
+            color=discord.Color.magenta()
+        )
+
+        if category in ("all", "utility"):
+            embed.add_field(
+                name="╭─💡 Utility Commands ───────────────╮",
+                value=(
+                    "• `/supporters` — Show top boosters of the support server.\n"
+                    "• `/profile` — View your profile stored by Melli.\n"
+                    "• `/add_melli` — Invite Melli & view credits."
+                ),
+                inline=False
+            )
+
+        if category in ("all", "moderation"):
+            embed.add_field(
+                name="╭─📌 Moderation Tools ───────────────╮",
+                value=(
+                    "• `/mute` — Temporarily mute a user.\n"
+                    "• `/unmute` — Remove a timeout.\n"
+                    "• `/clear` — Delete messages in bulk.\n"
+                    "• `/warn` — Warn a member.\n"
+                    "• `/warnings` — Show warnings for a user.\n"
+                    "• `/delwarn` — Delete a specific warning.\n"
+                    "• `/clearwarns` — Clear all warnings.\n"
+                    "• `/kick` — Kick a member.\n"
+                    "• `/ban` — Ban a member.\n"
+                    "• `/unban` — Unban someone.\n"
+                    "• `/setup` — Interactive AutoMod setup.\n"
+                    "• `/forceupdate` — Refresh AutoMod rules."
+                ),
+                inline=False
+            )
+
+        if category in ("all", "vc"):
+            embed.add_field(
+                name="╭─🔊 VC Tools ───────────────────────╮",
+                value=(
+                    "• `/bump` — Move a user to another VC.\n"
+                    "• `/vc_mute` — Server mute a user in VC.\n"
+                    "• `/vc_unmute` — Unmute a user in VC.\n"
+                    "• `/deafen` — Server deafen a user.\n"
+                    "• `/undeafen` — Remove deafening.\n"
+                    "• `/kickvc` — Kick someone from VC."
+                ),
+                inline=False
+            )
+
+        if category in ("all", "fun"):
+            embed.add_field(
+                name="╭─🎉 Fun & Extras ─────────────────╮",
+                value=(
+                    "• `/knockout` — Timeout a user dramatically!\n"
+                    "• `/revive` — Bring back a timed-out user.\n"
+                    "• `/prank` — Harmlessly prank a user.\n"
+                    "• `/chaos` — Temporarily unleash chaos."
+                ),
+                inline=False
+            )
+
+        embed.set_footer(text="Need more help? Join the support server or ping a mod!")
+        return embed
+
     @app_commands.command(name="help", description="Get a list of available commands")
-    async def help(self, interaction: discord.Interaction):
-        # ✅ Check if the command is enabled before executing, using the function itself
+    @app_commands.describe(category="Pick a category to see commands from")
+    @app_commands.choices(category=[
+        app_commands.Choice(name="All", value="all"),
+        app_commands.Choice(name="Moderation", value="moderation"),
+        app_commands.Choice(name="Utility", value="utility"),
+        app_commands.Choice(name="VC Tools", value="vc"),
+        app_commands.Choice(name="Fun", value="fun"),
+    ])
+    async def help(self, interaction: discord.Interaction, category: app_commands.Choice[str] = None):
         if not is_command_enabled(interaction.guild.id, "help"):
             await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
             return
-        embed = discord.Embed(title="Help Menu", description="Click a button below to view commands in each category.", color=discord.Color.blurple())
-        await interaction.response.send_message(embed=embed, view=HelpView(), ephemeral=True)
 
-    @commands.Cog.listener()
-    async def on_interaction(self, interaction: discord.Interaction):
-        if interaction.type == discord.InteractionType.component:
-            custom_id = interaction.data.get("custom_id", "")
-            if custom_id.startswith("help_") and "_" in custom_id:
-                parts = custom_id.split("_")
-                if len(parts) > 1:
-                    category = parts[1].capitalize()
-                    if category in command_categories:
-                        embed = discord.Embed(
-                            title=f"{category} Commands",
-                            description="\n".join(command_categories[category]),
-                            color=discord.Color.blurple()
-                        )
-                        await interaction.response.edit_message(embed=embed, view=HelpView())
-
+        selected_category = category.value if category else "all"
+        embed = self.build_embed(selected_category)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(HelpCommand(bot))
