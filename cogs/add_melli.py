@@ -25,7 +25,7 @@ class AddMelli(commands.Cog):
             embed = discord.Embed(
                 title="✨ Meet Melli ✨",
                 description="A heartfelt thank you to everyone who contributed to Melli!\n\n**<:vwv:1323527766011809873> Click the button below to invite Melli to your server!**",
-                color=0x5865F2
+                color=discord.Color.magenta()
             )
             embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1308048258337345609/1331874809352556597/f0a534c6da023d46a18674bcf5a6a147.png")
             embed.add_field(

@@ -56,7 +56,7 @@ class Royal(commands.Cog):
 
 
         try:
-            embed = discord.Embed(color=discord.Color.red())
+            embed = discord.Embed(color=discord.Color.magenta())
 
             if tool.value == 'sniper':
                 await member.timeout(discord.utils.utcnow() + timedelta(seconds=30), reason="( -_•)▄︻デ══━一 Sniped")

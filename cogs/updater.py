@@ -105,7 +105,7 @@ class Updater(commands.Cog):
         embed = discord.Embed(
             title="Updating...",
             description="Pulling updates from GitHub & Ubuntu and restarting.",
-            color=0x3474eb
+            color=discord.Color.magenta()
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 

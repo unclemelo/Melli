@@ -80,7 +80,7 @@ class StatsCog(commands.Cog):
 
         embed = discord.Embed(
             title="📊 Bot Statistics",
-            color=discord.Color.from_str("#FC6C85"),
+            color=discord.Color.magenta(),
             timestamp=datetime.datetime.utcnow()
         )
         embed.add_field(name="Servers", value=str(guild_count), inline=True)

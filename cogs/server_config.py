@@ -148,7 +148,7 @@ class ServerConfig(commands.Cog):
         embed = discord.Embed(
             title="🛠 Command Configuration",
             description="Toggle commands on/off for this server.\nYou can also search by name or navigate pages.",
-            color=discord.Color.blurple()
+            color=discord.Color.magenta()
         )
         embed.set_footer(text="Changes apply immediately • Ephemeral only")
 

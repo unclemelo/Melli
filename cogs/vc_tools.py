@@ -26,7 +26,7 @@ class VCTools(commands.Cog):
         embed = discord.Embed(
             title="🔀 Member Bumped",
             description=f"{member.mention} has been bumped to **{channel.name}**.",
-            color=discord.Color.green()
+            color=discord.Color.magenta()
         )
         await interaction.response.send_message(embed=embed)
 
@@ -63,7 +63,7 @@ class VCTools(commands.Cog):
         embed = discord.Embed(
             title="🔊 Member Unmuted",
             description=f"{member.mention} has been unmuted.",
-            color=discord.Color.green()
+            color=discord.Color.magenta()
         )
         await interaction.response.send_message(embed=embed)
 
@@ -100,7 +100,7 @@ class VCTools(commands.Cog):
         embed = discord.Embed(
             title="🔔 Member Undeafened",
             description=f"{member.mention} has been undeafened.",
-            color=discord.Color.green()
+            color=discord.Color.magenta()
         )
         await interaction.response.send_message(embed=embed)
 
