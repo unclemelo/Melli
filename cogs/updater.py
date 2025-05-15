@@ -99,6 +99,7 @@ class Updater(commands.Cog):
 
     @app_commands.command(name="update", description="Developer Only")
     @is_dev()
+    @app_commands.guilds(discord.Object(id=1308048258337345607))
     async def restart_cmd(self, interaction: discord.Interaction):
         """Command to update the bot and pull updates from GitHub."""
         embed = discord.Embed(

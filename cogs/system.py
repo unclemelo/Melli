@@ -46,6 +46,7 @@ class System(commands.Cog):
 
     @app_commands.command(name="shutdown", description="Developer Only")
     @is_dev()
+    @app_commands.guilds(discord.Object(id=1308048258337345607))
     async def shutdown_cmd(self, interaction: discord.Interaction):
         """Command to shut down the bot."""
         embed = discord.Embed(
