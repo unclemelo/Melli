@@ -1,6 +1,6 @@
 # Melli
 
-**Melli** is a private Discord bot built for managing and enhancing the experience of your community. This README provides step-by-step instructions to set up and run the bot locally.
+**Melli** is no longer a private Discord bot, now you can have a bot that is built for managing and enhancing the experience of your community! This README provides step-by-step instructions to set up and run the bot locally.
 
 ---
 
