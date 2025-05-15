@@ -45,6 +45,23 @@ class StatsCog(commands.Cog):
         self.update_stats.cancel()
         self.save_stats()
 
+    def get_uptime(self):
+        delta = datetime.datetime.utcnow() - self.start_time
+        days = delta.days
+        hours, remainder = divmod(delta.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        parts = []
+        if days > 0:
+            parts.append(f"{days}d")
+        if hours > 0 or days > 0:
+            parts.append(f"{hours}h")
+        if minutes > 0 or hours > 0 or days > 0:
+            parts.append(f"{minutes}m")
+        parts.append(f"{seconds}s")
+
+        return " ".join(parts)
+
     @commands.Cog.listener()
     async def on_application_command(self, interaction: discord.Interaction):
         self.command_usage += 1
@@ -59,7 +76,7 @@ class StatsCog(commands.Cog):
         channel_count = sum(len(g.channels) for g in guilds)
         role_count = sum(len(g.roles) for g in guilds)
         avg_ping = round(self.bot.latency * 1000, 2)
-        uptime = discord.utils.format_dt(self.start_time, style="R")
+        uptime = self.get_uptime()
 
         embed = discord.Embed(
             title="📊 Bot Statistics",
@@ -90,7 +107,6 @@ class StatsCog(commands.Cog):
                 self.message_id = msg.id
                 self.save_stats()
         except discord.NotFound:
-            # Message deleted or invalid ID; create a new one
             msg = await channel.send(embed=embed)
             self.message_id = msg.id
             self.save_stats()
