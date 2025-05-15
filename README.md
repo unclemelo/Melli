@@ -70,7 +70,7 @@ Replace your_webhook_url with your actual Discord webhook url.
  
  ### 2. Set Up the Database
  
-#### Ensure the `data/warns.json`, `data/config.json`, and `AM_conf.json` files exists. If it's missing, you may need to generate it or let the bot handle database creation on first launch (if supported).
+#### Ensure the `data/warns.json`, `data/user_stats.json`, `data/memory.json`, `data/guildConf.json`, `data/bot_stats.json`, and `applied_presets.json` files exists. If it's missing, you may need to generate it or let the bot handle database creation on first launch (if supported).
 ---
 
 ## Running the Bot
