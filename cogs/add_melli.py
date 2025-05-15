@@ -14,9 +14,12 @@ class AddMelli(commands.Cog):
         try:
             # Invite button
             invite_url = "https://discord.com/oauth2/authorize?client_id=1316235145778434070&permissions=8&integration_type=0&scope=bot"
+            github_url = "https://github.com/unclemelo/Melli"
             view = discord.ui.View()
             button = discord.ui.Button(label="➕ Add Melli", url=invite_url, style=discord.ButtonStyle.link)
+            githubbutton = discord.ui.Button(label="<:github:1372632557945880606> GitHub", url=github_url, style=discord.ButtonStyle.link)
             view.add_item(button)
+            view.add_item(githubbutton)
 
             # Embed with credits and invite prompt
             embed = discord.Embed(
