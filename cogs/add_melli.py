@@ -17,7 +17,7 @@ class AddMelli(commands.Cog):
             github_url = "https://github.com/unclemelo/Melli"
             view = discord.ui.View()
             button = discord.ui.Button(label="➕ Add Melli", url=invite_url, style=discord.ButtonStyle.link)
-            githubbutton = discord.ui.Button(label="<:github:1372632557945880606> GitHub", url=github_url, style=discord.ButtonStyle.link)
+            githubbutton = discord.ui.Button(label="💻 GitHub", url=github_url, style=discord.ButtonStyle.link)
             view.add_item(button)
             view.add_item(githubbutton)
 
