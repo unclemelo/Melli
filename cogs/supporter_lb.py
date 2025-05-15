@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from util.command_checks import command_enabled
 
 SUPPORT_GUILD_ID = 1290420853926002789
 BANNER_URL = "https://cdn.discordapp.com/attachments/1335051139183415306/1371655184849305670/image-removebg-preview.png?ex=6823ecf0&is=68229b70&hm=b68c7f47378124e4932d22d4bd89050f17aefb01ace49cf457b8d26a1c2c2102&"  # Optional banner image
@@ -10,6 +11,7 @@ class SupporterLeaderboard(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="supporters", description="Show the top boosters of our support server!")
+    @command_enabled()
     async def supporters(self, interaction: discord.Interaction):
         await interaction.response.defer()
 

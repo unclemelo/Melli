@@ -1,18 +1,15 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from util.command_checks import is_command_enabled
+from util.command_checks import command_enabled
 
 class AddMelli(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @app_commands.command(name="add_melli", description="Invite Melli and view her credits!")
+    @command_enabled()
     async def add_melli(self, interaction: discord.Interaction):
-        # ✅ Check if the command is enabled before executing
-        if not is_command_enabled(interaction.guild.id, "credits"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
 
         try:
             # Invite button

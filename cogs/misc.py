@@ -8,7 +8,7 @@ from discord import app_commands
 from typing import List
 from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
-from util.command_checks import is_command_enabled
+from util.command_checks import command_enabled
 from util.booster_cooldown import BoosterCooldownManager
 
 cooldown_manager_user = BoosterCooldownManager(rate=1, per=600, bucket_type="user")
@@ -21,6 +21,7 @@ class MISC(commands.Cog):
 
     
     @app_commands.command(name="revive", description="Bring back a timed-out user with flair!")
+    @command_enabled()
     async def revive_cmd(self, interaction: discord.Interaction, member: discord.Member):
         remaining = await cooldown_manager_user.get_remaining(interaction)
         if remaining > 0:
@@ -52,6 +53,7 @@ class MISC(commands.Cog):
             print(f"- [ERROR] {e}")
 
     @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
+    @command_enabled()
     async def chaos_cmd(self, interaction: discord.Interaction):
         remaining = await cooldown_manager_user.get_remaining(interaction)
         if remaining > 0:
@@ -62,10 +64,7 @@ class MISC(commands.Cog):
 
         await cooldown_manager_user.trigger(interaction)
 
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "chaos"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
+        
         await interaction.response.defer()
         try:
             members = interaction.guild.members
@@ -101,6 +100,7 @@ class MISC(commands.Cog):
 
 
     @app_commands.command(name="prank", description="Play a harmless prank on a member!")
+    @command_enabled()
     async def prank_cmd(self, interaction: discord.Interaction, member: discord.Member):
         remaining = await cooldown_manager_user.get_remaining(interaction)
         if remaining > 0:
@@ -110,10 +110,6 @@ class MISC(commands.Cog):
             return
 
         await cooldown_manager_user.trigger(interaction)
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "prank"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         await interaction.response.defer()
         if member.id == 1230672301364871188:
             prank_nick = f"{member.name} 🤡"

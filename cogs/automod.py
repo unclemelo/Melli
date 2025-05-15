@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands, tasks
 import json
 import hashlib
+from util.command_checks import command_enabled
 
 # Utility functions
 
@@ -183,6 +184,7 @@ class AutoModManager(commands.Cog):
 
     @app_commands.command(name="setup", description="Interactively set up AutoMod for your server.")
     @app_commands.checks.has_permissions(manage_guild=True)
+    @command_enabled()
     async def setup_automod(self, interaction: discord.Interaction):
         log_channel = discord.utils.get(interaction.guild.text_channels, name="mod-logs") or interaction.channel
         view = AutoModSettingsView(log_channel, interaction.guild)
@@ -190,6 +192,7 @@ class AutoModManager(commands.Cog):
 
     @app_commands.command(name="force_update", description="Manually update the AutoMod preset.")
     @app_commands.checks.has_permissions(manage_guild=True)
+    @command_enabled()
     async def force_update(self, interaction: discord.Interaction):
         try:
             guild = interaction.guild

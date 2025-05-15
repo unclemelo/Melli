@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
+from util.command_checks import command_enabled
 
 class VCTools(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -9,6 +10,7 @@ class VCTools(commands.Cog):
     # Move member to another VC
     @app_commands.command(name="bump", description="Bump a member to another voice channel.")
     @app_commands.checks.has_permissions(move_members=True)
+    @command_enabled()
     async def bump(self, interaction: discord.Interaction, member: discord.Member, channel: discord.VoiceChannel):
         if not member.voice:
             return await interaction.response.send_message(
@@ -31,6 +33,7 @@ class VCTools(commands.Cog):
     # Server mute
     @app_commands.command(name="vc_mute", description="Server mute a member in VC.")
     @app_commands.checks.has_permissions(mute_members=True)
+    @command_enabled()
     async def vcmute(self, interaction: discord.Interaction, member: discord.Member):
         if not member.voice:
             return await interaction.response.send_message(
@@ -52,6 +55,7 @@ class VCTools(commands.Cog):
     
     @app_commands.command(name="vc_unmute", description="Unmute a member in VC.")
     @app_commands.checks.has_permissions(mute_members=True)
+    @command_enabled()
     async def vcunmute(self, interaction: discord.Interaction, member: discord.Member):
         if not member.voice:
             return await interaction.response.send_message(embed=self._not_in_vc(member), ephemeral=True)
@@ -66,6 +70,7 @@ class VCTools(commands.Cog):
     # Server deafen
     @app_commands.command(name="deafen", description="Server deafen a member in VC.")
     @app_commands.checks.has_permissions(deafen_members=True)
+    @command_enabled()
     async def deafen(self, interaction: discord.Interaction, member: discord.Member):
         if not member.voice:
             return await interaction.response.send_message(
@@ -87,6 +92,7 @@ class VCTools(commands.Cog):
 
     @app_commands.command(name="undeafen", description="Undeafen a member in VC.")
     @app_commands.checks.has_permissions(deafen_members=True)
+    @command_enabled()
     async def undeafen(self, interaction: discord.Interaction, member: discord.Member):
         if not member.voice:
             return await interaction.response.send_message(embed=self._not_in_vc(member), ephemeral=True)
@@ -101,6 +107,7 @@ class VCTools(commands.Cog):
     # Kick member from VC (move to None)
     @app_commands.command(name="kickvc", description="Remove a member from their voice channel.")
     @app_commands.checks.has_permissions(move_members=True)
+    @command_enabled()
     async def kickvc(self, interaction: discord.Interaction, member: discord.Member):
         if not member.voice:
             return await interaction.response.send_message(

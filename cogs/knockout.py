@@ -4,7 +4,7 @@ from discord.ext.commands import cooldown, BucketType
 from datetime import timedelta
 from discord import app_commands
 from discord.ext import commands
-from util.command_checks import is_command_enabled
+from util.command_checks import command_enabled
 from util.booster_cooldown import BoosterCooldownManager
 
 cooldown_manager_user = BoosterCooldownManager(rate=1, per=600, bucket_type="user")
@@ -23,6 +23,7 @@ class Royal(commands.Cog):
         app_commands.Choice(name="Rocket Launcher", value="rocket"),
         app_commands.Choice(name="Club", value="club"),
     ])
+    @command_enabled()
     async def knockoutcmd(self, interaction: discord.Interaction, tool: app_commands.Choice[str], member: discord.Member = None):
         remaining = await cooldown_manager_user.get_remaining(interaction)
         if remaining > 0:
@@ -33,10 +34,6 @@ class Royal(commands.Cog):
 
         await cooldown_manager_user.trigger(interaction)
 
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "knockout"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         # If no member is provided, pick a random member from the guild
         if member is None:
             member = random.choice(interaction.guild.members)

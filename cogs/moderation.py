@@ -4,7 +4,7 @@ import os
 from discord import app_commands
 from discord.ext import commands
 from datetime import timedelta
-from util.command_checks import is_command_enabled
+from util.command_checks import command_enabled
 
 WARN_FILE = 'data/warns.json'
 
@@ -27,11 +27,8 @@ class Moderation(commands.Cog):
     
     @app_commands.command(name="mute", description="Temporarily mutes a user using Discord's timeout feature.")
     @app_commands.checks.has_permissions(moderate_members=True)
+    @command_enabled()
     async def mute_cmd(self, interaction: discord.Interaction, member: discord.Member, minutes: int, *, reason: str = "No reason provided"):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "mute"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         try:
             # Apply timeout
             await member.timeout(discord.utils.utcnow() + timedelta(minutes=minutes), reason=reason)
@@ -47,11 +44,8 @@ class Moderation(commands.Cog):
 
     @app_commands.command(name="unmute", description="Removes a user's mute (timeout).")
     @app_commands.checks.has_permissions(moderate_members=True)
+    @command_enabled()
     async def unmute_cmd(self, interaction: discord.Interaction, member: discord.Member):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "unmute"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         try:
             # Remove timeout
             await member.timeout(discord.utils.utcnow() + timedelta(minutes=0))
@@ -67,11 +61,8 @@ class Moderation(commands.Cog):
     
     @app_commands.command(name="clear", description="Clears a number of messages.")
     @app_commands.checks.has_permissions(manage_messages=True)
+    @command_enabled()
     async def clear_cmd(self, interaction: discord.Interaction, amount: int):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "clear"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         try:
             await interaction.response.send_message(f"🧹 Poof! Cleared {amount} messages. The chat looks spotless now!", ephemeral=True)
             try:
@@ -84,11 +75,8 @@ class Moderation(commands.Cog):
     
     @app_commands.command(name="warn", description="Warn a user and log the reason.")
     @app_commands.checks.has_permissions(manage_messages=True)
+    @command_enabled()
     async def warn(self, interaction: discord.Interaction, member: discord.Member, *, reason: str = "No reason provided"):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "warn"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         """Warn a user and log the reason, guild-specific."""
         if member.bot:
             await interaction.response.send_message("You cannot warn a bot.")
@@ -120,11 +108,8 @@ class Moderation(commands.Cog):
 
     @app_commands.command(name="warnings", description="Display all warnings for a user.")
     @app_commands.checks.has_permissions(manage_messages=True)
+    @command_enabled()
     async def warnings(self, interaction: discord.Interaction, member: discord.Member):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "warnings"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         """Display all warnings for a user, guild-specific."""
         guild_id = str(interaction.guild.id)
         user_id = str(member.id)
@@ -144,11 +129,8 @@ class Moderation(commands.Cog):
 
     @app_commands.command(name="delwarn", description="Delete a specific warning for a user.")
     @app_commands.checks.has_permissions(manage_messages=True)
+    @command_enabled()
     async def delwarn(self, interaction: discord.Interaction, member: discord.Member, warn_index: int):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "delwarn"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         """Delete a specific warning for a user, guild-specific."""
         guild_id = str(interaction.guild.id)
         user_id = str(member.id)
@@ -173,11 +155,8 @@ class Moderation(commands.Cog):
 
     @app_commands.command(name="clearwarns", description="Clear all warnings for a user.")
     @app_commands.checks.has_permissions(manage_messages=True)
+    @command_enabled()
     async def clearwarns(self, interaction: discord.Interaction, member: discord.Member):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "clearwarns"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         """Clear all warnings for a user, guild-specific."""
         guild_id = str(interaction.guild.id)
         user_id = str(member.id)
@@ -193,11 +172,8 @@ class Moderation(commands.Cog):
 
     @app_commands.command(name="kick", description="Kicks a user.")
     @app_commands.checks.has_permissions(kick_members=True)
+    @command_enabled()
     async def kick_cmd(self, interaction: discord.Interaction, member: discord.Member, *, reason: str = "No reason provided"):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "kick"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         try:
             embed = discord.Embed(
                 title=f"🥾 **{member.name} was yeeted out of the server!**",
@@ -211,11 +187,8 @@ class Moderation(commands.Cog):
     
     @app_commands.command(name="ban", description="Bans a user.")
     @app_commands.checks.has_permissions(ban_members=True)
+    @command_enabled()
     async def ban_cmd(self, interaction: discord.Interaction, member: discord.Member, *, reason: str = "No reason provided"):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "ban"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         try:
             embed = discord.Embed(
                 title=f"🔨 **{member.name} was struck by the Melon Hammer!**",
@@ -229,11 +202,8 @@ class Moderation(commands.Cog):
 
     @app_commands.command(name="unban", description="Unbans a user.")
     @app_commands.checks.has_permissions(ban_members=True)
+    @command_enabled()
     async def unban_cmd(self, interaction: discord.Interaction, user_id: int):
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "unban"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         try:
             user = await self.bot.fetch_user(user_id)
             await interaction.guild.unban(user)

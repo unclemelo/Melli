@@ -2,7 +2,7 @@ import discord
 import json
 from discord import app_commands
 from discord.ext import commands
-from util.command_checks import is_command_enabled
+from util.command_checks import command_enabled
 
 class HelpCommand(commands.Cog):
     def __init__(self, bot):
@@ -85,9 +85,6 @@ class HelpCommand(commands.Cog):
         app_commands.Choice(name="Fun", value="fun"),
     ])
     async def help(self, interaction: discord.Interaction, category: app_commands.Choice[str] = None):
-        if not is_command_enabled(interaction.guild.id, "help"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
 
         selected_category = category.value if category else "all"
         embed = self.build_embed(selected_category)
