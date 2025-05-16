@@ -1,6 +1,5 @@
 .env
 cogs/__pycache__
-ms
 melli
 __pycache__
 data/warns.json
