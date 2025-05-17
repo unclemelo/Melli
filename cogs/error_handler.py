@@ -44,22 +44,44 @@ class ERROR(commands.Cog):
         trace = "".join(traceback.format_exception(type(error), error, error.__traceback__))
 
         # Handle common user errors gracefully
-        if isinstance(error, app_commands.CommandOnCooldown):
+        if isinstance(error, CommandOnCooldown):
             await interaction.response.send_message(
                 f"⌛ This command is on cooldown. Try again in **{error.retry_after:.2f}** seconds.",
                 ephemeral=True
             )
-            return
-
-        if isinstance(error, app_commands.MissingPermissions):
+        elif isinstance(error, MissingPermissions):
             await interaction.response.send_message(
                 "🚫 You do not have permission to use this command.",
                 ephemeral=True
             )
-            return
-
+        elif isinstance(error, BotMissingPermissions):
+            await interaction.response.send_message(
+                "⚠️ I don't have the required permissions to execute this command.",
+                ephemeral=True
+            )
+        elif isinstance(error, MissingRole):
+            await interaction.response.send_message(
+                f"🔐 You must have the `{error.missing_role}` role to use this command.",
+                ephemeral=True
+            )
+        elif isinstance(error, MissingAnyRole):
+            missing = ", ".join(f"`{role}`" for role in error.missing_roles)
+            await interaction.response.send_message(
+                f"🔐 You need at least one of the following roles to use this command: {missing}.",
+                ephemeral=True
+            )
+        elif isinstance(error, NoPrivateMessage):
+            await interaction.response.send_message(
+                "📵 This command cannot be used in DMs.",
+                ephemeral=True
+            )
+        elif isinstance(error, app_commands.CheckFailure):
+            await interaction.response.send_message(
+                "❌ You don't meet the requirements to run this command.",
+                ephemeral=True
+            )
         # For other errors, notify user and log
-        if not interaction.response.is_done():
+        elif not interaction.response.is_done():
             try:
                 await interaction.response.send_message(
                     "❌ An unexpected error occurred. The developers have been notified.",
