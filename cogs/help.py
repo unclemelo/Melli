@@ -17,7 +17,7 @@ class HelpCommand(commands.Cog):
 
         if category in ("all", "utility"):
             embed.add_field(
-                name="╭─💡 Utility Commands ───────────────╮",
+                name="💡 Utility Commands",
                 value=(
                     "• `/supporters` — Show top boosters of the support server.\n"
                     "• `/profile [user]` — View your profile or another user's profile.\n"
@@ -29,7 +29,7 @@ class HelpCommand(commands.Cog):
 
         if category in ("all", "moderation"):
             embed.add_field(
-                name="╭─📌 Moderation Tools ───────────────╮",
+                name="📌 Moderation Tools",
                 value=(
                     "• `/mute <user> <duration> [reason]` — Temporarily mute a user.\n"
                     "• `/unmute <user>` — Remove a timeout from a user.\n"
@@ -49,7 +49,7 @@ class HelpCommand(commands.Cog):
 
         if category in ("all", "vc"):
             embed.add_field(
-                name="╭─🔊 VC Tools ───────────────────────╮",
+                name="🔊 VC Tools",
                 value=(
                     "• `/bump <user> <target_vc>` — Move a user to another voice channel.\n"
                     "• `/vc_mute <user>` — Server mute a user in voice chat.\n"
@@ -63,7 +63,7 @@ class HelpCommand(commands.Cog):
 
         if category in ("all", "fun"):
             embed.add_field(
-                name="╭─🎉 Fun & Extras ─────────────────╮",
+                name="🎉 Fun & Extras",
                 value=(
                     "• `/knockout <user>` — Timeout a user dramatically!\n"
                     "• `/revive <user>` — Bring back a timed-out user.\n"
@@ -89,7 +89,31 @@ class HelpCommand(commands.Cog):
     async def help(self, interaction: discord.Interaction, category: app_commands.Choice[str] = None):
         selected_category = category.value if category else "all"
         embed = self.build_embed(selected_category)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        view = HelpView(self)
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+
+
+class HelpView(discord.ui.View):
+    def __init__(self, cog: HelpCommand):
+        super().__init__(timeout=60)
+        self.cog = cog
+
+    @discord.ui.select(
+        placeholder="Select a command category...",
+        min_values=1,
+        max_values=1,
+        options=[
+            discord.SelectOption(label="All", value="all", emoji="📖"),
+            discord.SelectOption(label="Moderation", value="moderation", emoji="📌"),
+            discord.SelectOption(label="Utility", value="utility", emoji="💡"),
+            discord.SelectOption(label="VC Tools", value="vc", emoji="🔊"),
+            discord.SelectOption(label="Fun", value="fun", emoji="🎉"),
+        ]
+    )
+    async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        value = select.values[0]
+        embed = self.cog.build_embed(value)
+        await interaction.response.edit_message(embed=embed, view=self)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
