@@ -31,11 +31,6 @@ class MISC(commands.Cog):
             return
 
         await cooldown_manager_user.trigger(interaction)
-
-        # ✅ Check if the command is enabled before executing, using the function itself
-        if not is_command_enabled(interaction.guild.id, "revive"):
-            await interaction.response.send_message("🚫 This command is disabled in this server.", ephemeral=True)
-            return
         try:
             await member.edit(timed_out_until=None)
             embed = discord.Embed(
