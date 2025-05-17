@@ -9,7 +9,7 @@ class ServerConfig(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name="command_config", description="Enable or disable commands for this server.")
+    @app_commands.command(name="config", description="Enable or disable commands for this server.")
     @app_commands.checks.has_permissions(administrator=True)
     async def config_cmd(self, interaction: discord.Interaction):
         guild_id = interaction.guild_id
@@ -21,7 +21,7 @@ class ServerConfig(commands.Cog):
         all_cmds = {
             cmd.name: guild_config.get(cmd.name, True)
             for cmd in self.bot.tree.get_commands()
-            if cmd.name != "command_config"
+            if cmd.name != "config"
         }
 
         sorted_cmds = sorted(all_cmds.items())
