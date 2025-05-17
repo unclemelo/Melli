@@ -1,6 +1,4 @@
 import discord
-import datetime
-import pytz
 import traceback
 import sys
 import logging
@@ -10,6 +8,7 @@ from discord import app_commands, Interaction
 from discord.ext import commands
 from dotenv import load_dotenv
 
+# Load .env for webhook
 load_dotenv()
 WEBHOOK_URL = os.getenv('WEBHOOK')
 
@@ -18,13 +17,10 @@ class ERROR(commands.Cog):
         self.bot = bot
         self.error_channel_id = error_channel_id
 
-        # Global error handler for slash commands
+        # Assign global app command error handler
         self.bot.tree.on_error = self.global_app_command_error
 
-        # Global handler for async background task errors
-        self.bot.loop.set_exception_handler(self.handle_async_exception)
-
-        # Logging config
+        # Set up logging to file and console
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s [%(levelname)s] %(message)s",
@@ -35,45 +31,51 @@ class ERROR(commands.Cog):
             ]
         )
 
-        # Redirect stdout and stderr
+        # Redirect print() and errors
         sys.stdout = self
         sys.stderr = self
         sys.excepthook = self.handle_uncaught_exception
 
+    async def cog_load(self):
+        """
+        Called when the cog is fully loaded and bot is initialized.
+        Safe place to access loop.
+        """
+        self.bot.loop.set_exception_handler(self.handle_async_exception)
+
     async def global_app_command_error(self, interaction: Interaction, error: Exception):
         """
-        Handles errors in slash commands.
+        Handles errors from slash commands.
         """
         error_type = type(error).__name__
         error_message = str(error)
 
-        # Send user-friendly message
+        # User-facing response
         if isinstance(error, app_commands.CommandOnCooldown):
             await interaction.response.send_message(
-                f"⌛ Please wait! Try again in **{error.retry_after:.2f}** seconds.",
+                f"⌛ This command is on cooldown. Try again in **{error.retry_after:.2f}** seconds.",
                 ephemeral=True
             )
         elif isinstance(error, app_commands.MissingPermissions):
             await interaction.response.send_message(
-                "🚫 You don't have permission to use this command.",
+                "🚫 You do not have permission to use this command.",
                 ephemeral=True
             )
         else:
-            # Ensure the interaction is responded to
             if not interaction.response.is_done():
                 await interaction.response.send_message(
                     "❌ An unexpected error occurred. The developers have been notified.",
                     ephemeral=True
                 )
 
-            # Log full traceback
+            # Full traceback
             trace = "".join(traceback.format_exception(type(error), error, error.__traceback__))
             logging.error(f"Unhandled Slash Command Exception:\n{trace}")
             self.send_to_webhook(f"**[SLASH ERROR]** `{error_type}`\n```py\n{trace[:1900]}\n```")
 
     def handle_async_exception(self, loop, context):
         """
-        Handles background task exceptions (not tied to commands).
+        Handles unhandled errors in async tasks.
         """
         error = context.get("exception")
         if error:
@@ -88,7 +90,7 @@ class ERROR(commands.Cog):
 
     def handle_uncaught_exception(self, exctype, value, tb):
         """
-        Handles uncaught synchronous exceptions.
+        Logs uncaught sync exceptions and sends to webhook.
         """
         trace = "".join(traceback.format_exception(exctype, value, tb))
         error_type = exctype.__name__
@@ -97,7 +99,7 @@ class ERROR(commands.Cog):
 
     def send_to_webhook(self, message):
         """
-        Sends a message to the webhook for remote logging.
+        Sends formatted message to Discord webhook.
         """
         payload = {
             "content": message,
@@ -112,7 +114,7 @@ class ERROR(commands.Cog):
 
     def write(self, message):
         """
-        Redirects print() and standard output to log + webhook.
+        Redirects print() and stdout to logging and webhook.
         """
         message = message.strip()
         if message:
@@ -120,10 +122,9 @@ class ERROR(commands.Cog):
             self.send_to_webhook(f"**[LOG]** `{message[:1900]}`")
 
     def flush(self):
-        """Required method for file-like objects."""
         pass
 
+# Bot extension setup
 async def setup(bot: commands.Bot):
-    # Replace this with your actual error logging channel ID if needed
-    error_channel_id = 1308048388637462558
+    error_channel_id = 1308048388637462558  # Replace with your error channel ID if needed
     await bot.add_cog(ERROR(bot, error_channel_id))
