@@ -22,7 +22,7 @@ class HelpCommand(commands.Cog):
                     "• `/supporters` — Show top boosters of the support server.\n"
                     "• `/profile [user]` — View your profile or another user's profile.\n"
                     "• `/add_melli` — Invite Melli & view credits.\n"
-                    "• `/command_config` — Enable or disable commands for this server."
+                    "• `/config` — Enable or disable commands for this server."
                 ),
                 inline=False
             )
