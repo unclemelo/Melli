@@ -1,11 +1,10 @@
 import discord
-import json
 from discord import app_commands
 from discord.ext import commands
 from util.command_checks import command_enabled
 
 class HelpCommand(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     def build_embed(self, category: str) -> discord.Embed:
@@ -41,8 +40,19 @@ class HelpCommand(commands.Cog):
                     "• `/kick <user> [reason]` — Kick a member.\n"
                     "• `/ban <user> [reason]` — Ban a member.\n"
                     "• `/unban <user>` — Unban a previously banned user.\n"
+                ),
+                inline=False
+            )
+
+        if category in ("all", "automod"):
+            embed.add_field(
+                name="🛡️ AutoMod Commands",
+                value=(
                     "• `/setup` — Interactive AutoMod setup wizard.\n"
-                    "• `/forceupdate` — Refresh AutoMod rules immediately."
+                    "• `/forceupdate` — Refresh AutoMod rules immediately.\n"
+                    "• `/show_config` — Lets you see the current AutoMod settings in a neat embed.\n"
+                    "• `/clear_config` — Wipes your AutoMod settings for the guild.\n"
+                    "• `/set_log_channel` — Lets you pick the log channel explicitly, stored in temp data for now."
                 ),
                 inline=False
             )
@@ -82,6 +92,7 @@ class HelpCommand(commands.Cog):
         app_commands.Choice(name="All", value="all"),
         app_commands.Choice(name="Moderation", value="moderation"),
         app_commands.Choice(name="Utility", value="utility"),
+        app_commands.Choice(name="AutoMod", value="automod"),
         app_commands.Choice(name="VC Tools", value="vc"),
         app_commands.Choice(name="Fun", value="fun"),
     ])
@@ -91,29 +102,6 @@ class HelpCommand(commands.Cog):
         embed = self.build_embed(selected_category)
         view = HelpView(self)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
-
-
-class HelpView(discord.ui.View):
-    def __init__(self, cog: HelpCommand):
-        super().__init__(timeout=60)
-        self.cog = cog
-
-    @discord.ui.select(
-        placeholder="Select a command category...",
-        min_values=1,
-        max_values=1,
-        options=[
-            discord.SelectOption(label="All", value="all", emoji="📖"),
-            discord.SelectOption(label="Moderation", value="moderation", emoji="📌"),
-            discord.SelectOption(label="Utility", value="utility", emoji="💡"),
-            discord.SelectOption(label="VC Tools", value="vc", emoji="🔊"),
-            discord.SelectOption(label="Fun", value="fun", emoji="🎉"),
-        ]
-    )
-    async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
-        value = select.values[0]
-        embed = self.cog.build_embed(value)
-        await interaction.response.edit_message(embed=embed, view=self)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -130,9 +118,45 @@ class HelpView(discord.ui.View):
                 ),
                 color=discord.Color.magenta()
             )
-            embed.set_footer(text="Thanks for mentioning me ")
-            await message.reply(embed=embed, mention_author=False)
+            embed.set_footer(text="Thanks for mentioning me")
+            try:
+                await message.reply(embed=embed, mention_author=False)
+            except discord.Forbidden:
+                pass  # Bot can't send messages here
 
 
-async def setup(bot):
+class HelpView(discord.ui.View):
+    def __init__(self, cog: HelpCommand):
+        super().__init__(timeout=60)
+        self.cog = cog
+
+    @discord.ui.select(
+        placeholder="Select a command category...",
+        min_values=1,
+        max_values=1,
+        options=[
+            discord.SelectOption(label="All", value="all", emoji="📖"),
+            discord.SelectOption(label="Moderation", value="moderation", emoji="📌"),
+            discord.SelectOption(label="Utility", value="utility", emoji="💡"),
+            discord.SelectOption(label="AutoMod", value="automod", emoji="🛡️"),
+            discord.SelectOption(label="VC Tools", value="vc", emoji="🔊"),
+            discord.SelectOption(label="Fun", value="fun", emoji="🎉"),
+        ]
+    )
+    async def select_callback(self, interaction: discord.Interaction, select: discord.ui.Select):
+        value = select.values[0]
+        embed = self.cog.build_embed(value)
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    async def on_timeout(self) -> None:
+        # Disable the select when view times out
+        for child in self.children:
+            child.disabled = True
+        try:
+            await self.message.edit(view=self)
+        except Exception:
+            pass
+
+
+async def setup(bot: commands.Bot):
     await bot.add_cog(HelpCommand(bot))
