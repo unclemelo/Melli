@@ -162,10 +162,12 @@ async def main():
     try:
         await client.start(TOKEN)
     except KeyboardInterrupt:
-        await logger.send(build_embed("🛑 CRITICAL ERROR", "KeyboardInterrupt: Bot manually stopped.", "warn"))
+        await logger.send(build_embed("🛑 Shutdown", "Bot manually stopped with Ctrl+C.", "warn"))
+        await client.close()  # Gracefully close connection
     except Exception as e:
         print(f"[FAILED TO START] {e}")
         await logger.send(build_embed("❌ Failed to Start Bot", f"`{e}`", "error"))
+
 
 if __name__ == "__main__":
     asyncio.run(main())
