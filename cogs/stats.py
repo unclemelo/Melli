@@ -63,7 +63,10 @@ class StatsCog(commands.Cog):
         return " ".join(parts)
 
     @commands.Cog.listener()
-    async def on_application_command(self, interaction: discord.Interaction):
+    async def on_interaction(self, interaction: discord.Interaction):
+        if interaction.command is None:
+            return  # Ignore non-command interactions
+            
         self.command_usage += 1
         self.save_stats()
 
