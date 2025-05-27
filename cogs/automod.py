@@ -5,86 +5,56 @@ import json
 import hashlib
 import re
 from util.command_checks import command_enabled
-
-# ---- util funcs moved to util/automod.py (import them) ----
 from util.automod import (
     hash_preset, get_temp_data, load_json, save_json, apply_automod_rule
 )
 
-# Load presets once here
 Presets = load_json("data/presets.json")
-
-# Regex to extract IDs from mentions (roles/channels)
 ID_EXTRACTOR = re.compile(r"<@&?(\d+)>|(\d+)")
 
-# --- Modal classes for manual input when >25 roles/channels ---
+# --- Modal Inputs ---
 
-class ManualRoleInputModal(discord.ui.Modal, title="Enter exempt roles manually"):
-    input_roles = discord.ui.TextInput(
-        label="Roles (mention or ID separated by spaces or commas)",
-        style=discord.TextStyle.paragraph,
-        placeholder="@Moderator, 123456789012345678",
-        required=True,
-        max_length=400
-    )
-
-    def __init__(self, guild: discord.Guild):
-        super().__init__()
+class ManualInputModal(discord.ui.Modal):
+    def __init__(self, guild: discord.Guild, input_type: str):
+        title = f"Enter exempt {input_type} manually"
+        super().__init__(title=title)
         self.guild = guild
+        self.input_type = input_type
+        self.input_field = discord.ui.TextInput(
+            label=f"{input_type.capitalize()}s (mention or ID, space/comma separated)",
+            style=discord.TextStyle.paragraph,
+            placeholder="@Moderator, 123456789012345678",
+            required=True,
+            max_length=400
+        )
+        self.add_item(self.input_field)
 
     async def on_submit(self, interaction: discord.Interaction):
-        raw = self.input_roles.value
-        role_ids = set()
-        for part in re.split(r"[,\s]+", raw):
+        raw = self.input_field.value
+        ids = set()
+        for part in re.split(r"[\s,]+", raw):
             if not part.strip():
                 continue
             match = ID_EXTRACTOR.match(part)
             if match:
-                role_id = int(match.group(1) or match.group(2))
-                if self.guild.get_role(role_id):
-                    role_ids.add(role_id)
-        roles = [self.guild.get_role(rid) for rid in role_ids if self.guild.get_role(rid)]
+                id_val = int(match.group(1) or match.group(2))
+                if self.input_type == "roles" and self.guild.get_role(id_val):
+                    ids.add(id_val)
+                elif self.input_type == "channels" and self.guild.get_channel(id_val):
+                    ids.add(id_val)
+        
         data = get_temp_data(interaction.client, interaction.user.id)
-        data["exempt_roles"] = roles
+        if self.input_type == "roles":
+            data["exempt_roles"] = [self.guild.get_role(rid) for rid in ids if self.guild.get_role(rid)]
+        else:
+            data["exempt_channels"] = [self.guild.get_channel(cid) for cid in ids if self.guild.get_channel(cid)]
+
         await interaction.response.send_message(
-            f"✅ Exempt roles manually updated ({len(roles)} roles).",
+            f"✅ Exempt {self.input_type} manually updated ({len(ids)} {self.input_type}).",
             ephemeral=True
         )
 
-
-class ManualChannelInputModal(discord.ui.Modal, title="Enter exempt channels manually"):
-    input_channels = discord.ui.TextInput(
-        label="Channels (mention or ID separated by spaces or commas)",
-        style=discord.TextStyle.paragraph,
-        placeholder="#general, 123456789012345678",
-        required=True,
-        max_length=400
-    )
-
-    def __init__(self, guild: discord.Guild):
-        super().__init__()
-        self.guild = guild
-
-    async def on_submit(self, interaction: discord.Interaction):
-        raw = self.input_channels.value
-        channel_ids = set()
-        for part in re.split(r"[,\s]+", raw):
-            if not part.strip():
-                continue
-            match = ID_EXTRACTOR.match(part)
-            if match:
-                channel_id = int(match.group(1) or match.group(2))
-                if self.guild.get_channel(channel_id):
-                    channel_ids.add(channel_id)
-        channels = [self.guild.get_channel(cid) for cid in channel_ids if self.guild.get_channel(cid)]
-        data = get_temp_data(interaction.client, interaction.user.id)
-        data["exempt_channels"] = channels
-        await interaction.response.send_message(
-            f"✅ Exempt channels manually updated ({len(channels)} channels).",
-            ephemeral=True
-        )
-
-# --- UI Selectors ---
+# --- UI Selects ---
 
 class AutoModPresetSelector(discord.ui.Select):
     def __init__(self):
@@ -92,60 +62,43 @@ class AutoModPresetSelector(discord.ui.Select):
             discord.SelectOption(label=name, description=data.get("description", "No description"))
             for name, data in Presets.items()
         ]
-        super().__init__(placeholder="Choose a security level...", min_values=1, max_values=1, options=options)
+        super().__init__(placeholder="Choose a security level...", options=options)
 
     async def callback(self, interaction: discord.Interaction):
         data = get_temp_data(interaction.client, interaction.user.id)
-        selected_preset = self.values[0]
-        data["preset"] = selected_preset
-        data["config"] = Presets.get(selected_preset, {})
-        await interaction.response.send_message(f"✅ Preset **{selected_preset}** selected!", ephemeral=True)
+        selected = self.values[0]
+        data["preset"] = selected
+        data["config"] = Presets.get(selected, {})
+        await interaction.response.send_message(f"✅ Preset **{selected}** selected!", ephemeral=True)
 
-
-class AutoModRoleSelector(discord.ui.Select):
-    def __init__(self, guild: discord.Guild):
+class ExemptSelector(discord.ui.Select):
+    def __init__(self, items, item_type: str, guild: discord.Guild):
+        options = [discord.SelectOption(label=item.name, value=str(item.id)) for item in items]
+        placeholder = f"Choose exempt {item_type}..."
+        super().__init__(placeholder=placeholder, options=options, min_values=0, max_values=len(options))
+        self.item_type = item_type
         self.guild = guild
-        roles = [discord.SelectOption(label=role.name, value=str(role.id)) for role in guild.roles if role.name != "@everyone"]
-        super().__init__(placeholder="Choose exempt roles...", min_values=0, max_values=len(roles), options=roles)
 
     async def callback(self, interaction: discord.Interaction):
         data = get_temp_data(interaction.client, interaction.user.id)
-        data["exempt_roles"] = [self.guild.get_role(int(role_id)) for role_id in self.values]
-        await interaction.response.send_message("✅ Exempt roles updated!", ephemeral=True)
-
-
-class AutoModChannelSelector(discord.ui.Select):
-    def __init__(self, guild: discord.Guild):
-        self.guild = guild
-        channels = [discord.SelectOption(label=channel.name, value=str(channel.id)) for channel in guild.text_channels]
-        super().__init__(placeholder="Choose exempt channels...", min_values=0, max_values=len(channels), options=channels)
-
-    async def callback(self, interaction: discord.Interaction):
-        data = get_temp_data(interaction.client, interaction.user.id)
-        data["exempt_channels"] = [self.guild.get_channel(int(channel_id)) for channel_id in self.values]
-        await interaction.response.send_message("✅ Exempt channels updated!", ephemeral=True)
+        if self.item_type == "roles":
+            data["exempt_roles"] = [self.guild.get_role(int(val)) for val in self.values]
+        else:
+            data["exempt_channels"] = [self.guild.get_channel(int(val)) for val in self.values]
+        await interaction.response.send_message(f"✅ Exempt {self.item_type} updated!", ephemeral=True)
 
 # --- Buttons ---
 
-class ManualInputFallbackButton(discord.ui.Button):
-    def __init__(self, config_type: str, guild: discord.Guild):
-        super().__init__(label=f"Enter {config_type} manually", style=discord.ButtonStyle.secondary, custom_id=config_type)
-        self.config_type = config_type
+class ManualInputButton(discord.ui.Button):
+    def __init__(self, item_type: str, guild: discord.Guild):
+        super().__init__(label=f"Enter {item_type} manually", style=discord.ButtonStyle.secondary)
+        self.item_type = item_type
         self.guild = guild
 
     async def callback(self, interaction: discord.Interaction):
-        # Open modal for manual input
-        if self.config_type == "roles":
-            modal = ManualRoleInputModal(self.guild)
-        elif self.config_type == "channels":
-            modal = ManualChannelInputModal(self.guild)
-        else:
-            await interaction.response.send_message("Invalid config type for manual input.", ephemeral=True)
-            return
-        await interaction.response.send_modal(modal)
+        await interaction.response.send_modal(ManualInputModal(self.guild, self.item_type))
 
-
-class SaveAutoModConfigButton(discord.ui.Button):
+class SaveConfigButton(discord.ui.Button):
     def __init__(self, log_channel: discord.TextChannel):
         super().__init__(label="Apply AutoMod Settings", style=discord.ButtonStyle.success)
         self.log_channel = log_channel
@@ -153,88 +106,51 @@ class SaveAutoModConfigButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         data = get_temp_data(interaction.client, interaction.user.id)
+        rule_data = data.get("config", {})
+        roles = data.get("exempt_roles", [])
+        channels = data.get("exempt_channels", [])
 
-        try:
-            rule_data = data.get("config", {})
-            exempt_roles = data.get("exempt_roles", [])
-            exempt_channels = data.get("exempt_channels", [])
+        await apply_automod_rule(interaction.guild, self.log_channel, rule_data, roles, channels)
 
-            await apply_automod_rule(interaction.guild, self.log_channel, rule_data, exempt_roles, exempt_channels)
+        embed = discord.Embed(title="✅ AutoMod Settings Applied",
+                              description=f"Using **{data.get('preset')}** preset.",
+                              color=discord.Color.magenta())
 
-            embed = discord.Embed(
-                title="✅ AutoMod Settings Applied",
-                description=f"AutoMod is now using the **{data.get('preset')}** preset.",
-                color=discord.Color.magenta()
-            )
+        def field_val(lst, fmt=str): return ", ".join(map(fmt, lst)) if lst else "None"
 
-            regex_patterns = rule_data.get("regex_patterns", [])
-            keyword_filters = rule_data.get("keyword_filter", [])
-            allowed_keywords = rule_data.get("allowed_keywords", [])
+        embed.add_field(name="🧠 Regex", value=f"```\n{chr(10).join(rule_data.get('regex_patterns', []))}```" or "None", inline=False)
+        embed.add_field(name="📝 Blocked Keywords", value=field_val(rule_data.get("keyword_filter", [])), inline=False)
+        embed.add_field(name="🚫 Allowed Keywords", value=field_val(rule_data.get("allowed_keywords", [])), inline=False)
+        embed.add_field(name="🎭 Exempt Roles", value=field_val(roles, lambda r: r.mention if r else ""), inline=True)
+        embed.add_field(name="💬 Exempt Channels", value=field_val(channels, lambda c: c.mention if c else ""), inline=True)
+        embed.set_footer(text=f"📢 Alerts sent to: #{self.log_channel.name}")
 
-            embed.add_field(
-                name="🧠 Regular Expressions",
-                value=f"```regex\n{chr(10).join(regex_patterns) if regex_patterns else 'None'}```",
-                inline=False
-            )
+        await interaction.followup.send(embed=embed)
 
-            embed.add_field(
-                name="📝 Blocked Keywords",
-                value=", ".join(keyword_filters) if keyword_filters else "None",
-                inline=False
-            )
+        applied = load_json("data/applied_presets.json")
+        applied[str(interaction.guild.id)] = {"preset": data.get("preset"), "hash": hash_preset(rule_data)}
+        save_json("data/applied_presets.json", applied)
 
-            embed.add_field(
-                name="🚫 Allowed Keywords",
-                value=", ".join(allowed_keywords) if allowed_keywords else "None",
-                inline=False
-            )
+# --- View ---
 
-            embed.add_field(
-                name="🎭 Exempt Roles",
-                value=", ".join(role.mention for role in exempt_roles if role) if exempt_roles else "None",
-                inline=True
-            )
-
-            embed.add_field(
-                name="💬 Exempt Channels",
-                value=", ".join(channel.mention for channel in exempt_channels if channel) if exempt_channels else "None",
-                inline=True
-            )
-
-            embed.set_footer(text=f"📢 Alerts will be sent to: #{self.log_channel.name}")
-
-            await interaction.followup.send(embed=embed)
-
-            # Save applied preset and hash
-            applied = load_json("data/applied_presets.json")
-            applied[str(interaction.guild.id)] = {"preset": data.get("preset"), "hash": hash_preset(rule_data)}
-            save_json("data/applied_presets.json", applied)
-
-        except discord.HTTPException as e:
-            await interaction.followup.send(f"❌ Failed to create AutoMod rule: {e}", ephemeral=True)
-
-
-# --- Main View with improved role/channel handling ---
 class AutoModSettingsView(discord.ui.View):
     def __init__(self, log_channel: discord.TextChannel, guild: discord.Guild):
         super().__init__(timeout=None)
-        self.guild = guild
-        self.log_channel = log_channel
         self.add_item(AutoModPresetSelector())
 
-        # Roles
-        if len(guild.roles) <= 25:
-            self.add_item(AutoModRoleSelector(guild))
+        role_items = [r for r in guild.roles if r.name != "@everyone"]
+        if len(role_items) <= 25:
+            self.add_item(ExemptSelector(role_items, "roles", guild))
         else:
-            self.add_item(ManualInputFallbackButton("roles", guild))
+            self.add_item(ManualInputButton("roles", guild))
 
-        # Channels
-        if len(guild.text_channels) <= 25:
-            self.add_item(AutoModChannelSelector(guild))
+        text_channels = guild.text_channels
+        if len(text_channels) <= 25:
+            self.add_item(ExemptSelector(text_channels, "channels", guild))
         else:
-            self.add_item(ManualInputFallbackButton("channels", guild))
+            self.add_item(ManualInputButton("channels", guild))
 
-        self.add_item(SaveAutoModConfigButton(log_channel))
+        self.add_item(SaveConfigButton(log_channel))
 
 
 # --- Cog class ---
