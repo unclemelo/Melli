@@ -1,117 +1,171 @@
 # Melli
 
-**Melli** is no longer a private Discord bot, now you can have a bot that is built for managing and enhancing the experience of your community! This README provides step-by-step instructions to set up and run the bot locally.
+**Melli** is now public! Built with community management in mind, Melli enhances moderation, automation, and engagement in your Discord server. This README will guide you through setting up and running the bot locally.
 
 ---
 
-## Features
+## 🚀 Features & Commands
 
-- **Automod**: Automatically moderates chat messages based on preset rules. It's finally out so enjoy!
-- **Error Handling**: Graceful handling of errors to ensure a seamless experience.
-- **Custom Commands**: Miscellaneous commands for fun and utility.
-- **Fun Commumity Commands**: We added a Chaos, Prank, and Knockout commands. Have some fun by trying them out!
+### 🛡️ AutoMod Tools
+- `/setup` — Launch an interactive AutoMod configuration wizard.  
+- `/forceupdate` — Instantly refresh AutoMod rules.  
+- `/show_config` — View your current AutoMod settings in a neat embed.  
+- `/clear_config` — Reset all AutoMod settings for your server.  
+- `/set_log_channel <channel>` — Set a temporary log channel manually.
+
+### 🔨 Moderation Tools
+- `/mute <user> <duration> [reason]` — Temporarily mute a user.  
+- `/unmute <user>` — Remove a timeout from a user.  
+- `/clear <amount>` — Bulk delete messages.  
+- `/warn <user> <reason>` — Warn a user.  
+- `/warnings <user>` — Show a user's warning history.  
+- `/delwarn <warning_id>` — Delete a specific warning.  
+- `/clearwarns <user>` — Remove all warnings from a user.  
+- `/kick <user> [reason]` — Kick a member from the server.  
+- `/ban <user> [reason]` — Ban a member from the server.  
+- `/unban <user>` — Unban a previously banned user.
+
+### ⚙️ Utility Commands
+- `/supporters` — View top boosters of the support server.  
+- `/profile [user]` — View your or another user's profile.  
+- `/add_melli` — Invite Melli to your server and see project credits.  
+- `/config` — Toggle command availability per server.
+
+### 🔊 Voice Channel Tools
+- `/bump <user> <target_vc>` — Move a user to another voice channel.  
+- `/vc_mute <user>` — Server mute a user in voice chat.  
+- `/vc_unmute <user>` — Unmute a user in voice chat.  
+- `/deafen <user>` — Server deafen a user.  
+- `/undeafen <user>` — Remove deafening from a user.  
+- `/kickvc <user>` — Disconnect a user from a voice channel.
+
+### 🎉 Fun & Extra Commands
+- `/knockout <user>` — Timeout a user dramatically.  
+- `/revive <user>` — Bring a timed-out user back.  
+- `/prank <user>` — Harmlessly prank a user.  
+- `/chaos` — Temporarily unleash controlled chaos.
 
 ---
 
-## Prerequisites
+## 🧰 Prerequisites
 
-Before you begin, ensure you have the following installed on your system:
+Before you begin, make sure the following are installed:
 
-1. **Python 3.11+**
-2. **pip** (Python package manager)
-3. **Git** (optional, but recommended for cloning this repository)
+1. **Python 3.11+**  
+2. **pip** (Python package manager)  
+3. **Git** (optional but recommended)
 
 ---
 
-## Installation
+## 📦 Installation
 
-Follow these steps to set up and run the bot:
-
- ### 1. Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/unclemelo/Melli
 cd Melli
 ```
 
- ### 2. Set Up a Virtual Environment (Recommended)
-
-Create a virtual environment to isolate dependencies:
+### 2. Set Up a Virtual Environment (Recommended)
 
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Linux/Mac
-venv\Scripts\activate     # On Windows
+# On Linux/Mac
+source venv/bin/activate
+# On Windows
+venv\Scripts\activate
 ```
 
- ### 3. Install Dependencies (Sumbit an issue if outdated libs)
+### 3. Install Dependencies
 
-Install the required Python packages:
+Install the required Python libraries:
 
 ```bash
 pip install -r requirements.txt
 ```
 
+> 💡 *If any dependencies are outdated or cause issues, feel free to open an issue.*
+
 ---
 
-## Configuration
+## ⚙️ Configuration
 
- ### 1. Create a .env File
+### 1. Create a `.env` File
 
-The `.env` file holds sensitive information such as your bot token. Create it in the project root if it doesn't already exist and add the following:
+In the project root, create a `.env` file and add:
 
 ```env
 TOKEN=your_discord_bot_token
 WEBHOOK=your_webhook_url
 ```
 
-Replace your_discord_bot_token with your actual Discord bot token. (You can get this from the [Discord Developer Portal](https://discord.com/developers/docs/intro).)
-Replace your_webhook_url with your actual Discord webhook url.
- 
- ### 2. Set Up the Database
- 
-#### Ensure the `data/warns.json`, `data/user_stats.json`, `data/memory.json`, `data/guildConf.json`, `data/bot_stats.json`, and `applied_presets.json` files exists. If it's missing, you may need to generate it or let the bot handle database creation on first launch (if supported).
+- Replace `your_discord_bot_token` with your bot token from the [Discord Developer Portal](https://discord.com/developers/docs/intro).
+- Replace `your_webhook_url` with your Discord webhook URL (optional, for logging or console output).
+
+### 2. Set Up the Database
+
+Ensure the following files exist in the `data/` directory:
+
+- `warns.json`
+- `user_stats.json`
+- `memory.json`
+- `guildConf.json`
+- `bot_stats.json`
+- `applied_presets.json`
+
+> If missing, Melli may auto-generate them on first launch. If not, create empty JSON files to prevent errors.
+
 ---
 
-## Running the Bot
+## ▶️ Running the Bot
 
-To run the bot:
+To start the bot:
 
 ```bash
-python bot.py # On Windows
-python3 bot.py # On Linux/Mac
+# On Windows
+python bot.py
+
+# On Linux/Mac
+python3 bot.py
 ```
 
-*The bot should now start and connect to your Discord server. Check the console output for any errors or confirmation that the bot is online.*
+> ✅ The bot should now start and connect to your Discord server. Check your terminal for confirmation or errors.
 
 ---
 
-## Folder Structure
+## 📁 Folder Structure
 
-- `cogs/`: Contains the bot's modular features (e.g., automod, custom commands, royal system).
-- `data/`: Stores bot data like databases and configuration files.
-- `.env.example`: Example .env file for configuration.
-- `requirements.txt`: Lists Python dependencies.
-- `LICENSE`: License file for the project.
-- `README.md`: This documentation file.
-
----
-
-## Troubleshooting
-
-1. Bot Token Error: Ensure the correct token is in the `.env` file.
-
-2. Missing Dependencies: Run `pip install -r requirements.txt` again.
-
-3. Database Issues: Verify the `data/warns.json`, `data/user_stats.json`, `data/memory.json`, `data/guildConf.json`, `data/bot_stats.json`, and `applied_presets.json` files exists and is properly configured.
+```
+Melli/
+├── cogs/               # Modular bot features
+├── data/               # Bot data and configuration files
+├── .env.example        # Example .env configuration
+├── requirements.txt    # Python dependencies
+├── LICENSE             # Project license
+└── README.md           # You're here!
+```
 
 ---
 
-## Contributing
+## ❗ Troubleshooting
 
-Contributions are welcomed! If you help with the code we will add your discord id to Melli's badge system that shows people you worked on Melli's development
+1. **Bot token error**  
+   - Double-check the `TOKEN` value in your `.env` file.
+
+2. **Missing dependencies**  
+   - Run `pip install -r requirements.txt` again.
+
+3. **Missing data files**  
+   - Make sure all required JSON files in the `data/` folder exist and are valid.
 
 ---
 
-*Let me know if you'd like help improving or adding functionality!*
+## 🤝 Contributing
 
+Contributions are welcome! If you help improve Melli's codebase, your Discord ID will be added to the bot's badge system as a contributor.
+
+Feel free to open issues, submit pull requests, or suggest new features!
+
+---
+
+*Let us know if you need help setting up or want to expand Melli’s features. We're always happy to collaborate!*
