@@ -4,7 +4,5 @@ asyncio
 python-dotenv
 pytz
 requests
-openai
-gTTS
 aiohttp
 psutil
