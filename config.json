@@ -1,0 +1,27 @@
+{
+    "whitelist": [
+      "agent_technology",
+      "azazelyboi",
+      "catof_darkness69",
+      "layatheemo",
+      "master_enzo",
+      "melissanisu",
+      "moobot",
+      "pitr1010",
+      "sourpopenergy"
+    ],
+    "banned_words": [
+      "fag",
+      "faggot",
+      "fatty",
+      "faggots",
+      "fags"
+    ],
+    "regex_patterns": {
+      "(?:https?:\\/\\/)?[a-z0-9_\\-]+(?:\\s*|[\\u0020\\u00A0])*\\.(?:c\\s*o\\s*m|n\\s*e\\s*t|o\\s*r\\s*g|i\\s*o|g\\s*o\\s*v|e\\s*d\\s*u|i\\s*n\\s*f\\s*o|g\\s*g|x\\s*x\\s*x)\\b": "Possible obfuscated domain or scam link",
+      "(?:https?:\\/\\/)?(?:www\\.|ptb\\.|canary\\.)?(?:dsc\\.gg|invite\\.gg|discord\\.link|(?:discord\\.(?:gg|io|me|li|id))|disboard\\.org|discord(?:app)?\\.(?:com|gg)\\/(?:invite|servers))\\/[a-z0-9-_]+": "Discord invite links are not allowed",
+      "[\\u0300-\\u036F]{3,}": "Excessive unicode combining characters (Zalgo text)",
+      "(?s)(?i)((<a?:[a-z_0-9]+:[0-9]+>|\\p{Extended_Pictographic}|[\\u{1F1E6}-\\u{1F1FF}]|[0-9#\\*]\\u{fe0f}).*){7,}": "Excessive emoji spam"
+    }
+  }
+  
