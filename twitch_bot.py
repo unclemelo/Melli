@@ -22,12 +22,16 @@ with open("config.json") as f:
 HOST = "irc.chat.twitch.tv"
 PORT = 6667
 
-irc = socket.socket()
-irc.connect((HOST, PORT))
-irc.send(f"PASS {TOKEN}\r\n".encode("utf-8"))
-irc.send(f"NICK {USERNAME}\r\n".encode("utf-8"))
-irc.send(f"JOIN {CHANNEL}\r\n".encode("utf-8"))
+def connect():
+    s = socket.socket()
+    s.connect((HOST, PORT))
+    s.send(f"PASS {TOKEN}\r\n".encode("utf-8"))
+    s.send(f"NICK {USERNAME}\r\n".encode("utf-8"))
+    s.send(f"JOIN {CHANNEL}\r\n".encode("utf-8"))
+    print(f"Connected to {CHANNEL} as {USERNAME}")
+    return s
 
+irc = connect()
 mod = ModerationHandler(config)
 
 def send_message(msg):
@@ -37,11 +41,17 @@ def timeout(user, reason, duration=10):
     send_message(f"/timeout {user} {duration} AutoMod: {reason}")
     print(f"[TIMEOUT] {user}: {reason}")
 
-print(f"Connected to {CHANNEL} as {USERNAME}")
+# Track the last time a message was received
+last_received_time = time.time()
+TIMEOUT_THRESHOLD = 600  # 10 minutes
 
 while True:
     try:
         resp = irc.recv(2048).decode("utf-8")
+        if not resp:
+            raise ConnectionResetError("No response received, reconnecting...")
+
+        last_received_time = time.time()
 
         if resp.startswith("PING"):
             irc.send("PONG :tmi.twitch.tv\r\n".encode("utf-8"))
@@ -75,6 +85,20 @@ while True:
         except:
             pass
 
+        # Auto reconnect if idle too long
+        if time.time() - last_received_time > TIMEOUT_THRESHOLD:
+            print("Connection idle too long, reconnecting...")
+            irc.close()
+            time.sleep(2)
+            irc = connect()
+            last_received_time = time.time()
+
     except Exception as e:
         print("Error:", e)
-        break
+        try:
+            irc.close()
+        except:
+            pass
+        time.sleep(5)
+        irc = connect()
+        last_received_time = time.time()

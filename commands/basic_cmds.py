@@ -1,8 +1,27 @@
 import random
 
-def handle_command(user, message):
-    msg = message.lower()
+OWNER_USERNAME = "unclemel0"  # replace with your Twitch username (lowercase)
+REPEAT_EVERY = 10  # number of chat messages between repeats
 
+# Track the repeat state
+brb_active = False
+brb_counter = 0
+
+def handle_command(user, message):
+    global brb_active, brb_counter
+
+    msg = message.lower()
+    user_lower = user.lower()
+
+    # Increment counter every message
+    brb_counter += 1
+
+    # --- Repeating reminder ---
+    if brb_active and brb_counter >= REPEAT_EVERY:
+        brb_counter = 0
+        return ["🔁 | Streamer is still on a short break. Hang tight! 💺"]
+
+    # --- Public Commands ---
     if msg.startswith("!rules"):
         return [
             "📜 | **Chat Rules**",
@@ -45,5 +64,19 @@ def handle_command(user, message):
 
     elif msg.startswith("!help"):
         return ["!rules, !discord, !hug, !8ball, !flip, !dice, !lurk, !unlurk"]
+
+    # --- Owner-only Commands ---
+    if user_lower == OWNER_USERNAME:
+        if msg.startswith("!brb"):
+            brb_active = True
+            brb_counter = 0
+            return ["🔕 | Streamer is taking a short break. Hang tight! 💺"]
+
+        elif msg.startswith("!back"):
+            brb_active = False
+            return ["✅ | Streamer is back! Thanks for waiting 💜"]
+
+        elif msg.startswith("!nomic"):
+            return ["🎮 | Switching games, be back shortly with something new!"]
 
     return None
