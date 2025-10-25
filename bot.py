@@ -1,99 +1,57 @@
-## Libraries
+# bot.py — Melli v2.0 (Terminal Edition)
+# ──────────────────────────────────────────────
+# Terminal-only version styled like Watch_Dogs 2
+
 import discord
 import os
 import asyncio
-import requests
 from discord.ext import commands, tasks
-from discord import Webhook
 from dotenv import load_dotenv
-from typing import Optional
+from colorama import Fore, Style, init
+from datetime import datetime
 
-## Load Environment Variables
+init(autoreset=True)
+
+# ──────────────────────────────────────────────
+# Load environment
 load_dotenv()
-TOKEN = os.getenv('TOKEN')
-WEBHOOK_URL = os.getenv('WEBHOOK')
+TOKEN = os.getenv("TOKEN")
 
-## Bot Setup
+# ──────────────────────────────────────────────
+# Bot setup
 intents = discord.Intents.all()
+intents.members = True
 client = commands.AutoShardedBot(command_prefix="!", shard_count=1, intents=intents)
-client.remove_command('help')
+client.remove_command("help")
 
+# ──────────────────────────────────────────────
+# Terminal Style Helpers
+def terminal_banner():
+    print(f"""{Fore.MAGENTA}{Style.BRIGHT}
+╔════════════════════════════════════════════════╗
+║               MELLI SYSTEM v2.0                ║
+║                                                ║
+╚════════════════════════════════════════════════╝
+    """)
+
+def log(msg: str, level: str = "info"):
+    time = datetime.now().strftime("%H:%M:%S")
+    levels = {
+        "info": Fore.CYAN + "[INFO]",
+        "success": Fore.GREEN + "[SUCCESS]",
+        "warn": Fore.YELLOW + "[WARN]",
+        "error": Fore.RED + "[ERROR]",
+        "critical": Fore.MAGENTA + "[CRITICAL]",
+    }
+    tag = levels.get(level, Fore.WHITE + "[LOG]")
+    print(f"{Fore.BLACK}[{time}]{Style.RESET_ALL} {tag} {Fore.WHITE}{msg}{Style.RESET_ALL}")
+
+# ──────────────────────────────────────────────
+# Status messages
 status_messages = [
     "🍉 | I'm a silly goober. :3",
-    "🌐 | Active in {guild_count} servers!",
     "⚙️ | Type /help for commands!"
 ]
-
-# ---------------------- Webhook Logger with Queue ----------------------
-class WebhookLogger:
-    def __init__(self, webhook_url: str, delay: float = 2.0):
-        self.webhook_url = webhook_url
-        self.queue = asyncio.Queue()
-        self.delay = delay
-        self.task = None
-
-    def start(self):
-        if not self.task:
-            self.task = asyncio.create_task(self._run())
-
-    async def _run(self):
-        while True:
-            embed = await self.queue.get()
-            try:
-                response = requests.post(
-                    self.webhook_url,
-                    json={"embeds": [embed.to_dict()]},
-                    headers={"Content-Type": "application/json"}
-                )
-                if response.status_code != 204:
-                    print(f"[WEBHOOK ERROR] {response.status_code} | {response.text}")
-            except Exception as e:
-                print(f"[WEBHOOK SEND FAILED] {e}")
-            await asyncio.sleep(self.delay)
-
-    async def send(self, embed: discord.Embed):
-        await self.queue.put(embed)
-
-# Instantiate the logger
-logger = WebhookLogger(WEBHOOK_URL)
-
-def build_embed(title: str, description: str, level: str = "info") -> discord.Embed:
-    colors = {
-        "success": discord.Color.green(),
-        "error": discord.Color.red(),
-        "info": discord.Color.blurple(),
-        "warn": discord.Color.orange()
-    }
-    embed = discord.Embed(
-        title=title,
-        description=description,
-        color=colors.get(level, discord.Color.default())
-    )
-    embed.set_footer(text="System Log")
-    return embed
-
-# ---------------------- Bot Events & Tasks ----------------------
-
-@client.event
-async def on_ready():
-    logger.start()  # start the webhook logger
-    try:
-        synced = await client.tree.sync()
-        await logger.send(build_embed("✅ Synced", f"{len(synced)} commands successfully synced.", "success"))
-    except Exception as e:
-        print(f"[SYNC FAILED] {e}")
-        await logger.send(build_embed("❌ Sync Failed", f"Error: `{e}`", "error"))
-
-    await logger.send(build_embed(
-        f"<:mellilogo:1341933009359732736> {client.user.name} Online",
-        f"**Logged in as:** {client.user} (`{client.user.id}`)\n"
-        f"**Guilds:** {len(client.guilds)}\n"
-        f"**Latency:** {round(client.latency * 1000)}ms",
-        "info"
-    ))
-
-    if not update_status_loop.is_running():
-        update_status_loop.start()
 
 @tasks.loop(seconds=10)
 async def update_status_loop():
@@ -108,66 +66,65 @@ async def update_status_loop():
             activity=discord.Activity(type=discord.ActivityType.watching, name=current)
         )
     except Exception as e:
-        await logger.send(build_embed("❌ Status Update Failed", f"`{e}`", "error"))
+        log(f"Status update failed: {e}", "error")
 
+# ──────────────────────────────────────────────
+# Events
+@client.event
+async def on_ready():
+    terminal_banner()
+    log(f"System online as {client.user} ({client.user.id})", "success")
+    log(f"Connected to {len(client.guilds)} guilds.", "info")
+
+    try:
+        synced = await client.tree.sync()
+        log(f"Slash commands synced: {len(synced)}", "success")
+    except Exception as e:
+        log(f"Command sync failed: {e}", "error")
+
+    if not update_status_loop.is_running():
+        update_status_loop.start()
+
+# ──────────────────────────────────────────────
+# Cog loader
 async def load_cogs():
-    """Loads all cogs and sends a summary embed after all have been processed."""
     loaded = []
     failed = []
 
-    for filename in os.listdir('cogs'):
-        if filename.endswith('.py'):
+    for filename in os.listdir("cogs"):
+        if filename.endswith(".py"):
             name = filename[:-3]
             try:
-                await client.load_extension(f'cogs.{name}')
+                await client.load_extension(f"cogs.{name}")
                 loaded.append(filename)
-                
             except Exception as e:
                 failed.append((filename, str(e)))
-                
 
-    # Build embed
-    embed = discord.Embed(
-        title="📦 Cog Load Summary",
-        color=discord.Color.green() if not failed else discord.Color.orange()
-    )
     if loaded:
-        embed.add_field(
-            name="✅ Successfully Loaded",
-            value="\n".join(f"`{file}`" for file in loaded),
-            inline=False
-        )
+        log("Loaded cogs:", "success")
+        for file in loaded:
+            print(Fore.GREEN + f"   → {file}")
     if failed:
-        embed.color = discord.Color.red()
-        embed.add_field(
-            name="❌ Failed to Load",
-            value="\n".join(f"`{file}` - `{error}`" for file, error in failed),
-            inline=False
-        )
+        log("Failed to load cogs:", "error")
+        for file, error in failed:
+            print(Fore.RED + f"   → {file}: {error}")
 
-    embed.set_footer(text="Cog Loader")
-    await logger.send(embed)
-
+# ──────────────────────────────────────────────
+# Main entry
 async def main():
     try:
         await load_cogs()
     except Exception as e:
-        print(f"[CRITICAL ERROR] {e}")
-        await logger.send(build_embed(
-            "🚨 Critical Error Loading Cogs",
-            f"An unexpected error occurred while loading cogs:\n`{e}`",
-            "error"
-        ))
+        log(f"Critical error loading cogs: {e}", "critical")
 
     try:
+        log("Starting Melli client...", "info")
         await client.start(TOKEN)
     except KeyboardInterrupt:
-        await logger.send(build_embed("🛑 Shutdown", "Bot manually stopped with Ctrl+C.", "warn"))
-        await client.close()  # Gracefully close connection
+        log("Manual shutdown requested (Ctrl+C)", "warn")
+        await client.close()
     except Exception as e:
-        print(f"[FAILED TO START] {e}")
-        await logger.send(build_embed("❌ Failed to Start Bot", f"`{e}`", "error"))
-
+        log(f"Failed to start bot: {e}", "critical")
 
 if __name__ == "__main__":
     asyncio.run(main())

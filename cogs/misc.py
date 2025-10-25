@@ -19,34 +19,6 @@ class MISC(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    
-    @app_commands.command(name="revive", description="Bring back a timed-out user with flair!")
-    @command_enabled()
-    async def revive_cmd(self, interaction: discord.Interaction, member: discord.Member):
-        remaining = await cooldown_manager_user.get_remaining(interaction)
-        if remaining > 0:
-            await interaction.response.send_message(
-                f"You're on cooldown! Try again in {round(remaining, 1)}s.", ephemeral=True
-            )
-            return
-
-        await cooldown_manager_user.trigger(interaction)
-        try:
-            await member.edit(timed_out_until=None)
-            embed = discord.Embed(
-                title="✨ Resurrection Complete!",
-                description=f"{member.mention} has been revived by {interaction.user.mention}! Hopefully, they behave this time. 🤞",
-                color=discord.Color.green()
-            )
-            embed.set_image(url="https://cdn.discordapp.com/attachments/1183985896039661658/1308808048030126162/love-live-static.gif?ex=673f49fb&is=673df87b&hm=e53b7c74842f2939f60c71bdad015a1013b28c0476f41244e8a8091464143f02&")
-            await interaction.response.send_message(embed=embed)
-        except discord.Forbidden:
-            await interaction.response.send_message("I don't have permission to revive them. RIP again. 😔", ephemeral=True)
-        except discord.HTTPException:
-            await interaction.response.send_message("Failed to revive. The afterlife is holding onto them tight.", ephemeral=True)
-        except Exception as e:
-            print(f"- [ERROR] {e}")
-
     @app_commands.command(name="chaos", description="Unleash chaos on the server (temporarily).")
     @command_enabled()
     async def chaos_cmd(self, interaction: discord.Interaction):

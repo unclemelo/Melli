@@ -18,10 +18,7 @@ class HelpCommand(commands.Cog):
             embed.add_field(
                 name="💡 Utility Commands",
                 value=(
-                    "• `/supporters` — Show top boosters of the support server.\n"
                     "• `/profile [user]` — View your profile or another user's profile.\n"
-                    "• `/add_melli` — Invite Melli & view credits.\n"
-                    "• `/config` — Enable or disable commands for this server."
                 ),
                 inline=False
             )
