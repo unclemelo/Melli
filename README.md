@@ -1,6 +1,8 @@
 # Melli
 
-**Melli** is now public! Built with community management in mind, Melli enhances moderation, automation, and engagement in your Discord server. This README will guide you through setting up and running the bot locally.
+A powerful Discord bot built for community management, automation, and fun, designed to make running your server easier and more engaging.
+
+Whether you're managing a chill community, a creator hub, or a bustling gaming server, Melli’s modular tools keep everything organized and lively.
 
 ---
 
