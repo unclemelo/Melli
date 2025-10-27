@@ -1,0 +1,62 @@
+{
+  "sniper": {
+    "title": "🎯 Sniper Shot!",
+    "timeout": 30,
+    "gif": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790458889146398/sinon-sao.gif",
+    "lines": [
+      "Headshot confirmed!",
+      "One shot, one nap.",
+      "They never saw it coming..."
+    ]
+  },
+  "shotie": {
+    "title": "💥 Shotgun Blast!",
+    "timeout": [30, 60],
+    "gif": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790449795895347/shotgun-bread-boys.gif",
+    "lines": [
+      "Boom! That's gotta hurt!",
+      "Close-range carnage!",
+      "You turned them into digital dust!"
+    ]
+  },
+  "pistol": {
+    "title": "🔫 Pistol Shot!",
+    "timeout": 20,
+    "gif": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790414626656256/gun-fire.gif",
+    "lines": [
+      "Pew pew! Straight to the ego!",
+      "They flinched just in time — almost.",
+      "Quick draw wins again."
+    ]
+  },
+  "grenade": {
+    "title": "💣 Grenade Explosion!",
+    "timeout": 90,
+    "gif": "https://cdn.discordapp.com/attachments/1183985896039661658/1308790148493873162/boom.gif",
+    "lines": [
+      "BOOM! That's what I call a statement.",
+      "You threw that like a champ!",
+      "Nothing but chaos remains..."
+    ]
+  },
+  "rocket": {
+    "title": "🚀 Rocket Launcher!",
+    "timeout": 120,
+    "gif": "https://cdn.discordapp.com/attachments/1183985896039661658/1308789861880299583/laser-eye.gif",
+    "lines": [
+      "Direct hit! 💀",
+      "They got vaporized instantly!",
+      "You really went *overkill* this time..."
+    ]
+  },
+  "club": {
+    "title": "🔨 Bonk Attack!",
+    "timeout": 15,
+    "gif": "https://cdn.discordapp.com/attachments/1290652330127003679/1326216909854736515/bonk-anime.gif",
+    "lines": [
+      "💥 BONK! Go to horny jail.",
+      "Classic melee dominance.",
+      "That swing had sound effects IRL."
+    ]
+  }
+}
