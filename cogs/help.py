@@ -100,27 +100,6 @@ class HelpCommand(commands.Cog):
         view = HelpView(self)
         await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.author.bot or not message.guild:
-            return
-
-        if self.bot.user in message.mentions:
-            embed = discord.Embed(
-                title="<:vwv:1323527766011809873> Hey there!",
-                description=(
-                    "I'm **Melli**, your moderation, utility, and fun assistant.\n\n"
-                    "Use the **`/help`** command to see everything I can do for you!\n"
-                    "[🛠 Support Server](https://discord.gg/r2q6gNp9t3) <:embarrassed:1323530963074158642>"
-                ),
-                color=discord.Color.magenta()
-            )
-            embed.set_footer(text="Thanks for mentioning me")
-            try:
-                await message.reply(embed=embed, mention_author=False)
-            except discord.Forbidden:
-                pass  # Bot can't send messages here
-
 
 class HelpView(discord.ui.View):
     def __init__(self, cog: HelpCommand):

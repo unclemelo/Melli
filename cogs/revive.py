@@ -83,7 +83,7 @@ class Revive(commands.Cog):
             return
 
         # Determine outcome (higher fail rate)
-        outcome = random.choices(["fail", "success", "miracle"], weights=[0.6, 0.3, 0.1])[0]
+        outcome = random.choices(["fail", "success", "miracle"], weights=[0.3, 0.6, 0.1])[0]
 
         embed = discord.Embed(color=discord.Color.blurple())
         embed.set_footer(text="🕐 Cooldown: 10 minutes")
