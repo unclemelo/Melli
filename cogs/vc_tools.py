@@ -8,10 +8,10 @@ class VCTools(commands.Cog):
         self.bot = bot
 
     # Move member to another VC
-    @app_commands.command(name="bump", description="Bump a member to another voice channel.")
+    @app_commands.command(name="move", description="Move a member to another voice channel.")
     @app_commands.checks.has_permissions(move_members=True)
     @command_enabled()
-    async def bump(self, interaction: discord.Interaction, member: discord.Member, channel: discord.VoiceChannel):
+    async def move(self, interaction: discord.Interaction, member: discord.Member, channel: discord.VoiceChannel):
         if not member.voice:
             return await interaction.response.send_message(
                 embed=discord.Embed(
@@ -24,8 +24,8 @@ class VCTools(commands.Cog):
         
         await member.move_to(channel)
         embed = discord.Embed(
-            title="🔀 Member Bumped",
-            description=f"{member.mention} has been bumped to **{channel.name}**.",
+            title="🔀 Member Moved",
+            description=f"{member.mention} has been moved to **{channel.name}**.",
             color=discord.Color.magenta()
         )
         await interaction.response.send_message(embed=embed)
