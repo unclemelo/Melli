@@ -57,7 +57,7 @@ class Updater(commands.Cog):
             name="GitHub Status",
             value=("No updates found. The bot is running the latest version."
                    if "Already up to date." in git_response else
-                   "Updates applied. Check the [GitHub Page](<https://github.com/unclemelo/Melli>)"), # Replace username & repo_name
+                   "Updates applied. Check the [GitHub Page](<https://github.com/unclemelo/Melli>)"),
             inline=False
         )
         await channel.send(embed=embed)
