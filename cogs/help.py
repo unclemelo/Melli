@@ -98,7 +98,7 @@ class HelpCommand(commands.Cog):
         selected_category = category.value if category else "all"
         embed = self.build_embed(selected_category)
         view = HelpView(self)
-        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+        await interaction.response.send_message("This Command is temp disabled", ephemeral=False)
 
 
 class HelpView(discord.ui.View):
