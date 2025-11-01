@@ -2,150 +2,184 @@ import discord
 import subprocess
 import os
 import sys
-from datetime import datetime, timezone
+import asyncio
+import traceback
+from datetime import datetime
 from discord import app_commands
 from discord.ext import commands
-from functools import wraps
 
-## Developer IDs ##
-devs = {954135885392252940, 667032667732312115}
-###################
-
-def is_dev():
-    """Decorator to restrict commands to developers."""
-    def predicate(func):
-        @wraps(func)
-        async def wrapper(self, interaction: discord.Interaction, *args, **kwargs):
-            if interaction.user.id in self.devs:
-                return await func(self, interaction, *args, **kwargs)
-            await interaction.response.send_message(
-                "This command is restricted to developers.", ephemeral=True
-            )
-        return wrapper
-    return predicate
+GITHUB_REPO = "https://github.com/unclemelo/Melli"
+DEV_ROLE_ID = 1434074860681822259
 
 class Updater(commands.Cog):
-    """Cog for managing system-level commands like restarting and updating the bot."""
-    ## Replace with your update channel ID ##
-    UPDATE_CHANNEL_ID = 1434070857696804965
-    #########################################
-
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot):
         self.bot = bot
-        self.devs = devs
 
-    def get_update_channel(self) -> discord.TextChannel:
-        """Fetches the update channel."""
-        return self.bot.get_channel(self.UPDATE_CHANNEL_ID)
+    # -------------------------------------------------
+    # Helper: Check for developer role
+    # -------------------------------------------------
+    async def _is_dev(self, interaction: discord.Interaction):
+        if DEV_ROLE_ID == 0:
+            return True
+        return any(role.id == DEV_ROLE_ID for role in interaction.user.roles)
 
-    @staticmethod
-    def run_command(command: list) -> str:
-        """Runs a shell command and returns the output."""
+    # -------------------------------------------------
+    # Helper: Send error embed
+    # -------------------------------------------------
+    async def send_error_embed(self, interaction: discord.Interaction, error: Exception, command_name: str):
+        """Sends an informative error message when a command fails."""
+        tb = "".join(traceback.format_exception(type(error), error, error.__traceback__))
+        embed = discord.Embed(
+            title=f"⚠️ Error in `{command_name}`",
+            description=f"An error occurred while running the `{command_name}` command.",
+            color=discord.Color.red()
+        )
+        embed.add_field(name="Error Type", value=f"`{type(error).__name__}`", inline=True)
+        embed.add_field(name="Error Message", value=f"```{str(error)[:500]}```", inline=False)
+        embed.set_footer(text="Check console for traceback details.")
+        await interaction.followup.send(embed=embed)
+        print(f"[Updater Error] {command_name} failed:\n{tb}")
+
+    # -------------------------------------------------
+    # /update - main update + restart
+    # -------------------------------------------------
+    @app_commands.command(name="update", description="Pull updates from GitHub and restart the bot.")
+    async def update_bot(self, interaction: discord.Interaction):
+        if not await self._is_dev(interaction):
+            return await interaction.response.send_message("You are not authorized to run this command.", ephemeral=True)
+
+        await interaction.response.defer(thinking=True)
         try:
-            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            return result.stdout if result.returncode == 0 else result.stderr
-        except Exception as e:
-            return str(e)
+            process = subprocess.run(["git", "pull"], capture_output=True, text=True)
+            output = process.stdout.strip() or process.stderr.strip()
 
-    def update_code(self) -> dict:
-        """Pulls the latest code from GitHub and updates dependencies."""
-        git_pull_output = self.run_command(["git", "pull"])
-        pip_output = self.run_command(["python3", "-m", "pip", "install", "-r", "requirements.txt"])
+            if "Already up to date" in output:
+                return await interaction.followup.send("✅ No updates available. The bot is already up to date.")
 
-        # Fetch the last few commit messages for display
-        if "Already up to date." in git_pull_output:
-            commit_logs = None
-        else:
-            commit_logs = self.run_command(["git", "log", "-n", "3", "--pretty=format:• %s (%an)"])
-
-        return {
-            "git_pull": git_pull_output,
-            "pip_install": pip_output,
-            "commit_logs": commit_logs
-        }
-
-    async def notify_updates(self, update_results: dict):
-        """Sends update notifications to the designated update channel."""
-        channel = self.get_update_channel()
-        if not channel:
-            print("[ ERROR ] Update channel not found.")
-            return
-
-        embed = discord.Embed(
-            title="Bot Updated",
-            description="Successfully pulled updates from GitHub and restarted.",
-            color=0x3474eb
-        )
-
-        git_response = update_results.get("git_pull", "No Git response available.")
-        commit_logs = update_results.get("commit_logs")
-
-        # --- Add GitHub status ---
-        embed.add_field(
-            name="GitHub Status",
-            value=("No updates found. The bot is running the latest version."
-                   if "Already up to date." in git_response
-                   else "Updates applied successfully. Check the [GitHub Page](<https://github.com/unclemelo/Melli>)"),
-            inline=False
-        )
-
-        # --- Add Commit Logs if there are new commits ---
-        if commit_logs:
-            embed.add_field(
-                name="Recent Commits",
-                value=commit_logs[:1024],  # prevent field from exceeding Discord limit
-                inline=False
+            embed = discord.Embed(
+                title="🔁 Bot Updated",
+                description="Successfully pulled updates from GitHub and restarting...",
+                color=discord.Color.green(),
+                timestamp=datetime.now()
             )
+            embed.add_field(name="GitHub Status", value=f"Updates applied successfully. [View on GitHub]({GITHUB_REPO})", inline=False)
 
-        # --- Time Handling ---
-        now_utc = datetime.now(timezone.utc)
-        unix_ts = int(now_utc.timestamp())
-        today_utc = datetime.now(timezone.utc).date()
-        date_label = "Today" if now_utc.date() == today_utc else now_utc.strftime("%B %d, %Y")
+            try:
+                commits = subprocess.run(["git", "log", "-5", "--pretty=format:• %s (%an)"], capture_output=True, text=True)
+                commit_list = commits.stdout.strip()
+                embed.add_field(name="Recent Commits", value=f"```\n{commit_list}\n```", inline=False)
+            except Exception as e:
+                embed.add_field(name="Recent Commits", value=f"Could not retrieve commit log.\nError: {e}", inline=False)
 
-        embed.set_footer(text=f"{date_label} at your local time • <t:{unix_ts}:t> | <t:{unix_ts}:R>")
+            now = int(datetime.now().timestamp())
+            embed.set_footer(text=f"Today at your local time • <t:{now}:t> | <t:{now}:R>")
+            await interaction.followup.send(embed=embed)
 
-        await channel.send(embed=embed)
+            await asyncio.sleep(3)
+            os.execv(sys.executable, ["python"] + sys.argv)
 
-    @staticmethod
-    def restart_bot():
-        """Restarts the bot using the current Python interpreter."""
-        os.execv(sys.executable, [sys.executable] + sys.argv)
+        except Exception as e:
+            await self.send_error_embed(interaction, e, "update")
 
-    @app_commands.command(name="update", description="Reboots the bot and updates its code.")
-    @is_dev()
-    async def restart_cmd(self, interaction: discord.Interaction):
-        """Command to update the bot and pull updates from GitHub."""
-        embed = discord.Embed(
-            title="Updating...",
-            description="Pulling updates from GitHub and restarting.",
-            color=0x3474eb
-        )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+    # -------------------------------------------------
+    # /update commits
+    # -------------------------------------------------
+    @app_commands.command(name="update_commits", description="View the most recent GitHub commits.")
+    async def recent_commits(self, interaction: discord.Interaction):
+        if not await self._is_dev(interaction):
+            return await interaction.response.send_message("You are not authorized to run this command.", ephemeral=True)
 
-        update_results = self.update_code()
-        await self.notify_updates(update_results)
+        await interaction.response.defer()
+        try:
+            process = subprocess.run(["git", "log", "-5", "--pretty=format:• %s (%an)"], capture_output=True, text=True)
+            commits = process.stdout.strip() or "No commits found."
+            embed = discord.Embed(title="📝 Recent Commits", description=f"```\n{commits}\n```", color=discord.Color.blurple())
+            await interaction.followup.send(embed=embed)
+        except Exception as e:
+            await self.send_error_embed(interaction, e, "update_commits")
 
-        git_response = update_results.get("git_pull", "No Git response available.")
+    # -------------------------------------------------
+    # /update test
+    # -------------------------------------------------
+    @app_commands.command(name="update_test", description="Simulate an update pull without restarting.")
+    async def test_update(self, interaction: discord.Interaction):
+        if not await self._is_dev(interaction):
+            return await interaction.response.send_message("You are not authorized to run this command.", ephemeral=True)
 
-        if "already up to date." in git_response.lower():
-            embed.description += "\n\nNo updates found. Cancelling the reboot..."
-        elif "error" in git_response.lower() or "conflict" in git_response.lower():
-            embed.description += "\n\n🚨 Error: Merge conflict or issue detected. Update failed!"
-        else:
-            embed.description += "\n\n🔧 Updates applied successfully."
+        await interaction.response.defer()
+        try:
+            process = subprocess.run(["git", "fetch"], capture_output=True, text=True)
+            ahead_check = subprocess.run(["git", "status", "-uno"], capture_output=True, text=True)
+            embed = discord.Embed(title="🧪 Update Test", color=discord.Color.orange())
+            embed.add_field(name="Git Fetch Output", value=f"```\n{process.stdout.strip()[:500]}\n```", inline=False)
+            embed.add_field(name="Status", value=f"```\n{ahead_check.stdout.strip()[:500]}\n```", inline=False)
+            await interaction.followup.send(embed=embed)
+        except Exception as e:
+            await self.send_error_embed(interaction, e, "update_test")
 
-        await interaction.followup.send(embed=embed, ephemeral=True)
+    # -------------------------------------------------
+    # /update reload
+    # -------------------------------------------------
+    @app_commands.command(name="update_reload", description="Reload all cogs without a full restart.")
+    async def reload_cogs(self, interaction: discord.Interaction):
+        if not await self._is_dev(interaction):
+            return await interaction.response.send_message("You are not authorized to run this command.", ephemeral=True)
 
-        # Restart logic only if updated successfully
-        if "already up to date." in git_response.lower():
-            return
-        elif "error" in git_response.lower() or "conflict" in git_response.lower():
-            return
-        else:
-            print("[ SYSTEM ] Rebooting bot...")
-            self.restart_bot()
+        try:
+            reloaded = []
+            failed = []
+            for ext in list(self.bot.extensions.keys()):
+                try:
+                    await self.bot.reload_extension(ext)
+                    reloaded.append(ext)
+                except Exception as e:
+                    failed.append(f"{ext}: {e}")
+                    print(f"Failed to reload {ext}: {e}")
 
-async def setup(bot: commands.Bot):
-    """Adds the Updater cog to the bot."""
+            embed = discord.Embed(title="♻️ Reloaded Cogs", color=discord.Color.green())
+            embed.add_field(name="Reloaded", value=f"```\n{chr(10).join(reloaded) or 'None'}\n```", inline=False)
+            if failed:
+                embed.add_field(name="Failed", value=f"```\n{chr(10).join(failed)[:1000]}\n```", inline=False)
+            await interaction.response.send_message(embed=embed)
+        except Exception as e:
+            await self.send_error_embed(interaction, e, "update_reload")
+
+    # -------------------------------------------------
+    # /update status
+    # -------------------------------------------------
+    @app_commands.command(name="update_status", description="Show current version, branch, and uptime.")
+    async def update_status(self, interaction: discord.Interaction):
+        try:
+            branch = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True).stdout.strip()
+            commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+
+            embed = discord.Embed(title="📊 Bot Status", color=discord.Color.blue())
+            embed.add_field(name="Branch", value=branch or "Unknown")
+            embed.add_field(name="Commit", value=commit or "Unknown")
+            embed.add_field(name="GitHub", value=f"[View Repository]({GITHUB_REPO})", inline=False)
+            await interaction.response.send_message(embed=embed)
+        except Exception as e:
+            await self.send_error_embed(interaction, e, "update_status")
+
+    # -------------------------------------------------
+    # /update info
+    # -------------------------------------------------
+    @app_commands.command(name="update_info", description="Display bot update info and recent activity.")
+    async def update_info(self, interaction: discord.Interaction):
+        try:
+            process = subprocess.run(["git", "log", "-3", "--pretty=format:• %s (%an)"], capture_output=True, text=True)
+            embed = discord.Embed(
+                title="ℹ️ Bot Update Info",
+                description="Quick summary of recent updates and version info.",
+                color=discord.Color.purple()
+            )
+            embed.add_field(name="Current Commit", value=subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip())
+            embed.add_field(name="Recent Commits", value=f"```\n{process.stdout.strip()}\n```", inline=False)
+            embed.add_field(name="GitHub Repo", value=f"[View Repository]({GITHUB_REPO})", inline=False)
+            await interaction.response.send_message(embed=embed)
+        except Exception as e:
+            await self.send_error_embed(interaction, e, "update_info")
+
+
+async def setup(bot):
     await bot.add_cog(Updater(bot))
