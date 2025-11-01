@@ -76,7 +76,7 @@ class AntiRaid(commands.Cog):
             )
             if reason:
                 confirm.add_field(name="Reason", value=reason, inline=False)
-            await interaction.response.send_message(embed=confirm, ephemeral=True)
+            await interaction.response.send_message(embed=confirm, ephemeral=True, delete_after=18000)
 
         # ===========================
         # DISABLE LOCKDOWN
@@ -113,7 +113,7 @@ class AntiRaid(commands.Cog):
                 description="Lockdown mode has been **deactivated**.",
                 color=discord.Color.green()
             )
-            await interaction.response.send_message(embed=confirm, ephemeral=True)
+            await interaction.response.send_message(embed=confirm, ephemeral=True, delete_after=30)
 
     # ===========================
     # MESSAGE ENFORCEMENT
@@ -147,7 +147,7 @@ class AntiRaid(commands.Cog):
                                 "You have been **timed out for 1 hour**.",
                     color=discord.Color.red()
                 )
-                await message.author.send(embed=dm_embed)
+                await message.author.send(embed=dm_embed, delete_after=30)
             except Exception:
                 pass
 
