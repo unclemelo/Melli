@@ -1,6 +1,6 @@
 .env
 cogs/__pycache__
-melli
+melliai
 __pycache__
 data/warns.json
 bot_errors.log
@@ -8,3 +8,4 @@ data/royal_stats.json
 venv/
 data/melli_intervals.json
 cogs/melli.py
+config/

@@ -7,3 +7,8 @@ requests
 aiohttp
 psutil
 openai
+PyYAML
+piper-tts
+twitchio
+python-osc
+simpleaudio
